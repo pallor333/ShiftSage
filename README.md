@@ -19,10 +19,5 @@
 
 `npm start`
 
-# Changes 4/14/25
-  - **Creating a fullstack template**
-  
+# ShiftSage 4/17/25
 
-
-
-# ShiftSage
