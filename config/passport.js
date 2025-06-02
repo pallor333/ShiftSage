@@ -4,11 +4,14 @@ const User = require("../models/User");
 
 module.exports = function (passport) {
   passport.use(
-    new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
+    // new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
+    //   try {
+    //     // Use async/await instead of a callback
+    //     const user = await User.findOne({ email: email.toLowerCase() });
+    //Changing from requiring email -> user for login
+    new LocalStrategy({ usernameField: "username" }, async (username, password, done) => {
       try {
-        // Use async/await instead of a callback
-        const user = await User.findOne({ email: email.toLowerCase() });
-
+        const user = await User.findOne({ userName: username });
         if (!user) {
           return done(null, false, { msg: `Email ${email} not found.` });
         }

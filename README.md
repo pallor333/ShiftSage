@@ -20,4 +20,8 @@
 `npm start`
 
 # ShiftSage 4/17/25
-
+Bugs: 
+- Incorrect error message on login → references to an email
+- Seniority shouldn't display day of week (Tuesday) but instead Month/Day/Year
+- 'Edit' button on Regular/Overtime Shift and Manage Locations does not work and should be removed in the case of regular + manage locations.
+- Does not handle DST when it comes to shifts. 

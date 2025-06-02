@@ -1,0 +1,85 @@
+<%- include('partials/header') -%>
+<!-- Page 3: Show schedule -->
+<main class="container">
+    <h1>Weekly Parking Monitor Schedule <%= wkStart %> - <%= wkEnd %></h1>
+    <% for(let i = 0; i < 7; i++){ %> 
+        <!-- 0 = thurs, 1 = fri, 2 = sat, 3 = sun, 4 = mon, 5 = tues, 6 = weds -->
+        <table class="table table-striped">
+            <h3><%= wkDays[i] %></h3>
+            <thead>
+                <tr>
+                    <th>Shift</th>
+                    <% filteredLocations[i].forEach((location) => { %>
+                        <th><%= location.name %></th>
+                    <% }) %>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (filteredRegularShifts[i] && filteredRegularShifts[i].length > 0) { %>
+                    <% filteredRegularShifts[i].forEach((shift) => { %>
+                        <tr>
+                            <!-- Display the shift time -->
+                            <td>
+                                <span style="white-space: nowrap;">
+                                    <%= new Date(shift.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %> -
+                                    <%= new Date(shift.endTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %>
+                                </span>
+                            </td>
+
+                            <!-- Display monitors for each location -->
+                            <% filteredLocations[i].forEach((location) => { %>
+                                <td>
+                                    <% let hasMonitor = false; %>
+                                    <% monitors.forEach((monitor) => { %>
+                                        <% if (
+                                            monitor?.regularShift?.startTime.toString() === shift.startTime.toString() &&
+                                            monitor?.regularShift?.endTime.toString() === shift.endTime.toString() &&
+                                            monitor?.location?.name === location.name &&
+                                            monitor?.regularShift?.days?.includes(wkDays[i].split(",")[0])
+                                            <!-- && !monitor.vaca  -->
+                                        ) { %>
+                                            <span><%= monitor.name %></span>
+                                            <% hasMonitor = true; %>
+                                        <% } %>
+                                    <% }) %>
+                                    <% if (!hasMonitor) { %>
+                                        <span>[--]</span> <!-- Placeholder for empty cells -->
+                                    <% } %>
+                                </td>
+                            <% }) %>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+
+    <% } %>
+</main>
+<%- include('partials/footer') -%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Show the allocation process -->
+<!-- To comment in EJS use <% /* %> {...code goes here} <% */ %> -->
+<% /* %>
+<% hourChargeSteps.forEach(step => { %>
+        <div class="allocation-step">
+            <h3><%= step.monitorName %> got <%= step.assignedShift %></h3>
+            <ul>
+                <% step.chargedMonitors.forEach(m => { %>
+                    <li>+<%= m.hoursAdded %>h to <%= m.name %></li>
+                <% }) %>
+            </ul>
+        </div>
+    <% }) %> 
+<% */ %>

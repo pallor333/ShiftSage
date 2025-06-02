@@ -4,7 +4,7 @@ const User = require("../models/User");
 
 exports.getLogin = (req, res) => {
   if (req.user) {
-    return res.redirect("/profile");
+    return res.redirect("/parking/home");
   }
   res.render("login", {
     title: "Login",
@@ -13,8 +13,12 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = (req, res, next) => {
   const validationErrors = [];
-  if (!validator.isEmail(req.body.email))
-    validationErrors.push({ msg: "Please enter a valid email address." });
+  // Change login from requiring email to username
+  // if (!validator.isEmail(req.body.email))
+  //   validationErrors.push({ msg: "Please enter a valid email address." });
+  if (validator.isEmpty(req.body.username)) {
+    validationErrors.push({ msg: "Username cannot be blank." });
+  }
   if (validator.isEmpty(req.body.password))
     validationErrors.push({ msg: "Password cannot be blank." });
 
@@ -22,9 +26,9 @@ exports.postLogin = (req, res, next) => {
     req.flash("errors", validationErrors);
     return res.redirect("/login");
   }
-  req.body.email = validator.normalizeEmail(req.body.email, {
-    gmail_remove_dots: false,
-  });
+  // req.body.email = validator.normalizeEmail(req.body.email, {
+  //   gmail_remove_dots: false,
+  // });
 
   passport.authenticate("local", (err, user, info) => {
     if (err) {
@@ -39,7 +43,8 @@ exports.postLogin = (req, res, next) => {
         return next(err);
       }
       req.flash("success", { msg: "Success! You are logged in." });
-      res.redirect(req.session.returnTo || "/profile");
+      // res.redirect(req.session.returnTo || "/profile");
+      res.redirect(req.session.returnTo || "/parking/home");
     });
   })(req, res, next);
 };
@@ -78,7 +83,7 @@ exports.logout = (req, res, next) => {
 
 exports.getSignup = (req, res) => {
   if (req.user) {
-    return res.redirect("/profile");
+    return res.redirect("/parking/home");
   }
   res.render("signup", {
     title: "Create Account",
@@ -126,7 +131,8 @@ exports.postSignup = async(req, res, next) => {
         return next(err);
       }
       req.flash("success", { msg: "You have successfully signed up!" });
-      res.redirect("/profile");
+      // res.redirect(req.session.returnTo || "/profile");
+      res.redirect(req.session.returnTo || "/parking/home");
     });
   } catch (err) {
     console.error(err);

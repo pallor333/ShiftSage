@@ -1,0 +1,122 @@
+<%- include('partials/header') -%>
+<!-- Page 2: Input individual monitor OT -->
+<main class="container">
+  <section class="overtime">
+    <h1>Overtime Sheets</h1> <p>Enter rankings for individual monitors here</p>
+    <!-- <form action="/parking/overtime/rank/:_id" method="POST" class="row g-3"> -->
+    <form id="rankingForm" action="" method="POST" class="row g-3">
+      <!-- Monitor ID Dropdown -->
+      <section class="col-md-6">
+        <label for="overtimeMonitorId" class="form-label">Monitor ID</label>
+        <select name="monitorId" class="form-select" id="overtimeMonitorId" required 
+          onChange= "updateFormAction(this.value)">
+          <!-- "this.form.action='parking/overtime/rank/'+this.value" -->
+          <!-- "updateFormAction(this.value)" -->
+          <option value="" disabled selected>Select Monitor</option>
+          <% monitors.forEach((monitor) => { %> 
+            <option value="<%= monitor._id %>">
+              <%= monitor.id %> (<%= monitor.name %>)
+            </option>
+          <% }) %>
+        </select>
+      </section>
+      <!-- OT Rankings -->
+      <table class="table table-striped ranking-table">
+        <thead>
+          <tr>
+            <th>Overtime Shift</th>
+            <th>Rank (1=highest)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Removed 'required' from the input becos it was blocking submission -->
+          <% openShifts.forEach((shift) => { %>
+            <tr>
+              <td><%= shift.name %></td>
+              <td>
+                <input 
+                  type="number"
+                  name="rankings[<%= shift._id %>]"
+                  class="form-control"
+                  min="1"
+                  max="<%= openShifts.length %>" 
+                >
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <!-- Submit Button -->
+      <section class="col-12">
+        <button type="submit" class="btn btn-primary">Submit Rankings</button>
+      </section>
+    </form>
+  </section>
+
+  <!-- Temp line break -->
+  <br><hr>
+  <!-- Display Overtime -->
+  <section id="displayOvertime">
+    <h2>Current Overtime Bids</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID (Monitor Name)</th>
+          <th>Overtime Rankings</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% overtimeBid.forEach((bid) => { %>
+          <tr>
+             <td><%= bid.monitor.id %></td>
+            <td>
+              <% bid.rankings.forEach((ranking) => { %>
+                <p><%= ranking.position.name %> | Rank: <%= ranking.rank %></p>
+              <% }) %>
+            </td>
+            <td>
+              <!-- Delete Button -->
+              <form action="/parking/overtime/deleteBid/<%= bid._id %>" method="POST">
+                <button type="submit" class="btn btn-warning btn-sm">Delete Bid</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<%- include('partials/footer') -%>
+
+<script>
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   const form = document.getElementById('rankingForm');
+    
+  //   // Debug form validation
+  //   form.addEventListener('invalid', (event) => {
+  //     console.log('Invalid field:', event.target);
+  //   }, true);
+    
+  //   // Debug form submission
+  //   form.addEventListener('submit', (event) => {
+  //     console.log('Form submitted to:', form.action);
+  //     console.log('Form data:', Object.fromEntries(new FormData(form)));
+      
+  //     // Uncomment to prevent actual submission while debugging
+  //     // event.preventDefault();
+  //   });
+  // });
+
+  //empty submissions = block
+  // form.addEventListener('invalid', (event) => {
+  // console.log('Invalid field:', event.target);
+  // }, true);
+
+  function updateFormAction(monitorId) {
+    const form = document.getElementById('rankingForm');
+    form.action = `/parking/overtime/rank/${monitorId}`; //modify form action based on selected monitor Id
+    console.log(`Form action updated to: ${form.action} with ${monitorId}`); // Debugging statement
+  }
+</script>

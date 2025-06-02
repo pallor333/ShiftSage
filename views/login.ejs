@@ -11,15 +11,25 @@
       <% }) %> <% } %>
       <form action="/login" method="POST">
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label"
+          <!-- Remove login by email -->
+          <!--<label for="exampleInputEmail1" class="form-label"
             >Email address</label
           >
-          <input
+           <input
             type="email"
             class="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
             name="email"
+          /> -->
+          <!-- Add login by username -->
+          <label for="username" class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            required
           />
         </div>
         <div class="mb-3">

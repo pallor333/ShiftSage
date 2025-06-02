@@ -1,0 +1,59 @@
+<%- include('partials/header') -%>
+
+<!-- Page 0: Display Monitors / Open Shifts -->
+<a href="/logout" class="col-3 btn btn-primary">Logout</a>
+<main class="container">
+  <h1>Parking Information</h1>
+  <p>Please make sure all the below info is correct before moving on to the automated scheduler</p>
+  
+  <!-- Navigation to edit, overtime and schedule pages -->
+  <a href="/parking/edit" class="btn btn-primary">Manage Monitors/Shifts/Locations</a>
+  <a href="/parking/overtime" class="btn btn-primary">Overtime Sheets</a>
+  <a href="/parking/schedule" class="btn btn-primary">Weekly Schedule</a>
+  
+
+  <section class="monitors">
+    <!-- Populate dynamically with monitors + monitor attributes 
+    Attributes = ID, displayname, shift time, shift location, vacation?, 
+    hours, and seniority. -->
+  <h2>Monitors</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Normal Shift</th>
+        <th>Location</th>
+        <th>On Vacation?</th>
+        <th>Hours</th>
+        <th>Seniority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% monitors.forEach((monitor) => { %>
+        <tr>
+          <td><%= monitor.id %></td>
+          <td><%= monitor.name %></td>
+          <td><%= monitor.regularShift.name %>    
+            (<%= monitor.regularShift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %> -
+            <%= monitor.regularShift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %>)</td>
+          <td><%= monitor.location.name %></td>
+          <td><%= monitor.vaca ? "Yes" : "No" %></td>
+          <td><%= monitor.hours %></td>
+          <td><%= monitor.seniority.toDateString() %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </section>
+  <section class="shifts">
+    <!-- Populate dynamically with open OT shifts. Maybe regular shifts too -->
+  </section>
+  <!-- <section class="locations">
+    Populate dynamically with open OT shifts.
+    Maybe I don't need this 
+  </section> -->
+
+</main>
+
+<%- include('partials/footer') -%>
