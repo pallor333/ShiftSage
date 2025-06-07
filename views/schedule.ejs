@@ -1,7 +1,7 @@
 <%- include('partials/header') -%>
 <!-- Page 3: Show schedule -->
 <main class="container">
-    <h1>Weekly Parking Monitor Schedule <%= wkStart %> - <%= wkEnd %></h1>
+    <h1>Weekly Parking Monitor Schedule <%= allocationResults.weekStart %> - <%= allocationResults.weekEnd %></h1>
     <% for(let i = 0; i < 7; i++){ %> 
         <!-- 0 = thurs, 1 = fri, 2 = sat, 3 = sun, 4 = mon, 5 = tues, 6 = weds -->
         <table class="table table-striped">
@@ -9,47 +9,41 @@
             <thead>
                 <tr>
                     <th>Shift</th>
-                    <% filteredLocations[i].forEach((location) => { %>
-                        <th><%= location.name %></th>
+                    <% allocationResults.schedule[daysArr[i]].locations.forEach(location => { %> 
+                        <th><%= location %></th>
                     <% }) %>
                 </tr>
+                <!-- <pre><%= JSON.stringify(allocationResults.schedule[daysArr[i]].locations, null, 2) %></pre> -->
             </thead>
             <tbody>
-                <% if (filteredRegularShifts[i] && filteredRegularShifts[i].length > 0) { %>
-                    <% filteredRegularShifts[i].forEach((shift) => { %>
-                        <tr>
-                            <!-- Display the shift time -->
+                <!-- Grouping shifts in the EJS template -->
+                <!-- <% const groupedShifts = {}; %>
+                <% Object.values(allocationResults.schedule[daysArr[i]].row).forEach(shift => { %>
+                    <% const location = shift.location || "Unassigned"; %>
+                    <% if (!groupedShifts[location]) { groupedShifts[location] = []; } %>
+                    <% groupedShifts[location].push(shift); %>
+                <% }); %> -->
+                
+                <!-- Looping over each 'row' -->
+                <% Object.values(allocationResults.schedule[daysArr[i]].row).forEach((shift) => { %>
+                    <tr>
+                        <!-- Display the shift time -->
+                        <td>
+                            <span style="white-space: nowrap;">
+                                <%= new Date(shift.start).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %> -
+                                <%= new Date(shift.end).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %>
+                            </span>
+                        </td>
+                        <!-- Render Monitors horizontally -->
+                        <% shift.location.forEach(monitor => { %>
                             <td>
-                                <span style="white-space: nowrap;">
-                                    <%= new Date(shift.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %> -
-                                    <%= new Date(shift.endTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %>
-                                </span>
+                                <!-- <pre><%= JSON.stringify(shift.location, null, 2) %></pre> -->
+                                <!-- <%= typeof monitor[1] === 'object' ? monitor[1].name : monitor[1] %> -->
+                                 <%= monitor[1] %>
                             </td>
-
-                            <!-- Display monitors for each location -->
-                            <% filteredLocations[i].forEach((location) => { %>
-                                <td>
-                                    <% let hasMonitor = false; %>
-                                    <% monitors.forEach((monitor) => { %>
-                                        <% if (
-                                            monitor?.regularShift?.startTime.toString() === shift.startTime.toString() &&
-                                            monitor?.regularShift?.endTime.toString() === shift.endTime.toString() &&
-                                            monitor?.location?.name === location.name &&
-                                            monitor?.regularShift?.days?.includes(wkDays[i].split(",")[0])
-                                            <!-- && !monitor.vaca  -->
-                                        ) { %>
-                                            <span><%= monitor.name %></span>
-                                            <% hasMonitor = true; %>
-                                        <% } %>
-                                    <% }) %>
-                                    <% if (!hasMonitor) { %>
-                                        <span>[--]</span> <!-- Placeholder for empty cells -->
-                                    <% } %>
-                                </td>
-                            <% }) %>
-                        </tr>
-                    <% }) %>
-                <% } %>
+                        <% }) %>
+                    </tr>
+                <% }) %>
             </tbody>
         </table>
 
@@ -57,7 +51,7 @@
 </main>
 <%- include('partials/footer') -%>
 
-
+ 
 
 
 

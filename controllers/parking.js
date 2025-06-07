@@ -1,8 +1,8 @@
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, RegularShift, OpenShift, Location, OvertimeBid} = require("../models/Parking");
 const { findById } = require("../models/User");
-const allocateOvertime = require('../services/overtimeServices'); //Import business logic from Service layer
-const allocateSchedule = require('../services/scheduleServices'); //Import business logic from Service layer
+const { allocateOvertime } = require('../services/overtimeServices'); //Import business logic from Service layer
+const { allocateSchedule }= require('../services/scheduleServices'); //Import business logic from Service layer
 //Can fetch related objects now
 //const monitor = await Monitor.findById(monitorId).populate('regularShifts currentLocation');
 
@@ -13,6 +13,7 @@ const THISWEEK = new Date("4/30/25")
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { Monday: "MON", Tuesday: "TUE", Wednesday: "WED", Thursday: "THU", Friday: "FRI", Saturday: "SAT", Sunday: "SUN",};
+const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
 
 // Helper function to fetch data from DB
 const fetchCommonData = async () => {
@@ -136,10 +137,10 @@ module.exports = {
   //TODO: Add overtime shifts.locations to filteredShifts and filteredLocations 
   getSchedulePage: async (req, res) => {
     try {
-      const { monitors, openShifts, locations } = await fetchCommonData();
-      const regularShifts = await RegularShift.find().lean().sort( {startTime: 1})
+      const allocationResults = await allocateSchedule() //call allocateSchedule function
+      // const { monitors, openShifts, locations } = await fetchCommonData();
+      // const regularShifts = await RegularShift.find().lean().sort( {startTime: 1})
       const [wkStart, wkEnd] = getNextThurs(THISWEEK), wkDays = []
-
       //Generate table headers for each day
       for(let i = 0; i < 7; i++){
         const date = new Date(wkStart)
@@ -152,12 +153,11 @@ module.exports = {
       }
       //wkDays[i].split(",")[0].toLowerCase() turns 'Thursday, May 1, 2025' into 'thursday'
       //Filter regularShifts into an array of days
-      const filteredShiftsByDay = wkDays.map(day => 
+      /*const filteredShiftsByDay = wkDays.map(day => 
         regularShifts.filter(shift => 
-          shift.days && shift.days.some(d => d.toLowerCase() === day.split(",")[0].toLowerCase())
+          shift.days && shift.days.some(d => d === day.split(",")[0].toLowerCase())
         )
       )
-      //console.log(regularShifts)
       //regularShifts
       //_id: new ObjectId('6811521626093510a53bf39f'),
       //name: 'Weekday First Shift B',
@@ -173,6 +173,7 @@ module.exports = {
       //   ) 
       // )
       // console.log(openShifts)
+
       // _id: new ObjectId('6826495e9e8667f3047c5613'),
       // name: 'THU 5/1 RECYCLE 07:00 AM - 03:30 PM (8.5)',
       // location: {
@@ -197,7 +198,7 @@ module.exports = {
           : location.scheduleType === 'none' ? false
           : !isWeekend
         )
-      })
+      })*/
 
       //Debugging schedule
       // monitors.filter(m => {
@@ -211,15 +212,18 @@ module.exports = {
       //WASHINGTON works at Weekday Third Shift A, SFPG/1WES on Monday,Tuesday,Wednesday,Thursday,Friday
       //VAN BUREN works at Weekend Third Shift, SFPG/1WES on Saturday,Sunday
 
+      // console.log(allocationResults)
       // Render the schedule.ejs template and pass the data
       res.render("schedule.ejs", {
         user: req.user,
-        monitors: monitors,
-        filteredRegularShifts: filteredShiftsByDay,
-        openShifts: openShifts,
-        filteredLocations: filteredLocationsByDay.sort((a,b) => a - b),
-        wkStart: wkStart,
-        wkEnd: wkEnd,
+        // monitors: monitors,
+        // filteredRegularShifts: filteredShiftsByDay,
+        // openShifts: openShifts,
+        // filteredLocations: filteredLocationsByDay.sort((a,b) => a - b),
+        // wkStart: wkStart,
+        // wkEnd: wkEnd,
+        allocationResults: allocationResults, // pass allocation results
+        daysArr: DAYSARRAY, 
         wkDays: wkDays,
       });
     } catch (err) {
