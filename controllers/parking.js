@@ -1,8 +1,10 @@
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, RegularShift, OpenShift, Location, OvertimeBid} = require("../models/Parking");
-const { findById } = require("../models/User");
-const { allocateOvertime } = require('../services/overtimeServices'); //Import business logic from Service layer
-const { allocateSchedule }= require('../services/scheduleServices'); //Import business logic from Service layer
+const { Monitor, RegularShift, OpenShift, Location, OvertimeBid } = require("../models/Parking")
+const { findById } = require("../models/User")
+// services/overtimeServices.js
+const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
+const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
+const { allocateSchedule }= require('../services/scheduleServices') //Import business logic from Service layer
 //Can fetch related objects now
 //const monitor = await Monitor.findById(monitorId).populate('regularShifts currentLocation');
 
@@ -29,40 +31,7 @@ const fetchCommonData = async () => {
     console.error("Error fetching common data:", err);
     throw err; // Rethrow the error to handle it in the calling function
   }
-};
-// Helper function to calculate hours in a shift
-const calculateShiftHours = (startTime, endTime) => {
-  let diffInMilliseconds = endTime - startTime; // Difference in milliseconds
-
-  // Handle overnight shifts (endTime < startTime)
-  if (diffInMilliseconds < 0) {
-    diffInMilliseconds += 24 * 60 * 60 * 1000; // Add 24 hours in milliseconds
-  }
-
-  const diffInHours = diffInMilliseconds / (1000 * 60 * 60); // Convert to hours
-  return diffInHours.toFixed(1); // Round to 1 decimal place
-};
-//Helper function to get next Thurs
-function getNextThurs(date){
-  const day = date.getDay() //0 = Sun, 6 = Sat
-  const wkStart = new Date(date)
-
-  //Calculate days till next Thurs
-  const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7;
-  wkStart.setDate(date.getDate() + daysUntilThursday);
-  const wkEnd = new Date(wkStart.getTime() + 604800000); // 7 days in ms
-  // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
-  // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
-
-  return [`${wkStart.getMonth() + 1}/${wkStart.getDate()}/${wkStart.getFullYear()}`, 
-          `${wkEnd.getMonth() + 1}/${wkEnd.getDate()}/${wkEnd.getFullYear()}`
-          ] //Return string in format month/day/year
 }
-// Helper function to format dates in MM/DD/YY format
-    const formatDate = (date) => {
-      const d = new Date(date);
-      return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
-    };
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
 module.exports = {
@@ -119,6 +88,7 @@ module.exports = {
   getOvertimePage: async (req, res) => {
     try { 
       const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
+      const overtimeCalcs = await allocateOvertime() //calling overtimeServices //I don't want to initialize this here
       // Render the edit.ejs template and pass the data
       res.render("overtime.ejs", {
         user: req.user,
@@ -134,12 +104,10 @@ module.exports = {
     }
   },
   //Scheduling page
-  //TODO: Add overtime shifts.locations to filteredShifts and filteredLocations 
+  //TODO: Add overtime shifts
   getSchedulePage: async (req, res) => {
     try {
       const allocationResults = await allocateSchedule() //call allocateSchedule function
-      // const { monitors, openShifts, locations } = await fetchCommonData();
-      // const regularShifts = await RegularShift.find().lean().sort( {startTime: 1})
       const [wkStart, wkEnd] = getNextThurs(THISWEEK), wkDays = []
       //Generate table headers for each day
       for(let i = 0; i < 7; i++){
@@ -151,77 +119,10 @@ module.exports = {
           month:"long", 
           day:"numeric" }))
       }
-      //wkDays[i].split(",")[0].toLowerCase() turns 'Thursday, May 1, 2025' into 'thursday'
-      //Filter regularShifts into an array of days
-      /*const filteredShiftsByDay = wkDays.map(day => 
-        regularShifts.filter(shift => 
-          shift.days && shift.days.some(d => d === day.split(",")[0].toLowerCase())
-        )
-      )
-      //regularShifts
-      //_id: new ObjectId('6811521626093510a53bf39f'),
-      //name: 'Weekday First Shift B',
-      //days: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
-      //startTime: 1970-01-01T13:00:00.000Z,
-      //endTime: 1970-01-01T21:30:00.000Z,
-
-      // filteredShiftsByDay.forEach((day, i) => 
-      //   filteredShiftsByDay.push( 
-      //       openShifts.filter(shift =>
-      //       shift.day && shift.day.some(d => d === day.split(",")[0])
-      //     ) 
-      //   ) 
-      // )
-      // console.log(openShifts)
-
-      // _id: new ObjectId('6826495e9e8667f3047c5613'),
-      // name: 'THU 5/1 RECYCLE 07:00 AM - 03:30 PM (8.5)',
-      // location: {
-      //   _id: new ObjectId('682cf19bac6a6c7d4af034bf'),
-      //   name: 'RECYCLE',
-      //   scheduleType: 'none',
-      //   __v: 0
-      // },
-      // day: 'Thursday',
-      // date: '05/01',
-      // startTime: 1970-01-01T12:00:00.000Z,
-      // endTime: 1970-01-01T20:30:00.000Z,
-      // totalHours: 8.5,
-      // recurring: true,
-
-      //location.scheduleType = [Weekday, Everyday, None]
-      //Filter locations by day
-      const filteredLocationsByDay = Array.from({ length: 7},(_,idx) => {
-        const isWeekend = idx === 2 || idx === 3 //Sat (2) and Sun (3)
-        return locations.filter(location =>  
-          location.scheduleType === 'everyday' ? true 
-          : location.scheduleType === 'none' ? false
-          : !isWeekend
-        )
-      })*/
-
-      //Debugging schedule
-      // monitors.filter(m => {
-      //   if(m.id === 101 || m.id === 106){
-      //     let start = new Date(m.regularShift.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
-      //     let end = new Date(m.regularShift.endTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
-
-      //     console.log(`${m.name} works at ${m.regularShift.name}(${start} - ${end}), ${m.location.name} on ${m.regularShift.days}`)
-      //   }
-      // })
-      //WASHINGTON works at Weekday Third Shift A, SFPG/1WES on Monday,Tuesday,Wednesday,Thursday,Friday
-      //VAN BUREN works at Weekend Third Shift, SFPG/1WES on Saturday,Sunday
-
-      // console.log(allocationResults)
+      
       // Render the schedule.ejs template and pass the data
       res.render("schedule.ejs", {
         user: req.user,
-        // monitors: monitors,
-        // filteredRegularShifts: filteredShiftsByDay,
-        // openShifts: openShifts,
-        // filteredLocations: filteredLocationsByDay.sort((a,b) => a - b),
-        // wkStart: wkStart,
-        // wkEnd: wkEnd,
         allocationResults: allocationResults, // pass allocation results
         daysArr: DAYSARRAY, 
         wkDays: wkDays,
@@ -405,14 +306,19 @@ module.exports = {
         res.redirect("/parking/home");
       }
     },
-  addVacation: async (req, res) => {
+  //Add helper function to automatically add OT shift when vacation is added
+  //Conversely add helper delete function when vacation is deleted
+  addVacation: async (req, res) => {  
     try{
       const { vacationMonitorSelect, startDate, endDate} = req.body
-      // console.log(vacationMonitorSelect, startDate, endDate)
-      // console.log(req.body)
+      //console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
+      
+      //Parse local dates + split before declaring the date
+      const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
+      const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
+      const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
+      const end = new Date(endYear, endMonth - 1, endDay);
       //Ensure start/endDate are valid
-      const start = new Date(startDate)
-      const end = new Date(endDate)
       if(isNaN(start) || isNaN(end) || start > end){
         return res.status(400).send("Invalid vacation date range provided.");
       }

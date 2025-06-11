@@ -1,9 +1,11 @@
-const { Monitor, RegularShift, OpenShift, Location, OvertimeBid} = require("../models/Parking");
-// Every Monitors has Overtime Rankings. 
-// 0) Duplicate list of monitors, removing all on vacation. 
-// 1) Score each Overtime sheet and filter out empty entries -> each monitor has a list of preferences
+// 0) Score each Overtime sheet and filter out empty entries -> each monitor has a list of preferences
+// Every Monitors has Overtime Rankings. // let noVacaMonitors = monitorNoVacaThisWeek(monitors)
+// 1) Duplicate list of monitors, removing all on vacation. 
+// 2) Create 7 different monitor tables, one for each day of the week.
+// Purpose: These are to be referenced later when augmenting hours. Compiling now reduces iterations later + efficiency.
 //*****************************************************************************/ SHIFT ALLOCATION PHASE
-// 1) Sort by hours (low -> high)
+// Grab monitors from OvertimeBid (Those who haven't submitted one aren't included)
+// 2) Sort by hours (low -> high), if the hours are the same then sort by seniority.
 // 	The first person on the list gets their #1 shift. (e.g. THURS, HBS, 11:00pm - 7:30am)
 // 1a) If hours conflict, then the one with the highest seniority wins. 
 //*****************************************************************************/ CALCULATION PHASE
@@ -16,6 +18,12 @@ const { Monitor, RegularShift, OpenShift, Location, OvertimeBid} = require("../m
 //*****************************************************************************/ Once at the end, return 
 // 1) List of overtime shifts
 // 2) hours added to each monitor 
+const { Monitor, OpenShift, Location, OvertimeBid} = require("../models/Parking");
+const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers');
+const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
+//temp hardcoding date:
+const THISWEEK = new Date("4/30/25")
+
 const checkShiftConflict = (monitor, openShiftID) => {
     if(!monitor.regularShift) return false
 
@@ -37,19 +45,48 @@ const checkShiftConflict = (monitor, openShiftID) => {
     return false // No day conflict = available
 }
 
+//Object of arrays = {date: [], date: [], date: []}
+function monitorNoVacaThisWeek(monitors, date){
+    //loop over days array: workingMonitors[thursday] = (monitor)
+    let workingMonitors = {thursday: [], friday: [], saturday: [], sunday: [], monday: [], tuesday: [], wednesday: [],}
+    // Filter monitors out vacation by converting dates to strings
+    DAYSARRAY.forEach(d => {
+        let dateStr = date.toISOString().split('T')[0]
+        workingMonitors[d] = ( monitors.filter(m => !m.vaca.some(v => v.toISOString().split('T')[0] === dateStr)) )
+        date.setDate(date.getDate() + 1);
+    })
+    return workingMonitors
+}
+
 module.exports = {
     allocateOvertime: async() => {
         try{
+            const monitors = await Monitor.find().populate("regularShift location").sort( {hours: 1}) //i think this is ascending (lowest first)
+            const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
+            const overtimeBidMonitors = await OvertimeBid.find().populate("monitor") //maybe sort by monitor id?
+            const locations = await Location.find().sort({ name: 1})   
+            // if count is different, then the sort is based on that. If count is the same, the first expression returns 0 which converts to false 
+            // and the result of the second expression is used (i.e. the sort is based on year).
+            // data.sort(function (a, b) {
+            // return a.count - b.count || a.year - b.year;
+            // })
+            //Convert date to 'YYYY-MM-DD' to match schema
+            const [wkStart, _] = getNextThurs(THISWEEK)
+            const [m, d, y] = wkStart.split("/").map(Number)
+            const formattedDate = new Date(y, m - 1, d)
+            // {thursday: [list of monitor objects working today], friday: [monitor objects], etc} - 7 days
+            let WorkingMonitors = monitorNoVacaThisWeek(monitors, formattedDate) 
+
             const stepByStepCharges= [] //track hours to add to each monitor
             const overtimeAssignments = {} //track shift assignments  {shift: monitor}
             //{shiftId: {monitor, shift}}
 
             //Avaliable defined as not on vacation
-            const avaliableMonitors = await Monitor.find( {vaca: false} ).populate('regularShift').lean().catch(err =>{
-                console.error("Error fetching monitors:", err)
-                throw err
-            })
-            
+            // const avaliableMonitors = await Monitor.find( {vaca: false} ).populate('regularShift').lean().catch(err =>{
+            //     console.error("Error fetching monitors:", err)
+            //     throw err
+            // })
+            /*
             //Fetch bids with populated monitor data + sort by hours ascending
             const bids = await OvertimeBid.find()
                 .populate({
@@ -105,12 +142,12 @@ module.exports = {
                     if (Object.keys(overtimeAssignments).length === bids.length) break; //avoid infinite loops?
                 }
             }
-
-            return {
-                assignments: Object.values(overtimeAssignments),
-                hourChargeSteps:stepByStepCharges,
-                summary: generateSummary(stepByStepCharges)
-            }
+            */
+            // return {
+            //     assignments: Object.values(overtimeAssignments),
+            //     hourChargeSteps:stepByStepCharges,
+            //     summary: generateSummary(stepByStepCharges)
+            // }
 
         }catch (err){
             console.error("Error, in allocateOvertime:", err)

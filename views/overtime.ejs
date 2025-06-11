@@ -3,7 +3,6 @@
 <main class="container">
   <section class="overtime">
     <h1>Overtime Sheets</h1> <p>Enter rankings for individual monitors here</p>
-    <!-- <form action="/parking/overtime/rank/:_id" method="POST" class="row g-3"> -->
     <form id="rankingForm" action="" method="POST" class="row g-3">
       <!-- Monitor ID Dropdown -->
       <section class="col-md-6">
@@ -55,7 +54,7 @@
 
   <!-- Temp line break -->
   <br><hr>
-  <!-- Display Overtime -->
+  <!-- Display Monitor Overtime Submissions-->
   <section id="displayOvertime">
     <h2>Current Overtime Bids</h2>
     <table class="table table-striped">
@@ -69,10 +68,11 @@
       <tbody>
         <% overtimeBid.forEach((bid) => { %>
           <tr>
-             <td><%= bid.monitor.id %></td>
+             <td><%= bid.monitor.name %> (<%= bid.monitor.id %>)</td>
             <td>
               <% bid.rankings.forEach((ranking) => { %>
-                <p><%= ranking.position.name %> | Rank: <%= ranking.rank %></p>
+                <p><%= ranking.rank %>) <%= ranking.position.name %> </p>
+                <!-- Rank: <%= ranking.rank %> -->
               <% }) %>
             </td>
             <td>

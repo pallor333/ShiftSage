@@ -13,17 +13,8 @@
                         <th><%= location %></th>
                     <% }) %>
                 </tr>
-                <!-- <pre><%= JSON.stringify(allocationResults.schedule[daysArr[i]].locations, null, 2) %></pre> -->
             </thead>
             <tbody>
-                <!-- Grouping shifts in the EJS template -->
-                <!-- <% const groupedShifts = {}; %>
-                <% Object.values(allocationResults.schedule[daysArr[i]].row).forEach(shift => { %>
-                    <% const location = shift.location || "Unassigned"; %>
-                    <% if (!groupedShifts[location]) { groupedShifts[location] = []; } %>
-                    <% groupedShifts[location].push(shift); %>
-                <% }); %> -->
-                
                 <!-- Looping over each 'row' -->
                 <% Object.values(allocationResults.schedule[daysArr[i]].row).forEach((shift) => { %>
                     <tr>
@@ -35,7 +26,7 @@
                             </span>
                         </td>
                         <!-- Render Monitors horizontally -->
-                        <% shift.location.forEach(monitor => { %>
+                        <% shift.locationMonitors.forEach(monitor => { %>
                             <td>
                                 <!-- <pre><%= JSON.stringify(shift.location, null, 2) %></pre> -->
                                 <!-- <%= typeof monitor[1] === 'object' ? monitor[1].name : monitor[1] %> -->
