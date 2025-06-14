@@ -429,7 +429,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
         if(rankings[id]){ //Filter rankings to remove empty values
           rankingArr.push({position: id, rank: rankings[id]})
         }
-      }
+      }//TODO: Sort these in reverse order because pop() is O(1)
 
       //Update/Create OvertimeBid document
       await OvertimeBid.findOneAndUpdate(
@@ -437,8 +437,8 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
         {
           $set: {
             rankings: rankingArr, //insert formatted rankings
-            monitorHours: monitor.hours,
-            monitorSeniority: monitor.seniority,
+            // monitorHours: monitor.hours,
+            // monitorSeniority: monitor.seniority,
           },
         },
         { upsert: true } //Create new document if one doesn't exist

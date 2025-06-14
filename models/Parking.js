@@ -9,7 +9,7 @@ const LocationSchema = new Schema({
 
 const RegularShiftSchema = new Schema({
   name: { type: String },
-  days: [{ type: String, required: true}],
+  days: [{ type: String, required: true}], // monday, tuesday, wednesday, thursday, friday,etc
   // location: { 
   //   type: Schema.Types.ObjectId, 
   //   ref: 'Location', 
@@ -26,7 +26,7 @@ const OpenShiftSchema = new Schema({
     ref: 'Location', 
     required: true
   },
-  day: {type: String, required: true },     // Monday/Tuesday/Wednesday, etc
+  day: {type: String, required: true },     // monday/tuesday/wednesday, etc
   date: {type: String, required: true},     // MM/DD
   startTime: { type: Date, required: true, },
   endTime: { type: Date, required: true },
@@ -58,10 +58,22 @@ const OvertimeBidsSchema = new Schema({
     position: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
     rank: { type: Number }, // Rank assigned to the position
   }],
-  monitorHours: { type: Schema.Types.Decimal128, required: true, },
-  monitorSeniority: {type: Date, required: true},
+  
+  // monitorHours: { type: Schema.Types.Decimal128, required: true, },
+  // monitorSeniority: {type: Date, required: true},
   //week: { type: Date, default: () => new Date() }, // Timestamp for the week
 });
+
+const OvertimeWinnersSchema = new Schema({
+  monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true },
+  openShift: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
+  hourAllocation: { 
+    type: [{monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true }, 
+    hrs: { type: Number, required: true }, 
+  }], 
+  default: []  //Arr of [monitor:hrToAdd]
+  },
+})
 
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
@@ -70,5 +82,35 @@ module.exports = {
   OpenShift: mongoose.model("OpenShift", OpenShiftSchema),
   Location: mongoose.model("Location", LocationSchema),
   OvertimeBid: mongoose.model("OvertimeBid", OvertimeBidsSchema),
+  OvertimeWinners: mongoose.model("OvertimeWinners", OvertimeWinnersSchema),
 };
 
+
+/*
+OvertimeBidsSchema.rankings = [
+  {
+    position: new ObjectId('6826495e9e8667f3047c5613'),
+    rank: 1,
+    _id: new ObjectId('6848e1addeac5e7d5a875f15')
+  },
+  {
+    position: new ObjectId('68264a8179f269ffb0f939f8'),
+    rank: 2,
+    _id: new ObjectId('6848e1addeac5e7d5a875f16')
+  },
+  {
+    position: new ObjectId('68264ac779f269ffb0f93a04'),
+    rank: 3,
+    _id: new ObjectId('6848e1addeac5e7d5a875f17')
+  },
+  {
+    position: new ObjectId('68264add79f269ffb0f93a10'),
+    rank: 4,
+    _id: new ObjectId('6848e1addeac5e7d5a875f18')
+  },
+  {
+    position: new ObjectId('68264af879f269ffb0f93a1c'),
+    rank: 5,
+    _id: new ObjectId('6848e1addeac5e7d5a875f19')
+  }
+]*/

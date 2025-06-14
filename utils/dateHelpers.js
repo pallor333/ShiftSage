@@ -1,3 +1,4 @@
+/* DATE HELPER FUNCTIONS ****************************************************************/
 // Helper function to calculate hours in a shift
 const calculateShiftHours = (startTime, endTime) => {
   let diffInMilliseconds = endTime - startTime; // Difference in milliseconds
@@ -33,4 +34,5 @@ function getNextThurs(date){
           `${wkEnd.getMonth() + 1}/${wkEnd.getDate()}/${wkEnd.getFullYear()}`
           ] //Return string in format month/day/year
 }
+
 module.exports = { calculateShiftHours, formatDate, getNextThurs, }

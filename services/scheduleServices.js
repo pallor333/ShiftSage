@@ -66,57 +66,22 @@ schedule.Thursday.forEach(entry => {
 console.log(schedule.Thursday);
 */
 const { Monitor, RegularShift, OpenShift, Location} = require("../models/Parking");
+const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
+const { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, } = require('../utils/lookupHelpers')
 const THISWEEK = new Date("4/30/25") //new Date()
 const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
 const EMPTY = "Unassigned"
 
-//Helper function to get next Thurs
-function getNextThurs(date){
-  const day = date.getDay() //0 = Sun, 6 = Sat
-  const wkStart = new Date(date)
-
-  //Calculate days till next Thurs
-  const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7
-  wkStart.setDate(date.getDate() + daysUntilThursday)
-  const wkEnd = new Date(wkStart.getTime() + 604800000) // 7 days in ms
-  // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
-  // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
-
-  return [`${wkStart.getMonth() + 1}/${wkStart.getDate()}/${wkStart.getFullYear()}`, 
-          `${wkEnd.getMonth() + 1}/${wkEnd.getDate()}/${wkEnd.getFullYear()}`
-          ] //Return string in format month/day/year
-}
-//Create a lookup table with O(1) lookup time via monitorByShiftId.get()
-function monitorLookupTable(monitors){
-  const monitorByShiftId = new Map()
-  monitors.forEach(monitor => { // shift_id: {monitor object}
-      const shiftId = monitor.regularShift._id.toString();
-      if (!monitorByShiftId.has(shiftId)) {
-          monitorByShiftId.set(shiftId, []); // shiftID is key
-      }
-      monitorByShiftId.get(shiftId).push(monitor); // Store multiple monitors inside arr
-  })
-  return monitorByShiftId
-}
-// Pre-index locations by _id for quick lookup
-function locationLookupTable(locations){
-  const locationById = new Map() // location_id: {location Object}
-  locations.forEach(location => { 
-      locationById.set(location._id.toString(), location);
-  })
-  return locationById
-}
 function resetLocationToday(locationsToday){
   // template to populate with monitors later [location Object, monitor name, overtime shift?]
   //[ '10EV', 'VACACHECK2' ] -> [ '10EV', 'Unassigned' ], also used to reset
   return Object.entries(locationsToday).map(([_, loc]) => [loc.name, EMPTY, false]) 
 }
 
-
 function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations){
     const [wkStart, wkEnd] = getNextThurs(date), schedule = {}
-    const monitorByShiftId = monitorLookupTable(monitors)
-    const locationById = locationLookupTable(locations)  
+    const monitorByShiftId = monitorLookupByShiftIdTable(monitors)
+    const locationById = locationLookupByLocationIdTable(locations)  
 
     //Create 7 different obj, one for each day of the week
     for(let i = 0; i < 7; i++){
