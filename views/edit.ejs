@@ -205,21 +205,76 @@
                     <label for="locationName" class="form-label">Location Name</label>
                     <input type="text" class="form-control" id="locationName" name="locationName" required>
                 </section>
-                <label>Which days is this location worked?</label>
+                <!-- <label>Which days is this location worked?</label>
                 <section class="col-md-6">
                     <section class="form-check">
-                        <input class="form-check-input" type="radio" name="locationDay" id="none" value="none" checked>
+                        <input class="form-check-input" type="radio" name="locationDay" id="none" value="" checked>
                         <label class="form-check-label" for="none">None, this is not a regular shift.</label>
                     </section>
                     <section class="form-check">
-                        <input class="form-check-input" type="radio" name="locationDay" id="weekdays" value="weekdays">
+                        <input class="form-check-input" type="radio" name="locationDay" id="weekdays" value='["thursday", "friday", "monday", "tuesday", "wednesday"]''>
                         <label class="form-check-label" for="weekday">Weekdays Only</label>
                     </section>
                     <section class="form-check">
-                        <input class="form-check-input" type="radio" name="locationDay" id="everyday" value="everyday">
+                        <input class="form-check-input" type="radio" name="locationDay" id="everyday" value='["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]''>
                         <label class="form-check-label" for="everyday">Everyday</label>
-                    </section>
+                </section> -->
+
+                <section class="col-md-6">
+                    <!-- Option 1: None -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="locationSelectionType" id="none" value="none" checked>
+                        <label class="form-check-label" for="none">None, this is not a regular shift</label>
+                    </div>
+                    <!-- Option 2: Weekdays -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="locationSelectionType" id="weekdays" value="weekdays">
+                        <label class="form-check-label" for="weekdays">Weekdays Only</label>
+                    </div>
+                    <!-- Option 3: Everyday -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="locationSelectionType" id="everyday" value="everyday">
+                        <label class="form-check-label" for="everyday">Everyday</label>
+                    </div>
+                    
+                    <!-- Option 4: Custom Days -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="locationSelectionType" id="custom" value="custom">
+                        <label class="form-check-label" for="custom">Select specific days</label>
+                    </div>
+                    <!-- Custom Day Checkboxes (always visible) -->
+                    <div class="ms-4 mt-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="monday" value="monday">
+                            <label class="form-check-label" for="monday">Monday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="tuesday" value="tuesday">
+                            <label class="form-check-label" for="tuesday">Tuesday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="wednesday" value="wednesday">
+                            <label class="form-check-label" for="wednesday">Wednesday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="thursday" value="thursday">
+                            <label class="form-check-label" for="thursday">Thursday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="friday" value="friday">
+                            <label class="form-check-label" for="friday">Friday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="saturday" value="saturday">
+                            <label class="form-check-label" for="saturday">Saturday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="customDays[]" id="sunday" value="sunday">
+                            <label class="form-check-label" for="sunday">Sunday</label>
+                        </div>
+                    </div>
                 </section>
+
                 <!-- Submit Button -->
                 <section class="col-12">
                     <button type="submit" class="btn btn-primary">Add Shift</button>
@@ -471,8 +526,8 @@
                 <% locations.forEach((location) => { %>
                     <tr>
                         <td><%= location.name %></td>
-                        <td><%= location.scheduleType ? 
-                            location.scheduleType.charAt(0).toUpperCase() + location.scheduleType.slice(1) : "ERR" %></td>
+                        <td><%= location.scheduleType %></td>
+                            <!-- ? location.scheduleType.charAt(0).toUpperCase() + location.scheduleType.slice(1) : "ERR" %></td> -->
                         <td>
                             <!-- <a href="/parking/location/edit/<%= location._id %>" class="btn btn-warning btn-sm">Edit</a> -->
                             <form action="/parking/location/delete/<%= location._id %>" method="POST" style="display:inline;">

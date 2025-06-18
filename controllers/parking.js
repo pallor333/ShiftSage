@@ -236,10 +236,28 @@ module.exports = {
     },
     addLocation: async (req, res) => {
       try {
-        // console.log("Request body:", req.body); // Log the request body
+        console.log("Request body:", req.body); // Log the request body
+        const { locationSelectionType, customDays } = req.body;
+        let selectedDays = []
+        switch(locationSelectionType) {
+          case 'weekdays':
+            selectedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+            break;
+          case 'everyday':
+            selectedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+            break;
+          case 'custom':
+            selectedDays = Array.isArray(customDays) ? customDays : [] // Array of checked values
+            break; 
+          case 'none':
+            selectedDays = Array.isArray(customDays) ? customDays : [] // Array of checked values
+            break; // 'none' falls through to empty array
+        }
+
         await Location.create({
           name: req.body.locationName,
-          scheduleType: req.body.locationDay,
+          scheduleType: selectedDays,
+          // scheduleType: req.body.locationDay,
         });
         console.log("Location has been added!");
         res.redirect("/parking/edit#locations");

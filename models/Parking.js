@@ -4,7 +4,12 @@ const { Schema } = mongoose
 // Creating schema for each DB object
 const LocationSchema = new Schema({
   name: { type: String, required: true },
-  scheduleType: { type: String, required: true},
+  scheduleType: { 
+    type: [String], 
+    enum: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"], //enum only allows these values
+    lowercase: true, 
+    required: true
+  },
 });
 
 const RegularShiftSchema = new Schema({

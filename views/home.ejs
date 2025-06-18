@@ -38,7 +38,7 @@
             (<%= monitor.regularShift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %> -
             <%= monitor.regularShift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %>)</td>
           <td><%= monitor.location.name %></td>
-          <td><%= monitor.vaca ? "Yes" : "No" %></td>
+          <td><%= monitor.vaca.length > 0 ? "Yes" : "No" %></td>
           <td><%= monitor.hours %></td>
           <td><%= monitor.seniority.toDateString() %></td>
         </tr>

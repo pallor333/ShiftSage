@@ -99,7 +99,7 @@ function findEligibleMonitors(openShiftObject, eligibleMonitorsByDay, currentMon
 }
 
 function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId){
-    let overtimeWinnersByOpenShift = {thursday: {}, friday: {}, saturday: {}, sunday: {}, monday: {}, tuesday: {}, wednesday: {},}
+    let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
     const rankingSlots = [] //Place all bids in linear order
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift
 
@@ -127,7 +127,7 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
 
                 if (!assignedShifts.has(shiftId)){  //Check if shift_id is unique
                     assignedShifts.add(shiftId)
-                    const openShift = openShiftByOpenShiftId.get(shiftId) //grab openShift from lookup table
+                    const openShift = openShiftByOpenShiftId.get(shiftId) //grab openShift object from lookup table
                     
                     if(openShift){
                         //2c)Return array of monitors to charge hours for NOT getting the shift for billing later
@@ -139,17 +139,22 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
                             'monitorId' : entry.monitor._id, 
                             'monitorName' : entry.monitor.name,
                             'shiftName' : openShift.name, 
+                            'locationId': openShift.location,
                             'monitorsToCharge': eligibleMonitors,
+                        }
+                        //2e)If openShift location is not also a regularShift location, push it to the day.locIds arr
+                        if((openShift.location?.scheduleType ?? []).length === 0){ 
+                            overtimeWinnersByOpenShift[openShift.day].locIds.push(openShift.location._id) 
                         }
                     }
                     assigned = true
                 }
-                entry.rankings.shift() //2e)Remove the first assigned shift NEED TO NOT LOOP OVER
+                entry.rankings.shift() //2f)Remove the first assigned shift
             }
             return entry.rankings.length > 0 //keep this monitor in the pool if it still has rankings
         })
     }
-    // console.log(overtimeWinnersByOpenShift)
+    // console.log(overtimeWinnersByOpenShift.thursday)
     return overtimeWinnersByOpenShift
 }
 
@@ -177,12 +182,19 @@ module.exports = {
             
             return overtimeWinners
                 // {
+                //   locIds[locId1, locId2, locId3, etc]
                 //   thursday: {
-                //     '6826495e9e8667f3047c5613': {
+                //     '6826495e9e8667f3047c5613': { //openShiftId
                 //       monitorId: new ObjectId('6826563dd3f7526aff07d080'),
                 //       monitorName: 'VACACHECK',
                 //       shiftName: 'THU 5/1 RECYCLE 07:00 AM - 03:30 PM (8.5)',
-                //       monitorsToCharge: [Array]
+                //       locationId: {
+                //          _id: new ObjectId('6850e2d9841052db64eb4128'),
+                //          name: '52OX',
+                //          scheduleType: [Array],
+                //          __v: 0
+                //      },
+                //      monitorsToCharge: [Array]
                 //     }, //etc
 
         }catch (err){

@@ -3,9 +3,9 @@
 function monitorLookupByShiftIdTable(monitors){
   const monitorByShiftId = new Map()
   monitors.forEach(monitor => { // shift_id: {monitor object}
-      const shiftId = monitor.regularShift._id.toString();
+      const shiftId = monitor.regularShift._id.toString()
       if (!monitorByShiftId.has(shiftId)) {
-          monitorByShiftId.set(shiftId, []); // shiftID is key
+          monitorByShiftId.set(shiftId, []) // shiftID is key
       }
       monitorByShiftId.get(shiftId).push(monitor); // Store multiple monitors inside arr
   })
@@ -15,7 +15,7 @@ function monitorLookupByShiftIdTable(monitors){
 function locationLookupByLocationIdTable(locations){
   const locationById = new Map() // location_id: {location Object}
   locations.forEach(location => { 
-      locationById.set(location._id.toString(), location);
+      locationById.set(location._id.toString(), location)
   })
   return locationById
 }
@@ -23,14 +23,14 @@ function locationLookupByLocationIdTable(locations){
 function monitorLookupByMonitorIdTable(monitors){
   const monitorByMonitorId = new Map()
   monitors.forEach(monitor => { // monitor_id: {monitor object}
-      monitorByMonitorId.set(monitor._id.toString(), monitor); // monitorID is key
+      monitorByMonitorId.set(monitor._id.toString(), monitor) // monitorID is key
   })
   return monitorByMonitorId
 }
 function openShiftLookupByOpenShiftIdTable(openShifts){
   const openShiftByopenShiftId = new Map()
   openShifts.forEach(shift => { // openShift_id: {openShift object}
-      openShiftByopenShiftId.set(shift._id.toString(), shift); // monitorID is key
+      openShiftByopenShiftId.set(shift._id.toString(), shift) // monitorID is key
   })
   return openShiftByopenShiftId
 }
