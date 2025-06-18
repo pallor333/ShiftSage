@@ -66,7 +66,7 @@ schedule.Thursday.forEach(entry => {
 console.log(schedule.Thursday);
 */
 const { Monitor, RegularShift, OpenShift, Location} = require("../models/Parking");
-const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
+const { calculateShiftHours, formatDate, formatTime, getNextThurs, toMinutes} = require('../utils/dateHelpers')
 const { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, openShiftLookupByOpenShiftIdTable} = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('./overtimeServices') // './' imports from same directory
 
@@ -80,10 +80,92 @@ const scheduleMap = {
   everyday: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
 }
 
+function buildLookupShifts(shifts, monitors){
+  const timeSlotMap = {}
+
+  //Group by time range
+  for (const shift of shifts) {
+    const key = `${shift.startTime}-${shift.endTime}`
+    if (!timeSlotMap[key]) timeSlotMap[key] = []
+
+    timeSlotMap[key].push([
+      shift.location,
+      shift.monitor,
+      shift.overtime || false,
+      shift.startTime, 
+      shift.endTime,
+      shift.locationId,
+    ])
+  }
+
+  //Sort the time keys by actual time
+  const sorted = Object.entries(timeSlotMap).sort(([keyA], [keyB]) => {
+    const [startA] = keyA.split('-');
+    const [startB] = keyB.split('-');
+    return toMinutes(startA) - toMinutes(startB);
+  })
+
+  return sorted // returns an array of [timeKey, entries]
+}
+
+// const shifts = [ //INPUT
+//   { startTime: "08:00", endTime: "10:00", monitor: "Alice", location: "A", overtime: false },
+//   { startTime: "08:00", endTime: "10:00", monitor: "Bob", location: "B", overtime: true },
+//   { startTime: "10:00", endTime: "12:00", monitor: "Charlie", location: "C", overtime: false }
+// ]
+// { //OUTPUT
+//   "08:00-10:00": [
+//     ["A", "Alice", false],
+//     ["B", "Bob", true]
+//   ],
+//   "10:00-12:00": [
+//     ["C", "Charlie", false]
+//   ]
+// }
+
+//Loop over it like this:
+// for (const [timeKey, entries] of Object.entries(shiftMap)) {
+//   for (const [location, monitor, overtime] of entries) {
+//     // Use these to render a row
+//     console.log(timeKey, location, monitor, overtime);
+//   }
+// }
+function normalizeShifts(shifts, monitorByShiftId, locationById) {
+  const normalized = []
+
+  for (const shift of shifts) {
+    if (shift.overtime) { ///Open Shift
+      normalized.push({
+        startTime: shift.startTime,
+        endTime: shift.endTime,
+        monitor: shift.name,
+        location: locationById.get(shift.location._id.toString())?.name,
+        locationId: shift.location._id, 
+        overtime: true
+      })
+    } else { //Regular Shift
+      //lookup monitors assigned to this shift, empty arr will get skipped
+      const assignedMonitors = monitorByShiftId.get(shift._id.toString()) || []
+
+      for (const monitor of assignedMonitors) {
+        normalized.push({
+          startTime: shift.startTime,
+          endTime: shift.endTime,
+          monitor: monitor.name,
+          location: locationById.get(monitor.location._id.toString())?.name,
+          locationId: monitor.location._id, 
+          overtime: false
+        })
+      }
+    }
+  }
+
+  return normalized
+}
 
 function resetLocationToday(locationsToday){
   // template to populate with monitors later [location Object, monitor name, overtime shift?]
-  //[ '10EV', 'VACACHECK2' ] -> [ '10EV', 'Unassigned' ], also used to reset
+  // reset [ '10EV', 'VACACHECK2' ] -> [ '10EV', 'Unassigned' ]
   return Object.entries(locationsToday).map(([_, loc]) => [loc.name, EMPTY, false]) 
 }
 
@@ -99,15 +181,14 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
         schedule[dayName] = {}, rows = {}
         let locationsCopy = locations //copying so we dont mutate original
         
-        //Adding OT locations for today from the overtime calculation obj
+        //Adding OT locations from overtimeCalc obj: edit scheduleType property with day of the week
         overtimeCalcs[dayName].locIds.forEach(ot => { //O(n^2)
           locationsCopy.forEach(l => { 
             if(l._id.toString() === ot.toString() && (!l.scheduleType.includes(dayName))){
-              l.scheduleType.push(dayName) 
+              l?.scheduleType.push(dayName) 
             }
           })
         })
-        // if(i===0) console.log(locationsCopy )
         
         //Filter locations for this day
         const locationsToday = locationsCopy
@@ -123,12 +204,13 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             acc[loc._id.toString()] = loc
             return acc
           }, {}) //use ID as the key
+        //Create a sorted array of location / monitors for insertion later
         let locationMonitors = resetLocationToday(locationsToday)
         // console.log(locationMonitors)
         
-        //filter regular/overtime shifts for this day
+        //Filter regular shifts
         const shiftsToday = regularShifts.filter(s => s.days.includes(dayName))
-        //Add today's OT shifts = overtimeCalcs[dayName] 
+        //Add OT shifts (overtimeCalcs[dayName]) to shiftsToday 
         for(let shift in overtimeCalcs[dayName]){
           if(shift!=="locIds"){
             shiftsToday.push({
@@ -141,47 +223,70 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             })
           }
         }
-        // if(i===0)console.log(shiftsToday)
-        
-        shiftsToday.forEach( (shift, idx) => { //Loop over all shifts
+        //Normalize regular/ot shift into one single format
+        const normalizedShiftsToday = normalizeShifts(shiftsToday, monitorByShiftId, locationById)
+        //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
+        const monitorShiftsArr = buildLookupShifts(normalizedShiftsToday)
+        // if(i===0)console.log(monitorShiftsArr[2]) 
+
+        //Loop over shifts and populate table
+        //shiftsToday.forEach( (shift, idx) => { //Loop over all shifts
+        monitorShiftsArr.forEach( (shift, idx) => {
           //Reset locationMonitors for current shift
           locationMonitors = resetLocationToday(locationsToday)
-          // if(i===0) console.log(shift)
-          //   console.log("$$$$$$$$$$$")
-          //Regular Shift: call monitorByShiftId() to get monitor info
-          //Overtime Shift: grab monitor(s) from Shift object
-          // const monitor = monitorByShiftId.get(shift._id.toString()) 
-          const monitor = shift?.overtime === true ? [shift] : monitorByShiftId.get(shift._id.toString()) 
-          // if(i===0) console.log(monitor)
-            // console.log("*******************")
+          // const [ location, monitorName, overtime, start, end, locationId ] = shift 
+          // if(i===0)console.log(location, monitorName, overtime, start, end, locationId)
+          // if(i===0)console.log(shift)
+          // if(i===0)console.log("*************")
+            //WHAT ARE THE UNDEFINEDS?
+          // console.log(location, monitorName, overtime, start, end, locationID)
+         
           
-          if (!monitor) {
-            // console.warn(`WARNING: ${DAYSARRAY[i]}: No monitors found for shift: ${shift.name.toString()}`)
-            return // Skip this shift if no monitors are found
-          }else{
-            monitor.forEach(m => { //loop thru monitors and add to locationMonitors accordingly
-              // Location in diff spot in Overtime vs. Regular Shift objects.
-              const monLocId = m?.overtime === true ? m.location : m?.location._id
-              // const monLocId = ""
-              if(locationsToday[monLocId]){
-                locationMonitors[locationsToday[monLocId].index][1] = 
-                  locationMonitors[locationsToday[monLocId].index][1] === EMPTY
-                  ? m.name // Replace "Unassigned"
-                  : locationMonitors[locationsToday[monLocId].index][1] + `, ${m.name}` // Append with a comma
-                //console.log(`${DAYSARRAY[i]} Shift ID: ${shift._id}, Monitor(s):`, m.name, m.id, m._id);
-              }
-            }) 
-          }
-          // if(i===0) console.log(locationsMonitors)
+          // if (!monitor) {
+          //   // console.warn(`WARNING: ${DAYSARRAY[i]}: No monitors found for shift: ${shift.name.toString()}`)
+          //   return // Skip this shift if no monitors are found
+          // }else{
+          //   monitor.forEach(m => { //loop thru monitors and add to locationMonitors accordingly
+          //     // Location in diff spot in Overtime vs. Regular Shift objects.
+          //     const monLocId = m?.overtime === true ? m.location : m?.location._id
+          //     // const monLocId = ""
+          //     if(locationsToday[monLocId]){
+          //       locationMonitors[locationsToday[monLocId].index][1] = 
+          //         locationMonitors[locationsToday[monLocId].index][1] === EMPTY
+          //         ? m.name // Replace "Unassigned"
+          //         : locationMonitors[locationsToday[monLocId].index][1] + `, ${m.name}` // Append with a comma
+          //       //console.log(`${DAYSARRAY[i]} Shift ID: ${shift._id}, Monitor(s):`, m.name, m.id, m._id);
+          //     }
+          //   }) 
+          // }
 
-          rows[`shift_${idx}`] = {
-              start: shift.startTime,
-              end: shift.endTime,
-              locationMonitors: locationMonitors, //JSON.parse(JSON.stringify(locationMonitors)), // [locationObject, monitorObject]
-              shiftObject: shift,
-              isOpenShift: shift?.overtime,
-          }
-          if(i===0)console.log(rows)
+          
+
+          //location, monitorName, overtime, start, end, locationID
+            shift.forEach(([location, monitorName, overtime, start, end, locationId]) => {
+              console.log({ location, monitorName, overtime, start, end, locationId })
+              console.log("$%$$$")
+
+              rows[`shift_${idx}`] = {
+                start: start,
+                end: end,
+                locationMonitors: locationMonitors,
+                isOpenShift: overtime,
+              }
+            })  ////////THIS IS BUGGED FIX LATER
+
+          // if(!monitorName){
+          //   return //SKIP
+          // }else{
+          //   locationMonitors[locationsToday[locationId].index][1] = 
+          //     locationMonitors[locationsToday[locationId].index][1] === EMPTY
+          //     ? monitorName // Replace "Unassigned"
+          //     : locationMonitors[locationsToday[locationId].index][1] + `, ${monitorName}` // Append with a comma
+          // // console.log(`${DAYSARRAY[i]} Shift ID: ${shift._id}, Monitor(s):`, shift.name, m.id, m._id);
+          // }
+
+
+          
         })
         schedule[dayName] = {
           locations: locationMonitors.map(l => l[0]), //extract location names

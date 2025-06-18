@@ -16,7 +16,12 @@ const calculateShiftHours = (startTime, endTime) => {
     const formatDate = (date) => {
       const d = new Date(date);
       return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
-    };
+    }
+
+//Formats time in HH:MM
+function formatTime(date) {
+  return date.toISOString().substring(11, 16) // "HH:MM"
+}
 
 //Helper function to get next Thurs
 function getNextThurs(date){
@@ -35,4 +40,10 @@ function getNextThurs(date){
           ] //Return string in format month/day/year
 }
 
-module.exports = { calculateShiftHours, formatDate, getNextThurs, }
+// Helper to convert 'HH:MM' to total minutes
+function toMinutes(timeStr) {
+  const [hour, minute] = timeStr.split(':').map(Number);
+  return hour * 60 + minute;
+}
+
+module.exports = { calculateShiftHours, formatDate, formatTime, getNextThurs, toMinutes}
