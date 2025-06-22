@@ -80,6 +80,13 @@ const OvertimeWinnersSchema = new Schema({
   },
 })
 
+const OvertimeWinnersRankedSchema = new Schema({
+  monitorName: { type: String },
+  shiftName: { type: String }, 
+  hours: { type: Number },
+  monitorsToCharge: { type: String },
+})
+
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
   Monitor: mongoose.model("Monitor", MonitorSchema),
@@ -88,6 +95,7 @@ module.exports = {
   Location: mongoose.model("Location", LocationSchema),
   OvertimeBid: mongoose.model("OvertimeBid", OvertimeBidsSchema),
   OvertimeWinners: mongoose.model("OvertimeWinners", OvertimeWinnersSchema),
+  OvertimeWinnersRanked: mongoose.model("OvertimeWinnersRanked", OvertimeWinnersRankedSchema),
 };
 
 

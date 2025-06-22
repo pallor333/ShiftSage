@@ -42,12 +42,19 @@ const checkShiftConflict = (monitor, overtimeShift) => {
     return (otStart < regEnd && otEnd > regStart)
 } 
 
-function findEligibleMonitors(openShiftObject, eligibleMonitorsByDay, currentMonitorId){
+function findEligibleMonitorsAndCharge(openShiftObject, eligibleMonitorsByDay, currentMonitorId){
     //Creating a list of monitors who are eligible to get charged for this shift. 
     //checkShiftConflict() returns false for no charge but for filter we want a true
-    return eligibleMonitorsByDay
+    const monitorsChargedHours = {}
+    // return eligibleMonitorsByDay
+    //     .filter(monitor => monitor._id.toString() !== currentMonitorId.toString() && !checkShiftConflict(monitor, openShiftObject))
+    //     .map(monitor => monitor.name) //monitor._id) //monitor.name)
+
+    //Changing function to return obj {monitorName: hoursChargedThisWeek}
+    eligibleMonitorsByDay
         .filter(monitor => monitor._id.toString() !== currentMonitorId.toString() && !checkShiftConflict(monitor, openShiftObject))
-        .map(monitor => monitor._id) //monitor.name)
+        .forEach(monitor => monitorsChargedHours[monitor.name] = openShiftObject.totalHours)
+    return monitorsChargedHours
 }
 
 //Object of arrays = {date: [], date: [], date: []}
@@ -110,9 +117,9 @@ function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
 
 function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId){
     let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
-    const rankingSlots = [] //Place all bids in linear order
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift
     let assignedMonitors = {} //Ensure monitor cannot pick up overlapping shift 
+    const assignedShiftsByOrder = [] //arr of assigned ot obj
 
     //1)Sort overtimeBid monitors based on hours, if hrs equal then sort based upon seniority. 
     //Create new arr w/ map() to avoid mutating original
@@ -151,8 +158,8 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
                     
                     if(openShift){
                         //2c)Return array of monitors to charge hours for NOT getting the shift for billing later
-                        const eligibleMonitors = findEligibleMonitors(openShift, eligibleMonitorsByDay[openShift.day], entry.monitor._id) 
-                    
+                        const chargeHoursToMonitors = findEligibleMonitorsAndCharge(openShift, eligibleMonitorsByDay[openShift.day], entry.monitor._id) 
+
                         //2d) Assigning monitor their first choice
                         //Add monitorId| thursday: { openShiftId456: monitorId, //..etc }
                         overtimeWinnersByOpenShift[openShift.day][shiftId] = { 
@@ -160,22 +167,31 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
                             'monitorName' : entry.monitor.name,
                             'shiftName' : openShift.name, 
                             'locationId': openShift.location,
-                            'monitorsToCharge': eligibleMonitors,
+                            // 'monitorsToCharge': chargeHoursToMonitors,
                         }
-                        //2e)If openShift location is not also a regularShift location, push it to the day.locIds arr
+                        //2e) Pushing shifts in order of assignment
+                        assignedShiftsByOrder.push({
+                            'shiftName': openShift.name, 
+                            'monitorName': entry.monitor.name, //winner
+                            'hours': openShift.totalHours, 
+                            'monitorsToCharge': chargeHoursToMonitors,
+                        })
+
+                        //2f)If openShift location is not also a regularShift location, push it to the day.locIds arr
                         if((openShift.location?.scheduleType ?? []).length === 0){ 
                             overtimeWinnersByOpenShift[openShift.day].locIds.push(openShift.location._id) 
                         }
                     }
                     assigned = true
                 }
-                entry.rankings.shift() //2f)Remove the first assigned shift
+                entry.rankings.shift() //2g)Remove the first assigned shift
             }
             return entry.rankings.length > 0 //keep this monitor in the pool if it still has rankings
         })
     }
-    // console.log(overtimeWinnersByOpenShift.thursday)
-    return overtimeWinnersByOpenShift
+    // overtimeWinnersByOpenShift is an object keyed by day -> use for scheduling
+    // assignedShiftsByOrder is an array sorted by order of shift assignment -> use in auditing
+    return [overtimeWinnersByOpenShift, assignedShiftsByOrder]
 }
 
 module.exports = {
@@ -199,9 +215,9 @@ module.exports = {
 
             //2) Sort working monitors with overtime bids and assign them openShifts.
             let overtimeWinners = assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId)
-            
+ 
             return overtimeWinners
-                // {
+                // [{
                 //   locIds[locId1, locId2, locId3, etc]
                 //   thursday: {
                 //     '6826495e9e8667f3047c5613': { //openShiftId
@@ -216,6 +232,26 @@ module.exports = {
                 //      },
                 //      monitorsToCharge: [Array]
                 //     }, //etc
+                // [
+                // {
+                //   shiftName: 'THU 5/1 RECYCLE 07:00 AM - 03:30 PM (8.5)',
+                //   monitorName: 'VACACHECK',
+                //   hours: 8.5,
+                //   monitorsToCharge: [Object]
+                // },
+                // {
+                //   shiftName: 'THU 5/1 HBS 03:00 PM - 11:00 PM (8.0)',
+                //   monitorName: 'VACACHECK2',
+                //   hours: 8,
+                //   monitorsToCharge: [Object]
+                // },
+                // {
+                //   shiftName: 'SAT 5/3 NRTH 07:00 AM - 03:00 PM (8.0)',
+                //   monitorName: 'TESTERONE',
+                //   hours: 8,
+                //   monitorsToCharge: [Object]
+                // }, //etc
+                // ]
 
         }catch (err){
             console.error("Error, in allocateOvertime:", err)

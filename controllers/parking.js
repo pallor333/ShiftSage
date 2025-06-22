@@ -1,10 +1,9 @@
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, RegularShift, OpenShift, Location, OvertimeBid } = require("../models/Parking")
-const { findById } = require("../models/User")
-// services/overtimeServices.js
+const { Monitor, RegularShift, OpenShift, Location, OvertimeBid, OvertimeWinnersRanked } = require("../models/Parking")
+// const { findById } = require("../models/User")
 const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
-const { allocateSchedule }= require('../services/scheduleServices') //Import business logic from Service layer
+const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
 //Can fetch related objects now
 //const monitor = await Monitor.findById(monitorId).populate('regularShifts currentLocation');
 
@@ -88,9 +87,21 @@ module.exports = {
   getOvertimePage: async (req, res) => {
     try { 
       const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
-      const overtimeCalcs = await allocateOvertime() //calling overtimeServices //I don't want to initialize this here
-      // console.log(overtimeCalcs)
-      console.log(overtimeBid)
+      const [_, overtimeWins] = await allocateOvertime() //calling overtimeServices 
+      // console.log(overtimeWinsAudit)
+
+      //Monitor being charged hours, hrs sorted by order ot shifts were assigned
+      const auditTable = {}
+      monitors.forEach(mon => {
+        overtimeWins.forEach(shift => {
+          let name = mon.name
+          let hrs = shift.monitorsToCharge[name]
+          if(!auditTable[name]) auditTable[name] = []
+          hrs ? auditTable[name].push(hrs) : auditTable[name].push(0)
+        })
+      })
+      // console.log(auditTable)
+      // console.log(Object.entries(auditTable))
 
       // DAYSARRAY.forEach(day => { //Quick list overtime shifts
       //   Object.entries(overtimeCalcs[day]).forEach((n, idx) => {
@@ -106,8 +117,10 @@ module.exports = {
         regularShifts: regularShifts,
         openShifts: openShifts,
         locations: locations,
-        overtimeBid: overtimeBid,
-        overtimeWins: overtimeCalcs,
+        overtimeBid: overtimeBid, //Show all monitor bids on ot shifts
+        // overtimeWins: overtimeCalcs, //Show monitor assignments to ot shifts
+        overtimeFlattened: overtimeWins, //ot bids structured for easy display
+        overtimeAudit: Object.entries(auditTable), //hacky soln, make it into arr of arr later 
       });
     } catch (err) {
       console.error(err);
@@ -480,7 +493,37 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       res.redirect("/parking/home");
     }
   },
-
+  updateOvertimeWinnersRanked: async (req, res) => { 
+    try {
+      //   await Monitor.findByIdAndUpdate(req.params.id, {
+      //     monitorName: ,
+      //     shiftName:,
+      //     hours: ,
+      //     monitorsToCharge:,
+      // })
+      console.log("Ranked Overtime Winners have been updated!");
+      res.redirect("/parking/overtime#displayOvertimeWinners"); 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  calculateOvertimeBid: async (req, res) => { //Press a button
+    try {
+      const overtimeCalcs = await allocateOvertime() //calling overtimeServices 
+      // TODO: Update Schema - OvertimeWinnersSchema
+      // TODO: Pass data to the webppage for display
+      if(!overtimeCalcs){
+        console.log("Error in assigning overtime shifts.")
+        return res.redirect("/parking/home")
+      }
+      console.log("Overtime Winners have been calculated!");
+      res.redirect("/parking/overtime#displayOvertimeWinners"); 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
   //Delete entries from DB
   //
   //

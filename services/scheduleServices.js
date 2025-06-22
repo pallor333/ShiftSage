@@ -191,7 +191,7 @@ module.exports = {
         const regularShifts = await RegularShift.find().sort({ name: 1 }) // 1 for ascending order
         const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
         const locations = await Location.find().sort({ name: 1})    
-        const overtimeCalcs = await allocateOvertime()
+        const [overtimeCalcs, _] = await allocateOvertime()
         // console.log(overtimeCalcs.thursday)
 
         //Behold, the Meat and Potatoes

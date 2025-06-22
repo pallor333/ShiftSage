@@ -40,6 +40,7 @@ router.post("/vacation", ensureAuth, parkingController.addVacation)
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
 router.post("/openShift/edit/:id", ensureAuth, parkingController.updateOpenShift);
 router.post("/overtime/rank/:id", ensureAuth, parkingController.updateOvertimeBid);
+router.post("/overtime/calculate/:id", ensureAuth, parkingController.calculateOvertimeBid);
 
 // router.get("/shift/edit/:id", ensureAuth, parkingController.editShift);
 // router.get("/location/edit/:id", ensureAuth, parkingController.editLocation);

@@ -91,6 +91,7 @@
   <br><hr>
   <!-- Display Overtime Winners -->
   <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
+  <% let otShiftCount = 1 %>
   <!-- <h2><%= days %></h2> -->
   <section class="displayOvertimeWinners">
     <h2>Overtime Winners</h2>
@@ -102,16 +103,12 @@
         </tr>
       </thead>
       <tbody>
-        <% days.forEach((day) => { %> 
-          <% Object.entries(overtimeWins[day]).forEach( (shift, idx) => { %>
-            <tr>
-            <% if(idx > 0) { %>
-              <td><%= shift[1].shiftName %></td>
-              <td><%= shift[1].monitorName %></td>
-            <% } %>
-            </tr>
-          <% }) %>
-        <%  }) %>
+        <% overtimeFlattened.forEach( (shift, idx) => { %>
+          <tr>
+              <td><%=idx+1%>) <%= shift.shiftName %></td>
+              <td><%= shift.monitorName %></td>
+          </tr>
+        <% }) %>
       </tbody>
     </table>
   </section>
@@ -119,16 +116,28 @@
   <!-- Temp line break -->
   <br><hr>
   <!-- Audit Log -->
+  <% otShiftCount = 1 %>
   <section class="auditLog">
     <h2>Audit Log/Monitors Charged</h2>
     <table class="table table-striped">
+
       <thead>
         <tr>
-          <th></th>
+          <th>Monitors</th>
+          <!-- <th><%=otShiftCount%></th> -->
+          <% overtimeAudit.forEach( (shift, idx) => { %>
+            <th><%=idx+1%></th>
+          <% }) %>
         </tr>
       </thead>
       <tbody>
-        <tr></tr>
+        <% overtimeAudit.forEach( (monitor, idx) => { %>
+          <tr>
+          <% monitor.forEach( (hrs, idx) => { %>
+              <td><%= hrs %></td>
+          <% }) %>
+          </tr>
+        <% }) %>
       </tbody>
     </table>
   </section>
