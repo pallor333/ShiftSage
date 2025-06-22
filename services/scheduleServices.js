@@ -1,5 +1,5 @@
 const { Monitor, RegularShift, OpenShift, Location} = require("../models/Parking");
-const { calculateShiftHours, formatDate, formatTime, getNextThurs, toMinutes} = require('../utils/dateHelpers')
+const { formatTime, getFixedTimeRange, getNextThurs, toMinutes} = require('../utils/dateHelpers')
 const { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, openShiftLookupByOpenShiftIdTable} = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('./overtimeServices') // './' imports from same directory
 
@@ -14,14 +14,15 @@ const scheduleMap = {
 }
 
 function coaleseAndSort(shifts){
-  const timeSlotMap = {}, timeKeys = new Set() 
+  const timeSlotMap = {}
 
   //Group by time range
   for (const shift of shifts) {
-    const key = `${formatTime(shift.startTime)}-${formatTime(shift.endTime)}`
+    const key = getFixedTimeRange(shift.startTime, shift.endTime).join('*')
+    //`${shift.startTime}*${shift.endTime}`//`${formatTime(shift.startTime)}-${formatTime(shift.endTime)}`
+
     if (!timeSlotMap[key]) timeSlotMap[key] = []
     timeSlotMap[key].push([
-      // shift.location,
       shift.monitor,
       shift.overtime || false,
       shift.startTime, 
@@ -30,11 +31,12 @@ function coaleseAndSort(shifts){
     ])
   }
 
-  //Sort the time keys by actual time
-  const sorted = Object.entries(timeSlotMap).sort(([keyA], [keyB]) => {
-    const [startA] = keyA.split('-');
-    const [startB] = keyB.split('-');
-    return toMinutes(startA) - toMinutes(startB);
+  let sorted = Object.entries(timeSlotMap).sort((a, b) => {
+    //First value in arr is time, split it into an arr to compare
+    a = a[0].split('*')
+    b = b[0].split('*')
+    //Compare start times first, compare end time if startA===startB
+    return a[0] - b[0] || a[1] - b[1]
   })
 
   //Remove key becos it gets in the way
@@ -143,6 +145,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
 
         //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
         const monitorShiftsArr = coaleseAndSort(normalizedShiftsToday)
+
         // if(i===0)console.log(monitorShiftsArr)
         //Loop over shifts and populate table
         monitorShiftsArr.forEach( (shift, idx) => {
@@ -165,7 +168,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             }
           }) 
         }) 
-
+        // if(i===0)console.log(rows)
         //Compile all 7 tables
         schedule[dayName] = {
           locations: locationMonitors.map(l => l[0]), //extract location names

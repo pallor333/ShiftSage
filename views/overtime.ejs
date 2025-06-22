@@ -68,13 +68,13 @@
       <tbody>
         <% overtimeBid.forEach((bid) => { %>
           <tr>
-             <td><%= bid.monitor.name %> (<%= bid.monitor.id %>)</td>
-            <td>
-              <% bid.rankings.forEach((ranking) => { %>
-                <p><%= ranking.rank %>) <%= ranking.position.name %> </p>
-                <!-- Rank: <%= ranking.rank %> -->
-              <% }) %>
-            </td>
+              <td><%= bid.monitor.name %> (<%= bid.monitor.id %>)</td>
+              <td>
+                <% bid.rankings.forEach((ranking) => { %>
+                  <p><%= ranking.rank %>) <%= ranking.position.name %> </p>
+                  <!-- Rank: <%= ranking.rank %> -->
+                <% }) %>
+              </td>
             <td>
               <!-- Delete Button -->
               <form action="/parking/overtime/deleteBid/<%= bid._id %>" method="POST">
@@ -86,9 +86,59 @@
       </tbody>
     </table>
   </section>
+
+  <!-- Temp line break -->
+  <br><hr>
+  <!-- Display Overtime Winners -->
+  <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
+  <!-- <h2><%= days %></h2> -->
+  <section class="displayOvertimeWinners">
+    <h2>Overtime Winners</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Shift Name</th>
+          <th>Monitor Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% days.forEach((day) => { %> 
+          <% Object.entries(overtimeWins[day]).forEach( (shift, idx) => { %>
+            <tr>
+            <% if(idx > 0) { %>
+              <td><%= shift[1].shiftName %></td>
+              <td><%= shift[1].monitorName %></td>
+            <% } %>
+            </tr>
+          <% }) %>
+        <%  }) %>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Temp line break -->
+  <br><hr>
+  <!-- Audit Log -->
+  <section class="auditLog">
+    <h2>Audit Log/Monitors Charged</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr></tr>
+      </tbody>
+    </table>
+  </section>
+
 </main>
 
 <%- include('partials/footer') -%>
+
+
+
 
 <script>
   // document.addEventListener('DOMContentLoaded', () => {

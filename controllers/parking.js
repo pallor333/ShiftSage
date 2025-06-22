@@ -89,6 +89,16 @@ module.exports = {
     try { 
       const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
       const overtimeCalcs = await allocateOvertime() //calling overtimeServices //I don't want to initialize this here
+      // console.log(overtimeCalcs)
+      console.log(overtimeBid)
+
+      // DAYSARRAY.forEach(day => { //Quick list overtime shifts
+      //   Object.entries(overtimeCalcs[day]).forEach((n, idx) => {
+      //     if(idx > 0) {
+      //       console.log(n[1].shiftName, n[1].monitorName)
+      //     }
+      //   })
+      // })
       // Render the edit.ejs template and pass the data
       res.render("overtime.ejs", {
         user: req.user,
@@ -97,6 +107,7 @@ module.exports = {
         openShifts: openShifts,
         locations: locations,
         overtimeBid: overtimeBid,
+        overtimeWins: overtimeCalcs,
       });
     } catch (err) {
       console.error(err);
