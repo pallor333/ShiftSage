@@ -120,7 +120,7 @@ module.exports = {
         overtimeBid: overtimeBid, //Show all monitor bids on ot shifts
         // overtimeWins: overtimeCalcs, //Show monitor assignments to ot shifts
         overtimeFlattened: overtimeWins, //ot bids structured for easy display
-        overtimeAudit: Object.entries(auditTable), //hacky soln, make it into arr of arr later 
+        overtimeAudit: auditTable
       });
     } catch (err) {
       console.error(err);

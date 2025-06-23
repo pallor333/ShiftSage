@@ -88,11 +88,10 @@
   </section>
 
   <!-- Temp line break -->
-  <br><hr>
+  <!-- <br><hr> -->
   <!-- Display Overtime Winners -->
   <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
   <% let otShiftCount = 1 %>
-  <!-- <h2><%= days %></h2> -->
   <section class="displayOvertimeWinners">
     <h2>Overtime Winners</h2>
     <table class="table table-striped">
@@ -103,10 +102,11 @@
         </tr>
       </thead>
       <tbody>
-        <% overtimeFlattened.forEach( (shift, idx) => { %>
+        <% overtimeFlattened.forEach((shift, idx) => { %>
           <tr>
               <td><%=idx+1%>) <%= shift.shiftName %></td>
               <td><%= shift.monitorName %></td>
+              <% otShiftCount++ %> 
           </tr>
         <% }) %>
       </tbody>
@@ -116,26 +116,27 @@
   <!-- Temp line break -->
   <br><hr>
   <!-- Audit Log -->
-  <% otShiftCount = 1 %>
   <section class="auditLog">
     <h2>Audit Log/Monitors Charged</h2>
     <table class="table table-striped">
-
       <thead>
         <tr>
           <th>Monitors</th>
-          <!-- <th><%=otShiftCount%></th> -->
-          <% overtimeAudit.forEach( (shift, idx) => { %>
-            <th><%=idx+1%></th>
-          <% }) %>
+          <!-- Count OT shifts  -->
+          <% for(let i = 1; i < otShiftCount; i++){ %>
+            <th>Overtime Shift <%= i %>)</th>
+          <% } %>
         </tr>
       </thead>
       <tbody>
-        <% overtimeAudit.forEach( (monitor, idx) => { %>
+        <!-- Loop over each row of {monitor: [hrs]} -->
+        <% Object.keys(overtimeAudit).forEach(monitor => { %>
           <tr>
-          <% monitor.forEach( (hrs, idx) => { %>
-              <td><%= hrs %></td>
-          <% }) %>
+            <td><%= monitor %></td>
+            <!-- Loop over just [hrs] -->
+            <% overtimeAudit[monitor].forEach(hrs => { %>
+                <td>+<%= hrs %> hr(s)</td>
+            <% }) %>
           </tr>
         <% }) %>
       </tbody>
