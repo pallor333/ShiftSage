@@ -1,6 +1,14 @@
 <%- include('partials/header') -%>
 <!-- Page 2: Input individual monitor OT -->
 <main class="container">
+  <section class="overtimeCalculationButton">
+    <form action="overtime/calculate" method="GET" class="row g-3">
+      <button type="submit" class="btn btn-primary">Calculate Overtime Shifts</button>
+    </form>
+    <form action="overtime/deleteOvertimeAuditWinners" method="GET" class="row g-3">
+      <button type="submit" class="btn btn-primary">Delete Overtime Audit Winners</button>
+    </form>
+  </section>
   <section class="overtime">
     <h1>Overtime Sheets</h1> <p>Enter rankings for individual monitors here</p>
     <form id="rankingForm" action="" method="POST" class="row g-3">
@@ -122,21 +130,28 @@
       <thead>
         <tr>
           <th>Monitors</th>
+          <th>Hours to Start</th>
           <!-- Count OT shifts  -->
           <% for(let i = 1; i < otShiftCount; i++){ %>
             <th>Overtime Shift <%= i %>)</th>
           <% } %>
+          <th>Total Hours</th>
         </tr>
       </thead>
       <tbody>
         <!-- Loop over each row of {monitor: [hrs]} -->
         <% Object.keys(overtimeAudit).forEach(monitor => { %>
+          <% const startingHrs = overtimeAudit[monitor].startEndHours[0] %>
+          <% let total = startingHrs %>
           <tr>
             <td><%= monitor %></td>
+            <td><%= startingHrs %></td> <!-- Hours monitor starts with -->
             <!-- Loop over just [hrs] -->
-            <% overtimeAudit[monitor].forEach(hrs => { %>
-                <td>+<%= hrs %> hr(s)</td>
+            <% overtimeAudit[monitor].hoursCharged.forEach(hr => { %>
+              <% total += hr %>
+              <td>+<%= hr %> = <%=total %></td>
             <% }) %>
+            <td><%= overtimeAudit[monitor].startEndHours[1] %></td> <!-- Monitor's final total -->
           </tr>
         <% }) %>
       </tbody>

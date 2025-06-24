@@ -1,5 +1,5 @@
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, RegularShift, OpenShift, Location, OvertimeBid, OvertimeWinnersRanked } = require("../models/Parking")
+const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift} = require("../models/Parking")
 // const { findById } = require("../models/User")
 const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
@@ -24,12 +24,19 @@ const fetchCommonData = async () => {
     const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1});
     const locations = await Location.find().sort({ name: 1});
     const overtimeBid = await OvertimeBid.find().populate("monitor").populate("rankings.position")
+    const overtimeAudit = await OvertimeAudit.find()
+    const overtimeSchedule = await OvertimeSchedule.find().populate("monitor").populate("openShift").populate("hourAllocation.type.monitor")
 
-    return { monitors, regularShifts, openShifts, locations, overtimeBid };
+    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, overtimeSchedule };
   } catch (err) {
     console.error("Error fetching common data:", err);
     throw err; // Rethrow the error to handle it in the calling function
   }
+}
+//Helper function to delete all documents from overtime audit schema
+async function clearOvertimeAuditWinners() {
+  await OvertimeAudit.deleteMany({});
+  console.log(`Helper: All Documents cleared from the Overtime Audit Winners Schema`);
 }
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
@@ -86,40 +93,43 @@ module.exports = {
   //Overtime page
   getOvertimePage: async (req, res) => {
     try { 
-      const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
-      const [_, overtimeWins] = await allocateOvertime() //calling overtimeServices 
-      // console.log(overtimeWinsAudit)
+      const { monitors, openShifts, locations, overtimeBid, overtimeAudit} = await fetchCommonData()
+      // const [_, overtimeWins] = await allocateOvertime() //calling overtimeServices 
+      // console.log(overtimeAudit)
 
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
       const auditTable = {}
-      monitors.forEach(mon => {
-        overtimeWins.forEach(shift => {
-          let name = mon.name
+      monitors.forEach(mon => { //loop over every monitor
+        // overtimeWins.forEach(shift => { //loop over every OTshift
+        overtimeAudit.forEach(shift => { //loop over every OTshift
+          let name = mon.name, startingHrs = +mon.hours, endingHrs = startingHrs
           let hrs = shift.monitorsToCharge[name]
-          if(!auditTable[name]) auditTable[name] = []
-          hrs ? auditTable[name].push(hrs) : auditTable[name].push(0)
+          if(!auditTable[name]){
+            auditTable[name] = {
+              hoursCharged: [],
+              startEndHours: [startingHrs, endingHrs]
+            }
+          }
+
+          if(hrs){
+            auditTable[name].hoursCharged.push(hrs)
+            auditTable[name].startEndHours[1] += hrs
+          }else{
+            auditTable[name].hoursCharged.push(0)
+          }
         })
       })
       // console.log(auditTable)
-      // console.log(Object.entries(auditTable))
 
-      // DAYSARRAY.forEach(day => { //Quick list overtime shifts
-      //   Object.entries(overtimeCalcs[day]).forEach((n, idx) => {
-      //     if(idx > 0) {
-      //       console.log(n[1].shiftName, n[1].monitorName)
-      //     }
-      //   })
-      // })
       // Render the edit.ejs template and pass the data
       res.render("overtime.ejs", {
-        user: req.user,
+        // user: req.user,
         monitors: monitors,
-        regularShifts: regularShifts,
+        // regularShifts: regularShifts,
         openShifts: openShifts,
         locations: locations,
         overtimeBid: overtimeBid, //Show all monitor bids on ot shifts
-        // overtimeWins: overtimeCalcs, //Show monitor assignments to ot shifts
-        overtimeFlattened: overtimeWins, //ot bids structured for easy display
+        overtimeFlattened: overtimeAudit, //ot bids structured for easy display
         overtimeAudit: auditTable
       });
     } catch (err) {
@@ -510,18 +520,27 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
   },
   calculateOvertimeBid: async (req, res) => { //Press a button
     try {
-      const overtimeCalcs = await allocateOvertime() //calling overtimeServices 
-      // TODO: Update Schema - OvertimeWinnersSchema
+      const { monitors, overtimeAudit, overtimeSchedule} = await fetchCommonData()
+      const [overtimeWinsForSchedule, overtimeWinsForAudit] = await allocateOvertime() //calling overtimeServices 
+      
+      if(!OvertimeAudit) throw new Error("overtime audit unavaliable")
+      // TODO: Update Schema - OvertimeWinnersForAuditSchema
       // TODO: Pass data to the webppage for display
-      if(!overtimeCalcs){
-        console.log("Error in assigning overtime shifts.")
+      if(!overtimeWinsForSchedule || !overtimeWinsForAudit){
+        console.log("Error in retreiving overtime calculations.")
         return res.redirect("/parking/home")
       }
-      console.log("Overtime Winners have been calculated!");
-      res.redirect("/parking/overtime#displayOvertimeWinners"); 
+
+      //Delete all documents before inserting
+      await clearOvertimeAuditWinners()
+      // Insert all audit entries as new documents
+      await OvertimeAudit.insertMany(overtimeWinsForAudit)
+
+      console.log("Overtime Audit Winners have been added to the DB")
+      res.redirect("/parking/overtime#displayOvertimeWinners")
     } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
+      console.error(err)
+      res.redirect("/parking/home")
     }
   },
   //Delete entries from DB
@@ -615,6 +634,19 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       res.redirect('/parking/home'); // Redirect to home on error
     }
   },
+  deleteOvertimeAuditWinners: async (req, res) =>{
+    try{
+    // console.log(OvertimeAudit)
+    await OvertimeAudit.deleteMany({})
+    // console.log(OvertimeAudit)
+    console.log(`All Documents cleared from the Overtime Audit Winners Schema`)
+    res.redirect("/parking/overtime")
+    } catch(err){
+      console.error(err);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+
   // SERVICES
   //
   //

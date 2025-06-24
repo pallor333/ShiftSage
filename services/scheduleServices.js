@@ -90,7 +90,6 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
     const monitorByShiftId = monitorLookupByShiftIdTable(monitors)
     const locationById = locationLookupByLocationIdTable(locations)  
     const openShiftById = openShiftLookupByOpenShiftIdTable(openShifts)
-
     //Create 7 different obj, one for each day of the week
     for(let i = 0; i < 7; i++){
         const dayName = DAYSARRAY[i], isWeekend = i === 2 || i === 3; // Sat(2), Sun(3)

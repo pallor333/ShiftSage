@@ -14,7 +14,10 @@ const LocationSchema = new Schema({
 
 const RegularShiftSchema = new Schema({
   name: { type: String },
-  days: [{ type: String, required: true}], // monday, tuesday, wednesday, thursday, friday,etc
+  days: [{ 
+    type: String, // monday, tuesday, wednesday, thursday, friday,etc
+    enum: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"],  //restricted to these strings
+    required: true}], 
   // location: { 
   //   type: Schema.Types.ObjectId, 
   //   ref: 'Location', 
@@ -69,23 +72,47 @@ const OvertimeBidsSchema = new Schema({
   //week: { type: Date, default: () => new Date() }, // Timestamp for the week
 });
 
-const OvertimeWinnersSchema = new Schema({
-  monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true },
-  openShift: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
-  hourAllocation: { 
-    type: [{monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true }, 
-    hrs: { type: Number, required: true }, 
-  }], 
-  default: []  //Arr of [monitor:hrToAdd]
+// OvertimeWinnersForScheduleSchema: Sub-document schema for individual monitor entries (e.g., '68264a8179f269ffb0f939f8')
+const monitorEntrySchema = new Schema({
+  monitorId: { type: Schema.Types.ObjectId, required: true, ref: 'Monitor' },
+  monitorName: { type: String, required: true },
+  shiftName: { type: String, required: true },
+  locationId: { type: Schema.Types.ObjectId, ref: 'Location' }, 
+}, { _id: false })
+// OvertimeWinnersForScheduleSchema: Sub-document schema for each day (e.g., 'thursday')
+const dayScheduleSchema = new Schema({
+  locIds: [{ type: Schema.Types.ObjectId, ref: 'Location' }], // Array of ObjectIds
+  shifts: {   // Explicitly map OpenShift IDs to their monitor entries
+    type: Map,
+    of: monitorEntrySchema,
+    default: new Map(),
+  }
+},  { _id: false }); //prevent auto _id creation for sub documents
+//Main Schema
+const OvertimeWinnersForScheduleSchema = new Schema({
+  days: { 
+    type: Map,
+    of: dayScheduleSchema, //ensure all values match dayScheduleSchema
+    default: new Map(), //initialize as empty map
   },
-})
+}, { timestamps: true })
 
-const OvertimeWinnersRankedSchema = new Schema({
-  monitorName: { type: String },
-  shiftName: { type: String }, 
-  hours: { type: Number },
-  monitorsToCharge: { type: String },
-})
+//   monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true },
+//   openShift: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
+//   hourAllocation: { 
+//     type: [{monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true }, 
+//     hrs: { type: Number, required: true }, 
+//   }], 
+//   default: []  //Arr of [monitor:hrToAdd]
+//   },
+// })
+
+const OvertimeWinnersForAuditSchema = new Schema({
+  shiftName: { type: String, required: true},
+  monitorName: { type: String, required: true},
+  hours: { type: Number, required: true},
+  monitorsToCharge: { type: Object, default: {} },
+}, { timestamps: true })
 
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
@@ -94,8 +121,8 @@ module.exports = {
   OpenShift: mongoose.model("OpenShift", OpenShiftSchema),
   Location: mongoose.model("Location", LocationSchema),
   OvertimeBid: mongoose.model("OvertimeBid", OvertimeBidsSchema),
-  OvertimeWinners: mongoose.model("OvertimeWinners", OvertimeWinnersSchema),
-  OvertimeWinnersRanked: mongoose.model("OvertimeWinnersRanked", OvertimeWinnersRankedSchema),
+  OvertimeSchedule: mongoose.model("OvertimeWinnersForSchedule", OvertimeWinnersForScheduleSchema),
+  OvertimeAudit: mongoose.model("OvertimeWinnersForAudit", OvertimeWinnersForAuditSchema),
 };
 
 

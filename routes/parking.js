@@ -22,12 +22,16 @@ router.get("/home", parkingController.getHomePage);
 router.get("/edit", ensureAuth, parkingController.getEditPage);
 router.get("/overtime", ensureAuth, parkingController.getOvertimePage);
 router.get("/schedule", ensureAuth, parkingController.getSchedulePage);
+// Button to calculate overtime bids
+router.get("/overtime/calculate", ensureAuth, parkingController.calculateOvertimeBid);
 
 // GET routes to gather monitor/location/shifts from DB
 // /home/monitor/:id = /home/monitor/12345
 router.get("/monitor/:id", ensureAuth, parkingController.getMonitor);
 router.get("/location/:id", ensureAuth, parkingController.getLocation);
 router.get("/shift/:id", ensureAuth, parkingController.getRegularShift);
+
+
 
 // POST routes to add new entries
 router.post("/monitor", ensureAuth, parkingController.addMonitor)
@@ -40,7 +44,6 @@ router.post("/vacation", ensureAuth, parkingController.addVacation)
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
 router.post("/openShift/edit/:id", ensureAuth, parkingController.updateOpenShift);
 router.post("/overtime/rank/:id", ensureAuth, parkingController.updateOvertimeBid);
-router.post("/overtime/calculate/:id", ensureAuth, parkingController.calculateOvertimeBid);
 
 // router.get("/shift/edit/:id", ensureAuth, parkingController.editShift);
 // router.get("/location/edit/:id", ensureAuth, parkingController.editLocation);
@@ -52,6 +55,7 @@ router.post("/regularShift/delete/:id", ensureAuth, parkingController.deleteRegu
 router.post("/openShift/delete/:id", ensureAuth, parkingController.deleteOpenShift);
 router.post('/monitor/deleteVacation/:id', ensureAuth, parkingController.deleteVacation);
 router.post("/overtime/deleteBid/:id", ensureAuth, parkingController.deleteOvertimeBid);
+router.get("/overtime/deleteOvertimeAuditWinners", ensureAuth, parkingController.deleteOvertimeAuditWinners);
 
 
 module.exports = router;
