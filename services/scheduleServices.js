@@ -190,7 +190,7 @@ module.exports = {
         const regularShifts = await RegularShift.find().sort({ name: 1 }) // 1 for ascending order
         const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
         const locations = await Location.find().sort({ name: 1})    
-        const [overtimeCalcs, _] = await allocateOvertime()
+        // const [overtimeCalcs, _] = await allocateOvertime()
         const overtimeSchedule = await OvertimeSchedule.find()
           .populate('days.$*.locIds') //$* = wildcard tells Mongoose to populate all keys in the Map.
           .populate({                //Works for both days (outer Map) and shifts (inner Map).
