@@ -116,10 +116,18 @@ function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
 }
 
 function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId){
-    let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
+    // let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift
     let assignedMonitors = {} //Ensure monitor cannot pick up overlapping shift 
     const assignedShiftsByOrder = [] //arr of assigned ot obj
+
+    let overtimeWinnersByOpenShift = new Map() //Creating map() for schema
+    for (const day of ['thursday', 'friday', 'saturday', 'sunday', 'monday', 'tuesday', 'wednesday']) {
+        overtimeWinnersByOpenShift.set(day, {
+            locIds: [],
+            shifts: new Map()
+        })
+    }
 
     //1)Sort overtimeBid monitors based on hours, if hrs equal then sort based upon seniority. 
     //Create new arr w/ map() to avoid mutating original
@@ -157,19 +165,36 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
                         : assignedMonitors[monId].time.push(startEnd)
                     
                     if(openShift){
-                        //2c)Return array of monitors to charge hours for NOT getting the shift for billing later
+                        //2c) Return array of monitors to charge hours for NOT getting the shift for billing later
                         const chargeHoursToMonitors = findEligibleMonitorsAndCharge(openShift, eligibleMonitorsByDay[openShift.day], entry.monitor._id) 
 
                         //2d) Assigning monitor their first choice
                         //Add monitorId| thursday: { openShiftId456: monitorId, //..etc }
-                        overtimeWinnersByOpenShift[openShift.day][shiftId] = { 
+                        const dayEntry = overtimeWinnersByOpenShift.get(openShift.day)
+                        dayEntry.shifts.set(shiftId, {
                             'monitorId' : entry.monitor._id, 
                             'monitorName' : entry.monitor.name,
                             'shiftName' : openShift.name, 
                             'locationId': openShift.location,
-                            // 'monitorsToCharge': chargeHoursToMonitors,
+                        })
+                        //const locIdStr = openShift.location.toString();
+                        // if (!dayEntry.locIds.map(id => id.toString()).includes(locIdStr)) {
+                        // dayEntry.locIds.push(openShift.location);
+                        // }
+                        
+                        //2e) openShift location !== regularShift location, push to day.locIds arr
+                        if((openShift.location?.scheduleType ?? []).length === 0){ 
+                            dayEntry.locIds.push(openShift.location._id) 
                         }
-                        //2e) Pushing shifts in order of assignment
+                        // overtimeWinnersByOpenShift[openShift.day][shiftId] = { 
+                        //     'monitorId' : entry.monitor._id, 
+                        //     'monitorName' : entry.monitor.name,
+                        //     'shiftName' : openShift.name, 
+                        //     'locationId': openShift.location,
+                        //     // 'monitorsToCharge': chargeHoursToMonitors,
+                        // }
+
+                        //2f) Pushing shifts in order of assignment
                         assignedShiftsByOrder.push({
                             'shiftName': openShift.name, 
                             'monitorName': entry.monitor.name, //winner
@@ -177,10 +202,7 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
                             'monitorsToCharge': chargeHoursToMonitors,
                         })
 
-                        //2f)If openShift location is not also a regularShift location, push it to the day.locIds arr
-                        if((openShift.location?.scheduleType ?? []).length === 0){ 
-                            overtimeWinnersByOpenShift[openShift.day].locIds.push(openShift.location._id) 
-                        }
+
                     }
                     assigned = true
                 }
@@ -191,6 +213,7 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
     }
     // overtimeWinnersByOpenShift is an object keyed by day -> use for scheduling
     // assignedShiftsByOrder is an array sorted by order of shift assignment -> use in auditing
+    // console.log(overtimeWinnersByOpenShift)
     return [overtimeWinnersByOpenShift, assignedShiftsByOrder]
 }
 

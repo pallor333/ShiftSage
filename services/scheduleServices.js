@@ -1,4 +1,4 @@
-const { Monitor, RegularShift, OpenShift, Location} = require("../models/Parking");
+const { Monitor, RegularShift, OpenShift, Location, OvertimeSchedule} = require("../models/Parking");
 const { formatTime, getFixedTimeRange, getNextThurs, toMinutes} = require('../utils/dateHelpers')
 const { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, openShiftLookupByOpenShiftIdTable} = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('./overtimeServices') // './' imports from same directory
@@ -93,18 +93,19 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
     //Create 7 different obj, one for each day of the week
     for(let i = 0; i < 7; i++){
         const dayName = DAYSARRAY[i], isWeekend = i === 2 || i === 3; // Sat(2), Sun(3)
-        schedule[dayName] = {}, rows = {}
+        schedule[dayName] = {}, rows = {}, otShiftsToday = overtimeCalcs.days.get(dayName)
         let locationsCopy = locations //copying so we dont mutate original
         
-        //Adding OT locations from overtimeCalc obj: edit scheduleType property with day of the week
-        overtimeCalcs[dayName].locIds.forEach(ot => { //O(n^2)
+        //1) Preparing today's locations
+        //Using scheduleType property of location to add OT locations from overtimeCalc obj
+        otShiftsToday.locIds.forEach(ot => { //O(n^2)
           locationsCopy.forEach(l => { 
-            if(l._id.toString() === ot.toString() && (!l.scheduleType.includes(dayName))){
+            if(l._id.toString() === ot?._id.toString() && (!l.scheduleType.includes(dayName))){
               l?.scheduleType.push(dayName) 
             }
           })
         })
-        
+
         //Filter locations for this day
         const locationsToday = locationsCopy
           .filter(l => l.scheduleType.includes(dayName)
@@ -112,40 +113,39 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             ...(loc._doc || loc), // spread mongoose document or spread manual object
             index: idx,
           })).reduce((acc, loc) =>{
-                if (!loc._id) {
-                console.error("Invalid object in array:", loc);
-                throw new Error("Object missing _id property");
-            }
-            acc[loc._id.toString()] = loc
-            return acc
+              if (!loc._id) {
+              console.error("Invalid object in array:", loc);
+              throw new Error("Object missing _id property");
+              }
+              acc[loc._id.toString()] = loc
+              return acc
           }, {}) //use ID as the key
-
+        
+        //2) Preparing today's shifts 
         //Create a sorted array of location / monitors for insertion later
         let locationMonitors = resetLocationToday(locationsToday)
-        
+
         //Filter regular shifts
         const shiftsToday = regularShifts.filter(s => s.days.includes(dayName))
 
-        //Add OT shifts (overtimeCalcs[dayName]) to shiftsToday 
-        for(let shift in overtimeCalcs[dayName]){
-          if(shift!=="locIds"){
-            shiftsToday.push({
-                  _id: shift, //instead of object, is just the openShiftId str
-                  name: overtimeCalcs[dayName][shift].monitorName, //get whole obj -> monitor name
-                  location: overtimeCalcs[dayName][shift].locationId._id, //locationId
-                  overtime: true,
-                  startTime: openShiftById.get(shift).startTime, //use lookup table
-                  endTime: openShiftById.get(shift).endTime, 
-            })
-          }
-        }
+        //Add OT shifts to shiftsToday 
+        otShiftsToday.shifts.forEach((shiftObj, shiftId) => {
+          shiftsToday.push({
+                _id: shiftId, //open shift Id
+                name: shiftObj.monitorName, //monitor name from obj
+                location: shiftObj.locationId._id, //location Id //overtimeCalcs[dayName][shift].locationId._id, //locationId
+                overtime: true,
+                startTime: openShiftById.get(shiftId).startTime, //use lookup table
+                endTime: openShiftById.get(shiftId).endTime, 
+          })
+        }) 
         //Normalize regular/ot shift into one single format
         const normalizedShiftsToday = normalizeShifts(shiftsToday, monitorByShiftId, locationById)
 
         //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
         const monitorShiftsArr = coaleseAndSort(normalizedShiftsToday)
 
-        // if(i===0)console.log(monitorShiftsArr)
+        //3) Populate table
         //Loop over shifts and populate table
         monitorShiftsArr.forEach( (shift, idx) => {
           //Reset locationMonitors for current shift
@@ -157,7 +157,6 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
               locationMonitors[locationsToday[locationId].index][1] === EMPTY
               ? monitorName //Replace "Unassigned"
               : locationMonitors[locationsToday[locationId].index][1] + `, ${monitorName}`//append w/ comma
-
             //Each row = one shift 
             rows[`shift_${idx}`] = {
               start: start,
@@ -167,7 +166,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             }
           }) 
         }) 
-        // if(i===0)console.log(rows)
+
         //Compile all 7 tables
         schedule[dayName] = {
           locations: locationMonitors.map(l => l[0]), //extract location names
@@ -176,6 +175,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
           isWeekend, 
         } 
     }
+
     return{
       weekStart: wkStart, 
       weekEnd: wkEnd, 
@@ -191,10 +191,23 @@ module.exports = {
         const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
         const locations = await Location.find().sort({ name: 1})    
         const [overtimeCalcs, _] = await allocateOvertime()
-        // console.log(overtimeCalcs.thursday)
+        const overtimeSchedule = await OvertimeSchedule.find()
+          .populate('days.$*.locIds') //$* = wildcard tells Mongoose to populate all keys in the Map.
+          .populate({                //Works for both days (outer Map) and shifts (inner Map).
+            path: 'days.$*.shifts.$*.monitorId',
+            model: 'Monitor'
+          })
+          .populate({
+            path: 'days.$*.shifts.$*.locationId',
+            model: 'Location'
+          })
+        // console.log(overtimeSchedule)
+        let zero = overtimeSchedule[0]
+        // console.log(zero)
+        // console.log(zero.days.get('thursday') )
 
         //Behold, the Meat and Potatoes
-        let weeklyTable = buildWeeklyTable(THISWEEK, monitors, regularShifts, openShifts, locations, overtimeCalcs)
+        let weeklyTable = buildWeeklyTable(THISWEEK, monitors, regularShifts, openShifts, locations, overtimeSchedule[0]) //overtimeCalcs)
 
         console.log("allocateSchedule function called")
         return weeklyTable 
