@@ -97,22 +97,18 @@ const OvertimeWinnersForScheduleSchema = new Schema({
   },
 }, { timestamps: true })
 
-//   monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true },
-//   openShift: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
-//   hourAllocation: { 
-//     type: [{monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true }, 
-//     hrs: { type: Number, required: true }, 
-//   }], 
-//   default: []  //Arr of [monitor:hrToAdd]
-//   },
-// })
-
 const OvertimeWinnersForAuditSchema = new Schema({
   shiftName: { type: String, required: true},
   monitorName: { type: String, required: true},
   hours: { type: Number, required: true},
   monitorsToCharge: { type: Object, default: {} },
 }, { timestamps: true })
+
+const WeeklyScheduleSchema = new Schema({
+  weekStart: { type: String, required: true},
+  weekEnd: { type: String, required: true},
+  schedule: { type: String, required: true},
+})
 
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {

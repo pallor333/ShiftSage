@@ -24,6 +24,7 @@ const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable} = requ
 
 const THISWEEK = new Date("4/30/25") //temp hardcoding date:
 
+/************** Helper functions *******************/
 //Given monitor and overtimeShift, returns true/false for scheduling conflict
 const checkShiftConflict = (monitor, overtimeShift) => {
     if(!monitor.regularShift) return false
@@ -115,6 +116,7 @@ function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
     })
 }
 
+/************** Main function *******************/
 function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId){
     // let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift

@@ -121,7 +121,6 @@ module.exports = {
   getOvertimePage: async (req, res) => {
     try { 
       const { monitors, openShifts, locations, overtimeBid, overtimeAudit} = await fetchCommonData()
-      // const [_, overtimeWins] = await allocateOvertime() //calling overtimeServices 
       // console.log(overtimeAudit)
 
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
@@ -146,7 +145,6 @@ module.exports = {
           }
         })
       })
-      // console.log(auditTable)
 
       // Render the edit.ejs template and pass the data
       res.render("overtime.ejs", {
@@ -163,7 +161,6 @@ module.exports = {
     }
   },
   //Scheduling page
-  //TODO: Add overtime shifts
   getSchedulePage: async (req, res) => {
     try {
       const allocationResults = await allocateSchedule() //call schedule building function
@@ -679,35 +676,35 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
   // SERVICES
   //
   //
-  allocateOvertimePage: async (req, res) => {
-    try {
-      // Call the allocateOvertime function
-      const results = await allocateOvertime();
+  // allocateOvertimePage: async (req, res) => {
+  //   try {
+  //     // Call the allocateOvertime function
+  //     const results = await allocateOvertime();
 
-      // Update all monitors' hours
-      await Promise.all(
-        Object.entries(results.summary).map(([id, hours]) =>
-          Monitor.updateOne({ _id: id }, { $inc: { hours: hours } })
-        )
-      );
+  //     // Update all monitors' hours
+  //     await Promise.all(
+  //       Object.entries(results.summary).map(([id, hours]) =>
+  //         Monitor.updateOne({ _id: id }, { $inc: { hours: hours } })
+  //       )
+  //     );
 
-      // Render the allocation results page
-      res.render('allocation-results', results);
-    } catch (err) {
-      console.error(err);
-      res.redirect('/parking/home');
-    }
-  },
-  allocateSchedule: async (req, res) => {
-    try {
-      // Call the allocateSchedule function
-      const results = await allocateSchedule();
+  //     // Render the allocation results page
+  //     res.render('allocation-results', results);
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.redirect('/parking/home');
+  //   }
+  // },
+  // allocateSchedule: async (req, res) => {
+  //   try {
+  //     // Call the allocateSchedule function
+  //     const results = await allocateSchedule();
 
-      // Render the allocation results page
-      res.render('allocation-results', results);
-    } catch (err) {
-      console.error(err);
-      res.redirect('/parking/home');
-    }
-  },
+  //     // Render the allocation results page
+  //     res.render('allocation-results', results);
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.redirect('/parking/home');
+  //   }
+  // },
 };

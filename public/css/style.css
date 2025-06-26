@@ -11,3 +11,16 @@
   .inline-form {
     display: inline;
   }
+
+  .page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Experimental */
+
+  @media print {
+    .no-print {
+      display: none
+    }
+  }

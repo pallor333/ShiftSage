@@ -23,6 +23,12 @@ function formatTime(date) {
   return date.toISOString().substring(11, 16) // "HH:MM"
 }
 
+function getCurrentDay(wkStart, daysElapsedSinceThursday){
+  let [m, d, y] = wkStart.split('/')
+  d = +d + daysElapsedSinceThursday //Cast str -> int for addition
+  return [m,d,y].join('/')  //new Date([m,d,y].join('/') )
+}
+
 //helper function to fix a start/end time for correct comparison
 const getFixedTimeRange = (start, end) => {
     const startMs = new Date(start).getTime() //convert to milliseconds since epoch
@@ -42,7 +48,7 @@ function getNextThurs(date){
   //Calculate days till next Thurs
   const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7;
   wkStart.setDate(date.getDate() + daysUntilThursday)
-  const wkEnd = new Date(wkStart.getTime() + 604800000) // 7 days in ms
+  const wkEnd = new Date(wkStart.getTime() + 518400000) //6 days in ms  /.604800000) // 7 days in ms
   // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
   // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
 
@@ -57,4 +63,4 @@ function toMinutes(timeStr) {
   return hour * 60 + minute
 }
 
-module.exports = { calculateShiftHours, formatDate, formatTime, getFixedTimeRange, getNextThurs, toMinutes}
+module.exports = { calculateShiftHours, formatDate, formatTime, getCurrentDay, getFixedTimeRange, getNextThurs, toMinutes}

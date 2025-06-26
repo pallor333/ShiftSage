@@ -1,18 +1,31 @@
+const xlsx = require("json-as-xlsx") //package to download JSON data as excel file
+const { jsPDF } = require("jspdf"); //generate PDF from JS 
 const { Monitor, RegularShift, OpenShift, Location, OvertimeSchedule} = require("../models/Parking");
-const { formatTime, getFixedTimeRange, getNextThurs, toMinutes} = require('../utils/dateHelpers')
+const { getCurrentDay, getFixedTimeRange, getNextThurs, } = require('../utils/dateHelpers')
 const { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, openShiftLookupByOpenShiftIdTable} = require('../utils/lookupHelpers')
-const { allocateOvertime } = require('./overtimeServices') // './' imports from same directory
+// const { allocateOvertime } = require('./overtimeServices') // './' imports from same directory
 
 const THISWEEK = new Date("4/30/25") //new Date()
 const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
-const EMPTY = "Unassigned"
+const EMPTY = ""//"Unassigned"
 
-const scheduleMap = {
-  weekdays: ["thursday", "friday", "monday", "tuesday", "wednesday"],
-  weekends: ["saturday", "sunday"],
-  everyday: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
+// const scheduleMap = {
+//   weekdays: ["thursday", "friday", "monday", "tuesday", "wednesday"],
+//   weekends: ["saturday", "sunday"],
+//   everyday: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
+// }
+
+//Download the weekly table in JSON format
+function downloadTextFile(text, name) {
+  const a = document.createElement('a');
+  const type = name.split(".").pop();
+  a.href = URL.createObjectURL(new Blob([text], { type: `text/${type === "txt" ? "plain" : type}` }));
+  a.download = name;
+  a.click();
 }
 
+/************** Helper functions *******************/
+//Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
 function coaleseAndSort(shifts){
   const timeSlotMap = {}
 
@@ -46,6 +59,7 @@ function coaleseAndSort(shifts){
   return removeKey 
 }
 
+// Normalize and match the formatting of regularshifts and openshifts for processing later
 function normalizeShifts(shifts, monitorByShiftId, locationById) {
   const normalized = []
 
@@ -79,14 +93,17 @@ function normalizeShifts(shifts, monitorByShiftId, locationById) {
   return normalized
 }
 
+//Reset all monitor/overtime in locationsToday arr to blank/false
 function resetLocationToday(locationsToday){
   // template to populate with monitors later [location Object, monitor name, overtime shift?]
   // reset [ '10EV', 'VACACHECK2' ] -> [ '10EV', 'Unassigned' ]
   return Object.entries(locationsToday).map(([_, loc]) => [loc.name, EMPTY, false]) 
 }
 
+/************** Main functions *******************/
+//Create the 7 day table for display in the frontend
 function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, overtimeCalcs){
-    const [wkStart, wkEnd] = getNextThurs(date), schedule = {}
+    const [wkStart, wkEnd] = getNextThurs(date), schedule = {} 
     const monitorByShiftId = monitorLookupByShiftIdTable(monitors)
     const locationById = locationLookupByLocationIdTable(locations)  
     const openShiftById = openShiftLookupByOpenShiftIdTable(openShifts)
@@ -171,8 +188,9 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
         schedule[dayName] = {
           locations: locationMonitors.map(l => l[0]), //extract location names
           row: rows,
-          date: new Date(date.getTime() + (i * 24 * 60 * 60 * 1000)), //Get exact date for day
-          isWeekend, 
+          date: getCurrentDay(wkStart, i)  //Get exact date for day
+          //new Date(date.getTime() + (i * 24 * 60 * 60 * 1000)), 
+          // isWeekend, 
         } 
     }
 
@@ -183,6 +201,46 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
     } 
 }
 
+//Convert weeklyTable to json then xlsx -> excel file with all fields populated
+function downloadAsExcelTable(weeklyTable){
+    let data = [
+    {
+      sheet: "Adults",
+      columns: [
+        { label: "User", value: "user" }, // Top level data
+        { label: "Age", value: (row) => row.age + " years" }, // Custom format
+        { label: "Phone", value: (row) => (row.more ? row.more.phone || "" : "") }, // Run functions
+      ],
+      content: [
+        { user: "Andrea", age: 20, more: { phone: "11111111" } },
+        { user: "Luis", age: 21, more: { phone: "12345678" } },
+      ],
+    },
+    {
+      sheet: "Children",
+      columns: [
+        { label: "User", value: "user" }, // Top level data
+        { label: "Age", value: "age", format: '# "years"' }, // Column format
+        { label: "Phone", value: "more.phone", format: "(###) ###-####" }, // Deep props and column format
+      ],
+      content: [
+        { user: "Manuel", age: 16, more: { phone: 9999999900 } },
+        { user: "Ana", age: 17, more: { phone: 8765432135 } },
+      ],
+    },
+  ]
+
+  let settings = {
+    fileName: "MySpreadsheet", // Name of the resulting spreadsheet
+    extraLength: 3, // A bigger number means that columns will be wider
+    writeMode: "writeFile", // The available parameters are 'WriteFile' and 'write'. This setting is optional. Useful in such cases https://docs.sheetjs.com/docs/solutions/output#example-remote-file
+    writeOptions: {}, // Style options from https://docs.sheetjs.com/docs/api/write-options
+    RTL: true, // Display the columns from right-to-left (the default value is false)
+  }
+
+  xlsx(data, settings) // Will download the excel file
+    const json = JSON.stringify(weeklyTable) 
+}
 module.exports = {
     allocateSchedule: async() => {
       try{
@@ -201,13 +259,16 @@ module.exports = {
             path: 'days.$*.shifts.$*.locationId',
             model: 'Location'
           })
-        // console.log(overtimeSchedule)
-        let zero = overtimeSchedule[0]
-        // console.log(zero)
-        // console.log(zero.days.get('thursday') )
 
         //Behold, the Meat and Potatoes
         let weeklyTable = buildWeeklyTable(THISWEEK, monitors, regularShifts, openShifts, locations, overtimeSchedule[0]) //overtimeCalcs)
+        // console.log(weeklyTable)
+        // downloadAsExcelTable(weeklyTable) //TODO: Use json-as-xlsx to output excel files to download
+
+        //Testing JS -> PDF functionality.
+        const doc = new jsPDF();
+        doc.text("Hello world!", 10, 10);
+        doc.save("a4.pdf"); // will save the file in the current working directory
 
         console.log("allocateSchedule function called")
         return weeklyTable 
@@ -217,6 +278,7 @@ module.exports = {
         }
     }
 }
+
 
 /*
 schedule = {

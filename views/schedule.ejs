@@ -1,11 +1,14 @@
 <%- include('partials/header') -%>
+
 <!-- Page 3: Show schedule -->
-<main class="container">
+<main class="container" id="schedule">
+    <!-- <button id="downloadSchedule" class="no-print">Download Schedule</button> -->
     <h1>Weekly Parking Monitor Schedule <%= allocationResults.weekStart %> - <%= allocationResults.weekEnd %></h1>
     <% for(let i = 0; i < 7; i++){ %> 
         <!-- 0 = thurs, 1 = fri, 2 = sat, 3 = sun, 4 = mon, 5 = tues, 6 = weds -->
-        <table class="table table-striped">
-            <h3><%= wkDays[i] %></h3>
+        <h3><%= wkDays[i] %></h3>
+        <table class="table table-striped<%= i < 6 ? ' page-break' : '' %>">
+            <!-- Conditionally add page-break class if i < 6 -->
             <thead>
                 <tr>
                     <th>Shift</th>
@@ -40,14 +43,55 @@
 
     <% } %>
 </main>
+
+<!-- Html 2 PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <%- include('partials/footer') -%>
 
- 
+
+<!-- Add Event Listener to button: Downloading HTML as PDF -->
+<!-- https://ekoopmans.github.io/html2pdf.js/ -->
+<script>
+    // document.getElementById('downloadSchedule').addEventListener('click', function () {
+    window.addEventListener('DOMContentLoaded', function () { //Auto download when page loads
+        //Create variables to specify title
+        const safeStart = "<%= allocationResults.weekStart %>".replace(/\//g, '-')
+        const safeEnd = "<%= allocationResults.weekEnd %>".replace(/\//g, '-')
+        // Select the content to print
+        const element = document.getElementById('schedule')
+        // ustomize options
+        const opt = {
+            margin:       0.2,
+            filename:     `${safeStart}-${safeEnd}_schedule.pdf`, 
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: [15,7], orientation: 'landscape' }, //[16, 11] initially worked to fit everything, adjust from there
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        }
+        html2pdf().set(opt).from(element).save()
+    })
+</script>
 
 
-
-
-
+<!-- Downloading EJS from the rendered data on the page -->
+<!-- Adapted from: https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser -->
+<% /* %>
+<!-- <script>
+    const scheduleData = <%- JSON.stringify(allocationResults) %>; //Converts server-side JS obj into JSON string
+    // <%- ... %> ensures the output is not HTML-escaped (so quotes, braces, etc. are preserved as valid JS)
+    const [m1,d1,y1] = scheduleData.weekStart.split('/')
+    const [m2,d2,y2] = scheduleData.weekEnd.split('/')
+    document.getElementById('downloadSchedule').addEventListener('click', function() {
+        const blob = new Blob([JSON.stringify(scheduleData, null, 2)], {type: 'application/json'})
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `Schedule ${m1}-${d1}-${y1} to ${m2}-${d2}-${y2}.json`//'schedule.json' 
+        a.click()
+        URL.revokeObjectURL(url)
+    })
+</script>  -->
+<% /* %>
 
 
 
