@@ -27,56 +27,56 @@
     <!-- Monitor Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
     <div class="tab-content" id="editPageTabContent">
         <div class="tab-pane fade show active" id="monitor-tab-pane" role="tabpanel" aria-labelledby="monitor-tab" tabindex="0">
-            <!-- Add Monitor -->
-            <section id="monitors" class="mt-5 monitors">
-            <h2>Add a Monitor</h2>
-            <form action="/parking/monitor" method="POST" class="row g-3">
-                <!-- ID Section -->
-                <section class="col-md-6">
-                    <label for="monitorId" class="form-label">Monitor ID</label>
-                    <input type="number" class="form-control" id="addMonitorId" name="id" required>
-                </section>
-                <!-- Display Name Section -->
-                <section class="col-md-6">
-                    <label for="displayName" class="form-label">Display Name</label>
-                    <input type="text" class="form-control" id="addMonitorDisplayName" name="displayName" required>
-                </section>
-                <!-- Shift Time Section -->
-                <section class="col-md-6">
-                    <label for="shiftTime" class="form-label">Regular Shift Time</label>
-                    <select class="form-select" id="addMonitorShiftTime" name="regularShift" required>
-                        <option value="" selected disabled>Select shift time</option>
-                        <% regularShifts.forEach((shift) => { %>
-                            <option value="<%= shift._id %>">
-                                <%= shift.name %> (<%= shift.startTime.toLocaleTimeString() %> - <%= shift.endTime.toLocaleTimeString() %>)
-                            </option>
-                        <% }) %>
-                    </select>
-                </section>
-                <!-- Shift Location Section -->
-                <section class="col-md-6">
-                    <label for="shiftLocation" class="form-label">Shift Location</label>
-                    <select class="form-select" id="addMonitorShiftLocation" name="shiftLocation" required>
-                        <option value="" selected disabled>Select location</option>
-                        <% locations.forEach((location) => { %>
-                            <option value="<%= location._id %>"><%= location.name %></option>
-                        <% }) %>
-                    </select>
-                </section>
-                <!-- Hours Section - Allows decimal input up to 999.9 -->
-                <section class="col-md-6">
-                    <label for="hours" class="form-label">Hours YTD</label>
-                    <input type="number" class="form-control" id="addMonitorHours" name="hours" min="0" max="9999" step="0.1" value="0" required>
-                </section>
-                <!-- Seniority Section -->
-                <section class="col-md-6">
-                    <label for="seniority" class="form-label">Seniority (MM/DD/YYYY)</label>
-                    <input type="date" class="form-control" id="addMonitorSeniority" name="seniority" required>
-                </section>
-                <!-- Submit Button Section -->
-                <section class="col-12">
-                    <button type="submit" class="btn btn-primary">Add Monitor</button>
-                </section>
+                <!-- Add Monitor -->
+                <section id="monitors" class="mt-5 monitors">
+                <h2>Add a Monitor</h2>
+                <form action="/parking/monitor" method="POST" class="row g-3">
+                    <!-- ID Section -->
+                    <section class="col-md-6">
+                        <label for="monitorId" class="form-label">Monitor ID</label>
+                        <input type="number" class="form-control" id="addMonitorId" name="id" required>
+                    </section>
+                    <!-- Display Name Section -->
+                    <section class="col-md-6">
+                        <label for="displayName" class="form-label">Display Name</label>
+                        <input type="text" class="form-control" id="addMonitorDisplayName" name="displayName" required>
+                    </section>
+                    <!-- Shift Time Section -->
+                    <section class="col-md-6">
+                        <label for="shiftTime" class="form-label">Regular Shift Time</label>
+                        <select class="form-select" id="addMonitorShiftTime" name="regularShift" required>
+                            <option value="" selected disabled>Select shift time</option>
+                            <% regularShifts.forEach((shift) => { %>
+                                <option value="<%= shift._id %>">
+                                    <%= shift.name %> (<%= shift.startTime.toLocaleTimeString() %> - <%= shift.endTime.toLocaleTimeString() %>)
+                                </option>
+                            <% }) %>
+                        </select>
+                    </section>
+                    <!-- Shift Location Section -->
+                    <section class="col-md-6">
+                        <label for="shiftLocation" class="form-label">Shift Location</label>
+                        <select class="form-select" id="addMonitorShiftLocation" name="shiftLocation" required>
+                            <option value="" selected disabled>Select location</option>
+                            <% locations.forEach((location) => { %>
+                                <option value="<%= location._id %>"><%= location.name %></option>
+                            <% }) %>
+                        </select>
+                    </section>
+                    <!-- Hours Section - Allows decimal input up to 999.9 -->
+                    <section class="col-md-6">
+                        <label for="hours" class="form-label">Hours YTD</label>
+                        <input type="number" class="form-control" id="addMonitorHours" name="hours" min="0" max="9999" step="0.1" value="0" required>
+                    </section>
+                    <!-- Seniority Section -->
+                    <section class="col-md-6">
+                        <label for="seniority" class="form-label">Seniority (MM/DD/YYYY)</label>
+                        <input type="date" class="form-control" id="addMonitorSeniority" name="seniority" required>
+                    </section>
+                    <!-- Submit Button Section -->
+                    <section class="col-12">
+                        <button type="submit" class="btn btn-primary">Add Monitor</button>
+                    </section>
             </form>
             </section>
 
@@ -549,9 +549,47 @@ function activateTabFromHash() {
     }
   }
 }
+///example link: /parking/edit?tab=monitor-tab#monitors
+//tab=monitor-tab → tells us which tab button ID to activate.
+//#monitors → tells us which section ID to scroll to inside the tab.
+//POST = res.redirect('/edit?tab=monitor-tab#monitors');
+
+
+/**
+ * Helper: Activates a Bootstrap tab and scrolls to a section inside it.
+ * 
+ * Expects:
+ *   URL like /page?tab=monitor-tab#monitors
+ */
+function activateTabAndScroll() {
+  const params = new URLSearchParams(window.location.search);
+  const tabId = params.get('tab'); // e.g. "monitor-tab"
+  const hash = window.location.hash; // e.g. "#monitors"
+
+  if (!tabId) return; // no tab? nothing to do.
+  const tabEl = document.getElementById(tabId);
+  if (!tabEl) return; // tab button not found.
+
+  const tab = new bootstrap.Tab(tabEl);
+  tab.show(); //select tab 
+
+  // If there is a hash, wait for the tab to be visible.
+  if (hash) {
+    tabEl.addEventListener('shown.bs.tab', () => {
+      const section = document.querySelector(hash);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+}
+
+// Run on DOM ready
+document.addEventListener('DOMContentLoaded', activateTabAndScroll);
+
 
 // Run on page load
-document.addEventListener("DOMContentLoaded", activateTabFromHash);
+// document.addEventListener("DOMContentLoaded", activateTabFromHash);
 
 // (Optional) If you want to support changing tabs by changing the hash manually:
 // window.addEventListener("hashchange", activateTabFromHash);
