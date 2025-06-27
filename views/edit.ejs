@@ -1,12 +1,34 @@
 <%- include('partials/header') -%>
 <!-- Page 1: Add/Edit/Delete entries -->
-<main class="container">
-    <section class = "mt-5 Add">
-        <h1>Add</h1>
-        <span>Parking Monitors, Locations, Shifts and Overtime positions</span>
+ <!-- <div class="fixed-top">test</div> -->
 
-        <!-- <section class="monitors"> -->
-        <section id="monitors" class="mt-5 monitors">
+<main class="container">
+
+    <!-- Creating the tab scaffolding -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="monitor-tab" data-bs-toggle="tab" data-bs-target="#monitor-tab-pane" type="button" role="tab" aria-controls="monitor-tab-pane" aria-selected="true">Monitors</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="openShift-tab" data-bs-toggle="tab" data-bs-target="#openShift-tab-pane" type="button" role="tab" aria-controls="openShift-tab-pane" aria-selected="false">Overtime Shifts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="regularShift-tab" data-bs-toggle="tab" data-bs-target="#regularShift-tab-pane" type="button" role="tab" aria-controls="regularShift-tab-pane" aria-selected="false">Regular Shifts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location-tab-pane" type="button" role="tab" aria-controls="location-tab-pane" aria-selected="false">Location</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="vaca-tab" data-bs-toggle="tab" data-bs-target="#vaca-tab-pane" type="button" role="tab" aria-controls="vaca-tab-pane" aria-selected="false">Vacation</button>
+        </li>
+    </ul>
+
+    <!-- Populating the tabs with content -->
+    <!-- Monitor Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="monitor-tab-pane" role="tabpanel" aria-labelledby="monitor-tab" tabindex="0">
+            <!-- Add Monitor -->
+            <section id="monitors" class="mt-5 monitors">
             <h2>Add a Monitor</h2>
             <form action="/parking/monitor" method="POST" class="row g-3">
                 <!-- ID Section -->
@@ -56,89 +78,77 @@
                     <button type="submit" class="btn btn-primary">Add Monitor</button>
                 </section>
             </form>
-        </section>
+            </section>
 
-        <!-- Need to put this in a JS file -->
-        <!-- <script>
-            // Format the date input to display in MM/DD/YYYY format while maintaining YYYY-MM-DD value
-            document.getElementById('seniorityDate').addEventListener('change', function(e) {
-                this.type = 'text';
-                const date = new Date(e.target.value);
-                const formattedDate = `${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
-                this.value = formattedDate;
-            });
-            
-            // Convert back to date format when focusing for calendar picker
-            document.getElementById('seniorityDate').addEventListener('focus', function() {
-                this.type = 'date';
-                // If there's a value in MM/DD/YYYY format, convert it back to YYYY-MM-DD
-                if (this.value.match(/\d{2}\/\d{2}\/\d{4}/)) {
-                    const parts = this.value.split('/');
-                    this.value = `${parts[2]}-${parts[0]}-${parts[1]}`;
-                }
-            });
-        </script> -->
+            <!-- Edit/Delete Monitors -->
+            <section id="displayMonitors" class="mt-5 displayMonitors">
+                <h2>Manage Monitors</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Regular Shift</th>
+                            <th>Location</th>
+                            <th>On Vacation This Week?</th>
+                            <th>Hours</th>
+                            <th>Seniority</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% monitors.forEach((monitor) => { %>
+                        <tr>
+                            <form action="/parking/monitor/edit/<%= monitor._id %>" method="POST" style="display:inline;">
+                                <td><input type="number" name="id" value="<%= monitor.id %>" class="form-control" required></td>
+                                <td><input type="text" name="displayName" value="<%= monitor.name %>" class="form-control" required></td>
+                                <td>
+                                    <select name="regularShift" class="form-select" required>
+                                        <option value="" disabled>Select shift</option>
+                                        <% regularShifts.forEach((shift) => { %>
+                                        <option value="<%= shift._id %>" <%= monitor.regularShift && monitor.regularShift._id.toString() === shift._id.toString() ? "selected" : "" %>>
+                                            <%= shift.name %>
+                                        </option>
+                                        <% }) %>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="shiftLocation" class="form-select" required>
+                                        <option value="" disabled>Select location</option>
+                                        <% locations.forEach((location) => { %>
+                                        <option value="<%= location._id %>" <%= monitor.location && monitor.location._id.toString() === location._id.toString() ? "selected" : "" %>>
+                                            <%= location.name %>
+                                        </option>
+                                        <% }) %>
+                                    </select>
+                                </td>
+                                <td>
+                                    <!-- TODO: On Vacation This Week -->
+                                </td>
+                                <td><input type="number" name="hours" value="<%= monitor.hours %>" class="form-control" step="0.1" required></td>
+                                <td><input type="date" name="seniority" value="<%= monitor.seniority.toISOString().split('T')[0] %>" class="form-control" required></td>
+                                <td>
+                                <!-- Save Button -->
+                                    <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                </td>
+                            </form>
+                            <td>
+                                <!-- Delete Button -->
+                                <form action="/parking/monitor/delete/<%= monitor._id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </section>        
+        </div>
 
-        <!-- Adding Regular Shifts -->
-        <section id="regularShifts" class="mt-5 regularShifts">
-            <h2>Add a Regular Shift</h2>
-            <form action="/parking/regularShift" method="POST" class="row g-3">
-                <!-- Start Time Section -->
-                <section class="col-md-6">
-                    <label for="startTime" class="form-label">Start Time</label>
-                    <input type="time" class="form-control" id="addRegularShiftStartTime" name="startTime" required>
-                </section>
-                <!-- End Time Section -->
-                <section class="col-md-6">
-                    <label for="endTime" class="form-label">End Time</label>
-                    <input type="time" class="form-control" id="addRegularShiftEndTime" name="endTime" required>
-                </section>
-                <!-- Display Name Section -->
-                <section class="col-md-6">
-                    <label for="displayName" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="regularShiftName" name="regularShiftName" required>
-                </section>
-                <!-- Day Section -->
-                <section class="col-md-6">
-                    <label class="form-label">Days</label>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="monday" name="days" value="monday">
-                        <label class="form-check-label" for="monday">Monday</label>
-                    </section>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="tuesday" name="days" value="tuesday">
-                        <label class="form-check-label" for="tuesday">Tuesday</label>
-                    </section>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="wednesday" name="days" value="wednesday">
-                        <label class="form-check-label" for="wednesday">Wednesday</label>
-                    </section>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="thursday" name="days" value="thursday">
-                        <label class="form-check-label" for="thursday">Thursday</label>
-                    </section>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="friday" name="days" value="friday">
-                        <label class="form-check-label" for="friday">Friday</label>
-                    </section>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="saturday" name="days" value="saturday">
-                        <label class="form-check-label" for="saturday">Saturday</label>
-                    </section>
-                    <section class="form-check">
-                        <input class="form-check-input" type="checkbox" id="sunday" name="days" value="sunday">
-                        <label class="form-check-label" for="sunday">Sunday</label>
-                    </section>
-                </section>
-                <!-- Submit Button -->
-                <section class="col-12">
-                    <button type="submit" class="btn btn-primary">Add Shift</button>
-                </section>
-            </form>
-        </section>
-
-        <!-- Overtime Shifts -->
-        <section id="openShifts" class="mt-5 openShifts">
+        <!-- Overtime Shift Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
+        <div class="tab-pane fade" id="openShift-tab-pane" role="tabpanel" aria-labelledby="openShift-tab" tabindex="0">
+            <!-- Overtime Shifts -->
+            <section id="openShifts" class="mt-5 openShifts">
             <h2>Add an Overtime Shift</h2>
             <form action="/parking/openShift" method="POST" class="row g-3">
                 <!-- Start Time Section -->
@@ -194,10 +204,163 @@
                     <button type="submit" class="btn btn-primary">Add Shift</button>
                 </section>
             </form>
-        </section>
-        
-        <!-- Add a Location -->
-        <section id="locations" class="mt-5 locations">
+            </section>
+
+            <!-- View and Delete Overtime Shifts -->
+            <section id="displayOpenShifts" class="mt-5 displayOpenShifts">
+                <h2>Overtime Shifts</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Location</th>
+                            <th>Repeats Weekly?</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% openShifts.forEach((shift) => { %>
+                        <tr>
+                            <td><%= shift.name %></td>
+                            <td><%= shift.day %></td>
+                            <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
+                            <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
+                            <!-- Location Dropdown -->
+                            <td>
+                                <form action="/parking/openShift/edit/<%= shift._id %>" method="POST" style="display:inline;">
+                                    <select name="shiftLocation" class="form-select" required>
+                                        <option value="" disabled>Select location</option>
+                                        <% locations.forEach((location) => { %>
+                                            <option value="<%= location._id %>" <%= shift.location && shift.location._id.toString() === location._id.toString() ? "selected" : "" %>>
+                                                <%= location.name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                            </td>
+                            <!-- Repeats Weekly Dropdown -->
+                            <td>
+                                <select name="recurring" class="form-select d-inline-block" required>
+                                    <option value="true" <%= shift.recurring === true ? "selected" : "" %>>Yes</option>
+                                    <option value="false" <%= shift.recurring === false ? "selected" : "" %>>No</option>
+                                </select>
+                            </td>
+                            <!-- Save and Delete Buttons -->
+                            <td>
+                                <form action="/parking/openShift/edit/:id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                </form>
+                                <form action="/parking/openShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- Regular Shift Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
+        <div class="tab-pane fade" id="regularShift-tab-pane" role="tabpanel" aria-labelledby="regularShift-tab" tabindex="0">
+            
+            <!-- Adding Regular Shifts -->
+            <section id="regularShifts" class="mt-5 regularShifts">
+            <h2>Add a Regular Shift</h2>
+            <form action="/parking/regularShift" method="POST" class="row g-3">
+                <!-- Start Time Section -->
+                <section class="col-md-6">
+                    <label for="startTime" class="form-label">Start Time</label>
+                    <input type="time" class="form-control" id="addRegularShiftStartTime" name="startTime" required>
+                </section>
+                <!-- End Time Section -->
+                <section class="col-md-6">
+                    <label for="endTime" class="form-label">End Time</label>
+                    <input type="time" class="form-control" id="addRegularShiftEndTime" name="endTime" required>
+                </section>
+                <!-- Display Name Section -->
+                <section class="col-md-6">
+                    <label for="displayName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="regularShiftName" name="regularShiftName" required>
+                </section>
+                <!-- Day Section -->
+                <section class="col-md-6">
+                    <label class="form-label">Days</label>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="monday" name="days" value="monday">
+                        <label class="form-check-label" for="monday">Monday</label>
+                    </section>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="tuesday" name="days" value="tuesday">
+                        <label class="form-check-label" for="tuesday">Tuesday</label>
+                    </section>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="wednesday" name="days" value="wednesday">
+                        <label class="form-check-label" for="wednesday">Wednesday</label>
+                    </section>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="thursday" name="days" value="thursday">
+                        <label class="form-check-label" for="thursday">Thursday</label>
+                    </section>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="friday" name="days" value="friday">
+                        <label class="form-check-label" for="friday">Friday</label>
+                    </section>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="saturday" name="days" value="saturday">
+                        <label class="form-check-label" for="saturday">Saturday</label>
+                    </section>
+                    <section class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sunday" name="days" value="sunday">
+                        <label class="form-check-label" for="sunday">Sunday</label>
+                    </section>
+                </section>
+                <!-- Submit Button -->
+                <section class="col-12">
+                    <button type="submit" class="btn btn-primary">Add Shift</button>
+                </section>
+            </form>
+            </section>
+
+            <!-- View and Delete Regular Shifts -->
+                <section id="displayRegularShifts" class="mt-5 displayRegularShifts">
+                    <h2>Regular Shifts</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Days</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% regularShifts.forEach((shift) => { %>
+                                <tr>
+                                    <td><%= shift.name %></td>
+                                    <td><%= shift.days ? shift.days.join(", ") : "N/A" %></td>
+                                    <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
+                                    <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
+                                    <td>
+                                        <!-- <a href="/parking/RegularShift/edit/<%= shift._id %>" class="btn btn-warning btn-sm">Edit</a> -->
+                                        <form action="/parking/RegularShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>    
+                    </table>
+                </section>
+        </div>
+
+        <!-- Location Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
+        <div class="tab-pane fade" id="location-tab-pane" role="tabpanel" aria-labelledby="location-tab" tabindex="0">
+            <!-- Add a Location -->
+            <section id="locations" class="mt-5 locations">
             <h2>Add a Location</h2>
             <form action="/parking/location" method="POST" class="row g-3">
                 <!-- Name Section -->
@@ -260,16 +423,46 @@
                         </div>
                     </div>
                 </section>
-
                 <!-- Submit Button -->
                 <section class="col-12">
                     <button type="submit" class="btn btn-primary">Add Shift</button>
                 </section>
             </form>
-        </section>
+            </section>
 
-        <!-- Add Vacation -->
-        <section id="vacation" class="mt-5 vacation">
+            <!-- Display and Delete Locations -->
+            <section id="displayLocations" class="mt-5 displayLocations">
+                <h2>Manage Locations</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Schedule Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% locations.forEach((location) => { %>
+                            <tr>
+                                <td><%= location.name %></td>
+                                <td><%= location.scheduleType %></td>
+                                <td>
+                                    <form action="/parking/location/delete/<%= location._id %>" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- Vacation Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
+        <div class="tab-pane fade" id="vaca-tab-pane" role="tabpanel" aria-labelledby="vaca-tab" tabindex="0">
+            
+            <!-- Add Vacation -->
+            <section id="vacation" class="mt-5 vacation">
             <h2>Add Vacation</h2>
             <form action= "/parking/vacation" method="POST" class="row g-3">
                 <!-- Monitor ID -->
@@ -283,7 +476,6 @@
                         <% }) %>
                       </select>
                 </section>
-
                 <!-- Vacation Dates -->
                 <section class="col-md-12">
                     <label for="vacationDateRange" class="form-label">Vacation Date Range</label>
@@ -303,230 +495,64 @@
                     <button type="submit" class="btn btn-primary">Add Vacation</button>
                 </section>
             </form>
-        </section>
+            </section>
 
-    </section>
-    <!-- Line break (temp) -->
-    <br><hr><br>
-    <section class = "mt-5 Delete">
-    <h2>Edit/Delete</h2>
-    <span>Parking Monitors, Locations, Shifts and Overtime positions</span>
-    <!-- Delete -->
-    <!-- Display/Delete Vacation -->
-    <section id="displayVacation" class="displayVacation">
-        <h2>Manage Vacation</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Monitor Name</th>
-                    <th>Vacation</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% formattedMon.forEach((monitor) => { %>
-                    <tr>
-                        <td><input type="number" name="id" value="<%= monitor.id %>" class="form-control" required></td>
-                        <td><input type="text" name="displayName" value="<%= monitor.name %>" class="form-control" required></td>
-                        <td><%= monitor.vaca.join(', ') %></td>
-                        <td> <!-- Delete Button -->
-                            <form action="/parking/monitor/deleteVacation/<%= monitor._id %>" method="POST">
-                                <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation</button>
-                            </form>
+            <!-- Delete Vacation -->
+            <section id="displayVacation" class="mt-5 displayVacation">
+                <h2>View and Delete Vacation</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Monitor Name</th>
+                            <th>Vacation</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% formattedMon.forEach((monitor) => { %>
+                            <tr>
+                                <td><%= monitor.id %></td>
+                                <td><%= monitor.name %></td>
+                                <td><%= monitor.vaca.join(', ') %></td>
+                                <td> <!-- Delete Button -->
+                                    <form action="/parking/monitor/deleteVacation/<%= monitor._id %>" method="POST">
+                                        <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation</button>
+                                    </form>
+                                </td>
                         </td>
-                  </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- Monitors -->
-    <section id="displayMonitors" class="mt-5 displayMonitors">
-        <h2>Manage Monitors</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Regular Shift</th>
-                    <th>Location</th>
-                    <th>On Vacation This Week?</th>
-                    <th>Hours</th>
-                    <th>Seniority</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-              <% monitors.forEach((monitor) => { %>
-                <tr>
-                  <form action="/parking/monitor/edit/<%= monitor._id %>" method="POST" style="display:inline;">
-                    <td><input type="number" name="id" value="<%= monitor.id %>" class="form-control" required></td>
-                    <td><input type="text" name="displayName" value="<%= monitor.name %>" class="form-control" required></td>
-                    <td>
-                      <select name="regularShift" class="form-select" required>
-                        <option value="" disabled>Select shift</option>
-                        <% regularShifts.forEach((shift) => { %>
-                          <option value="<%= shift._id %>" <%= monitor.regularShift && monitor.regularShift._id.toString() === shift._id.toString() ? "selected" : "" %>>
-                            <%= shift.name %>
-                          </option>
+                            </tr>
                         <% }) %>
-                      </select>
-                    </td>
-                    <td>
-                      <select name="shiftLocation" class="form-select" required>
-                        <option value="" disabled>Select location</option>
-                        <% locations.forEach((location) => { %>
-                          <option value="<%= location._id %>" <%= monitor.location && monitor.location._id.toString() === location._id.toString() ? "selected" : "" %>>
-                            <%= location.name %>
-                          </option>
-                        <% }) %>
-                      </select>
-                    </td>
-                    <td>
-                    <!-- TODO -->
-                      <!-- <select name="vacationStatus" class="form-select" required>
-                        <option value="true" <%= monitor.vaca ? "selected" : "" %>>Yes</option>
-                        <option value="false" <%= !monitor.vaca ? "selected" : "" %>>No</option>
-                      </select> -->
-                    </td>
-                    <td><input type="number" name="hours" value="<%= monitor.hours %>" class="form-control" step="0.1" required></td>
-                    <td><input type="date" name="seniority" value="<%= monitor.seniority.toISOString().split('T')[0] %>" class="form-control" required></td>
-                    <td>
-                      <!-- Save Button -->
-                      <button type="submit" class="btn btn-success btn-sm">Save</button>
-                    </td>
-                  </form>
-                  <td>
-                    <!-- Delete Button -->
-                    <form action="/parking/monitor/delete/<%= monitor._id %>?_method=DELETE" method="POST" style="display:inline;">
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- Shifts -->
-    <!-- Regular Shifts -->
-    <section id="displayRegularShifts" class="mt-5 displayRegularShifts">
-        <h2>Regular Shifts</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Days</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% regularShifts.forEach((shift) => { %>
-                    <tr>
-                        <td><%= shift.name %></td>
-                        <td><%= shift.days ? shift.days.join(", ") : "N/A" %></td>
-                        <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
-                        <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
-                        <td>
-                            <!-- <a href="/parking/RegularShift/edit/<%= shift._id %>" class="btn btn-warning btn-sm">Edit</a> -->
-                            <form action="/parking/RegularShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>    
-        </table>
-    </section>
-
-    <!-- Overtime Shifts -->
-    <section id="displayOpenShifts" class="mt-5 displayOpenShifts">
-        <h2>Overtime Shifts</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Day</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Location</th>
-                    <th>Repeats Weekly?</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% openShifts.forEach((shift) => { %>
-        <tr>
-            <td><%= shift.name %></td>
-            <td><%= shift.day %></td>
-            <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
-            <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
-            <!-- Location Dropdown -->
-            <td>
-                <form action="/parking/openShift/edit/<%= shift._id %>" method="POST" style="display:inline;">
-                    <select name="shiftLocation" class="form-select" required>
-                        <option value="" disabled>Select location</option>
-                        <% locations.forEach((location) => { %>
-                            <option value="<%= location._id %>" <%= shift.location && shift.location._id.toString() === location._id.toString() ? "selected" : "" %>>
-                                <%= location.name %>
-                            </option>
-                        <% }) %>
-                    </select>
-            </td>
-            <!-- Repeats Weekly Dropdown -->
-            <td>
-                    <select name="recurring" class="form-select d-inline-block" required>
-                        <option value="true" <%= shift.recurring === true ? "selected" : "" %>>Yes</option>
-                        <option value="false" <%= shift.recurring === false ? "selected" : "" %>>No</option>
-                    </select>
-            </td>
-            <!-- Save and Delete Buttons -->
-            <td>
-                    <button type="submit" class="btn btn-success btn-sm">Save</button>
-                </form>
-                <form action="/parking/openShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                </form>
-            </td>
-        </tr>
-    <% }) %>
-              </tbody>
-        </table>
-    </section>
-    <!-- Locations -->
-    <section id="displayLocations" class="mt-5 displayLocations">
-        <h2>Manage Locations</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Schedule Type</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% locations.forEach((location) => { %>
-                    <tr>
-                        <td><%= location.name %></td>
-                        <td><%= location.scheduleType %></td>
-                            <!-- ? location.scheduleType.charAt(0).toUpperCase() + location.scheduleType.slice(1) : "ERR" %></td> -->
-                        <td>
-                            <!-- <a href="/parking/location/edit/<%= location._id %>" class="btn btn-warning btn-sm">Edit</a> -->
-                            <form action="/parking/location/delete/<%= location._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </section>
-    </section>
+                    </tbody>
+                </table>
+            </section>           
+        </div> <!--Div for vacation-tab -->
+    </div> <!--D iv for myTabContent -->
 </main>
-    
 
 <%- include('partials/footer') -%>
+
+
+<script>
+/**
+ * Activates a Bootstrap tab based on the current URL hash.
+ * If no hash is present or no matching tab is found, does nothing.
+ */
+function activateTabFromHash() {
+  var hash = window.location.hash;
+  if (hash) {
+    // Find the tab button whose data-bs-target matches the hash
+    var tabButton = document.querySelector('[data-bs-target="' + hash + '"]');
+    if (tabButton) {
+      var tab = new bootstrap.Tab(tabButton);
+      tab.show();
+    }
+  }
+}
+
+// Run on page load
+document.addEventListener("DOMContentLoaded", activateTabFromHash);
+
+// (Optional) If you want to support changing tabs by changing the hash manually:
+// window.addEventListener("hashchange", activateTabFromHash);
+</script>

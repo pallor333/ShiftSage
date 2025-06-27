@@ -1,15 +1,15 @@
 <%- include('partials/header') -%>
 <!-- Page 2: Input individual monitor OT -->
+<section class="howTo text-center text-wrap">
+  <span>What to do:</span>
+  <span>1) Enter Monitor bids.</span>
+  <span>2) Visually confirm that the bids were added correctly in 'Current Overtime Bids'</span>
+  <span>3) Once all monitors have been Press the 'Calculate Overtime Shifts' button. </span>
+  <span>4) The tables 'Overtime Winners' and 'Audit Log' should now be populated.</span>
+</section>
+ 
 <main class="container">
-  <section class="overtimeCalculationButton">
-    <form action="overtime/calculate" method="GET" class="row g-3">
-      <button type="submit" class="btn btn-primary">Calculate Overtime Shifts</button>
-    </form>
-    <form action="overtime/deleteOvertimeAuditWinners" method="GET" class="row g-3">
-      <button type="submit" class="btn btn-primary">Delete Overtime Audit Winners</button>
-    </form>
-  </section>
-  <section class="overtime">
+  <section class="overtime mb-5">
     <h1>Overtime Sheets</h1> <p>Enter rankings for individual monitors here</p>
     <form id="rankingForm" action="" method="POST" class="row g-3">
       <!-- Monitor ID Dropdown -->
@@ -17,8 +17,6 @@
         <label for="overtimeMonitorId" class="form-label">Monitor ID</label>
         <select name="monitorId" class="form-select" id="overtimeMonitorId" required 
           onChange= "updateFormAction(this.value)">
-          <!-- "this.form.action='parking/overtime/rank/'+this.value" -->
-          <!-- "updateFormAction(this.value)" -->
           <option value="" disabled selected>Select Monitor</option>
           <% monitors.forEach((monitor) => { %> 
             <option value="<%= monitor._id %>">
@@ -28,7 +26,7 @@
         </select>
       </section>
       <!-- OT Rankings -->
-      <table class="table table-striped ranking-table">
+      <table class="table table-sm table-striped ranking-table">
         <thead>
           <tr>
             <th>Overtime Shift</th>
@@ -61,11 +59,11 @@
   </section>
 
   <!-- Temp line break -->
-  <br><hr>
+  <!-- <br><hr> -->
   <!-- Display Monitor Overtime Submissions-->
-  <section id="displayOvertime">
+  <section id="displayOvertime" class="mb-5">
     <h2>Current Overtime Bids</h2>
-    <table class="table table-striped">
+    <table class="table table-sm table-striped">
       <thead>
         <tr>
           <th>ID (Monitor Name)</th>
@@ -86,13 +84,19 @@
             <td>
               <!-- Delete Button -->
               <form action="/parking/overtime/deleteBid/<%= bid._id %>" method="POST">
-                <button type="submit" class="btn btn-warning btn-sm">Delete Bid</button>
+                <button type="submit" class="btn btn-warning btn-sm">Delete All Bids</button>
               </form>
             </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
+
+    <!-- Button: Calculate Overtime Shifts -->
+    <form action="overtime/calculate" method="GET" class="row g-3">
+        <button type="submit" class="btn btn-primary">Calculate Overtime Shifts</button>
+    </form>
+
   </section>
 
   <!-- Temp line break -->
@@ -100,29 +104,34 @@
   <!-- Display Overtime Winners -->
   <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
   <% let otShiftCount = 1 %>
-  <section class="displayOvertimeWinners">
+  <section class="displayOvertimeWinners mb-5">
     <h2>Overtime Winners</h2>
     <table class="table table-striped">
-      <thead>
+      <!-- <thead>
         <tr>
           <th>Shift Name</th>
           <th>Monitor Name</th>
         </tr>
-      </thead>
+      </thead> -->
       <tbody>
         <% overtimeFlattened.forEach((shift, idx) => { %>
           <tr>
-              <td><%=idx+1%>) <%= shift.shiftName %></td>
-              <td><%= shift.monitorName %></td>
+              <td><%=idx+1%>) <%= shift.shiftName %> <%= shift.monitorName %></td>
+              <!-- <td><%= shift.monitorName %></td> -->
               <% otShiftCount++ %> 
           </tr>
         <% }) %>
       </tbody>
     </table>
+
+    <!-- Button: Clear all Overtime Winners -->
+    <form action="overtime/deleteOvertimeAuditWinners" method="GET" class=>
+      <button type="submit" class="btn btn-primary">Delete Overtime Audit Winners</button>
+    </form>
   </section>
 
   <!-- Temp line break -->
-  <br><hr>
+  <!-- <br><hr> -->
   <!-- Audit Log -->
   <section class="auditLog">
     <h2>Audit Log/Monitors Charged</h2>

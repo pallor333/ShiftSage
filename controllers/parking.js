@@ -461,7 +461,7 @@ module.exports = {
         recurring: req.body.recurring === "true" //convert string to boolean
       });
       console.log("OpenShift has been updated!");
-      res.redirect("/parking/edit#displayOpenShifts");
+      res.redirect("/parking/edit#openShift-tab-pane") //displayOpenShifts"); 
     } catch (err) {
       console.error(err);
       res.redirect("/parking/home");

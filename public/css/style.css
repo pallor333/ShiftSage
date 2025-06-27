@@ -3,24 +3,34 @@
     padding: 10px 0;
   }
   
-  .comment-actions {
-    display: flex;
-    gap: 10px;
-  }
+.comment-actions {
+  display: flex;
+  gap: 10px;
+}
   
-  .inline-form {
-    display: inline;
-  }
+.inline-form {
+  display: inline;
+}
 
-  .page-break {
-    page-break-after: always;
-    break-after: page;
-  }
+.page-break {
+  page-break-after: always;
+  break-after: page;
+}
 
-  /* Experimental */
+/* .navbar{
+  border: 1px solid #0dcaf0;
+  background-color: #0dcaf0;
+} */
 
-  @media print {
-    .no-print {
-      display: none
-    }
+.howTo span {
+  display: block;
+}
+
+/* Experimental */
+
+@media print {
+  .no-print {
+    display: none
   }
+}
+
