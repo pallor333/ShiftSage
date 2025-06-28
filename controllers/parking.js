@@ -336,7 +336,7 @@ module.exports = {
           endTime: endTime,
         });
         console.log("Regular Shift has been added!");
-        res.redirect("/parking/edit#tab=regularShift-tab#regularShifts");
+        res.redirect("/parking/edit?tab=regularShift-tab#regularShifts");
       } catch (err) {
         console.error(err);
         res.redirect("/parking/home");
@@ -374,7 +374,7 @@ module.exports = {
           recurring: !!req.body.openEveryWeek // Convert truthy/falsy value to Boolean
         });
         console.log("Open Shift has been added!");
-        res.redirect("/parking/edit#tab=openShift-tab#openShifts");
+        res.redirect("/parking/edit?tab=openShift-tab#openShifts");
       } catch (err) {
         console.error(err);
         res.redirect("/parking/home");
@@ -415,7 +415,7 @@ module.exports = {
       if(!monitor) return res.status(404).send("Monitor not found.")
 
       console.log("Vacation has been added!");
-      res.redirect("/parking/edit#tab=vaca-tab#vacation")
+      res.redirect("/parking/edit?tab=vaca-tab#vacation")
       } catch(err){
         console.error(err);
         res.redirect("/parking/home");
@@ -565,7 +565,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
 
       console.log("Overtime Audit Winners have been added to the DB")
       console.log("Overtime Winners for Scheduling have been added to the DB")
-      res.redirect("/parking/overtime?overtimeAssignment-tab#displayOvertimeWinners")
+      res.redirect("/parking/overtime?tab=overtimeAssignment-tab#displayOvertimeWinners")
     } catch (err) {
       console.error(err)
       res.redirect("/parking/home")
@@ -598,7 +598,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       }
       await Location.findByIdAndDelete(req.params.id)
       console.log("Location has been deleted!");
-      res.redirect("/parking/edit?location-tab#displayLocations");
+      res.redirect("/parking/edit?tab=location-tab#displayLocations");
     } catch (err) {
       console.error(err);
       res.redirect("/parking/home");
@@ -613,7 +613,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       }
       await RegularShift.findByIdAndDelete(req.params.id)
       console.log("Regular Shift has been deleted!");
-      res.redirect("/parking/edit?regularShift-tab#displayRegularShifts");
+      res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts");
     } catch (err) {
       console.error(err);
       res.redirect("/parking/home");
@@ -628,7 +628,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       }
       await OpenShift.findByIdAndDelete(req.params.id)
       console.log("Open Shift has been deleted!");
-      res.redirect("/parking/edit?openShift-tab#displayOpenShifts");
+      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts");
     } catch (err) {
       console.error(err);
       res.redirect("/parking/home");
@@ -641,7 +641,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
 
       console.log(`Vacation cleared for monitor with ID: ${monitorId}`);
-      res.redirect('/parking/edit?vacation-tab#displayVacation'); // Redirect back to the vacation management section
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacation'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for monitor: ${err}`);
       res.redirect('/parking/home'); // Redirect to home on error

@@ -1,10 +1,10 @@
 <%- include('partials/header') -%>
 <!-- Page 2: Input individual monitor OT -->
-<section class="howTo text-center text-wrap">
+<section class="howTo text-center text-wrap mb-5">
   <span>What to do:</span>
-  <span>1) Enter Monitor bids.</span>
-  <span>2) Visually confirm that the bids were added correctly in 'Current Overtime Bids'</span>
-  <span>3) Once all monitors have been Press the 'Calculate Overtime Shifts' button. </span>
+  <span>1) Enter Monitor bids in 'Input Overtime Sheets'</span>
+  <span>2) Visually confirm that the bids were added correctly in the second half of the tab 'Input Overtime Sheets' labeled 'Current Overtime Bids'</span>
+  <span>3) Once all monitors have been Press the 'Calculate Overtime Shifts' button. This automatically brings you to the second tab 'Overtime Shift Assignments'.</span>
   <span>4) The tables 'Overtime Winners' and 'Audit Log' should now be populated.</span>
 </section>
  
@@ -16,7 +16,7 @@
           <button class="nav-link active" id="overtimeBid-tab" data-bs-toggle="tab" data-bs-target="#overtimeBid-tab-pane" type="button" role="tab" aria-controls="overtimeBid-tab-pane" aria-selected="true">Input Overtime Sheets</button>
       </li>
       <li class="nav-item" role="presentation">
-          <button class="nav-link" id="overtimeAssignment-tab" data-bs-toggle="tab" data-bs-target="#overtimeBid-tab-pane" type="button" role="tab" aria-controls="overtimeAssignment-tab-pane" aria-selected="false">Overtime Shift Assignments</button>
+          <button class="nav-link" id="overtimeAssignment-tab" data-bs-toggle="tab" data-bs-target="#overtimeAssignment-tab-pane" type="button" role="tab" aria-controls="overtimeAssignment-tab-pane" aria-selected="false">Overtime Shift Assignments</button>
       </li>
   </ul>
 
@@ -26,7 +26,7 @@
     <div class="tab-pane fade show active" id="overtimeBid-tab-pane" role="tabpanel" aria-labelledby="overtimeBid-tab" tabindex="0">
 
       <!-- Enter Monitor Bids -->
-      <section class="overtime mb-5">
+      <section id="overtimeBids "class="overtime mb-5">
         <h1>Overtime Sheets</h1> <p>Enter rankings for individual monitors here</p>
         <form id="rankingForm" action="" method="POST" class="row g-3">
           <!-- Monitor ID Dropdown -->
@@ -114,7 +114,7 @@
     </div><!-- End of first tab -->
 
     <!-- SECOND TAB: DISPLAY OVERTIME WINNERS AND AUDIT LOG -->
-    <div class="tab-pane fade show active" id="overtimeAssignment-tab-pane" role="tabpanel" aria-labelledby="overtimeAssignment-tab" tabindex="0">
+    <div class="tab-pane fade" id="overtimeAssignment-tab-pane" role="tabpanel" aria-labelledby="overtimeAssignment-tab" tabindex="0">
     <!-- Display Overtime Winners -->
     <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
     <% let otShiftCount = 1 %>
@@ -170,176 +170,16 @@
         </tbody>
       </table>
     </section>
+
     </div> <!-- End of second tab-->
+
   </div> <!-- End of Tab Content -->
-
-
-  <!-- Old page start -->
-  <section class="overtime mb-5">
-    <h1>Overtime Sheets</h1> <p>Enter rankings for individual monitors here</p>
-    <form id="rankingForm" action="" method="POST" class="row g-3">
-      <!-- Monitor ID Dropdown -->
-      <section class="col-md-6">
-        <label for="overtimeMonitorId" class="form-label">Monitor ID</label>
-        <select name="monitorId" class="form-select" id="overtimeMonitorId" required 
-          onChange= "updateFormAction(this.value)">
-          <option value="" disabled selected>Select Monitor</option>
-          <% monitors.forEach((monitor) => { %> 
-            <option value="<%= monitor._id %>">
-              <%= monitor.id %> (<%= monitor.name %>)
-            </option>
-          <% }) %>
-        </select>
-      </section>
-      <!-- OT Rankings -->
-      <table class="table table-sm table-striped ranking-table">
-        <thead>
-          <tr>
-            <th>Overtime Shift</th>
-            <th>Rank (1=highest)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Removed 'required' from the input becos it was blocking submission -->
-          <% openShifts.forEach((shift) => { %>
-            <tr>
-              <td><%= shift.name %></td>
-              <td>
-                <input 
-                  type="number"
-                  name="rankings[<%= shift._id %>]"
-                  class="form-control"
-                  min="1"
-                  max="<%= openShifts.length %>" 
-                >
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-      <!-- Submit Button -->
-      <section class="col-12">
-        <button type="submit" class="btn btn-primary">Submit Rankings</button>
-      </section>
-    </form>
-  </section>
-
-  <!-- Temp line break -->
-  <!-- <br><hr> -->
-  <!-- Display Monitor Overtime Submissions-->
-  <section id="displayOvertime" class="mb-5">
-    <h2>Current Overtime Bids</h2>
-    <table class="table table-sm table-striped">
-      <thead>
-        <tr>
-          <th>ID (Monitor Name)</th>
-          <th>Overtime Rankings</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% overtimeBid.forEach((bid) => { %>
-          <tr>
-              <td><%= bid.monitor.name %> (<%= bid.monitor.id %>)</td>
-              <td>
-                <% bid.rankings.forEach((ranking) => { %>
-                  <p><%= ranking.rank %>) <%= ranking.position.name %> </p>
-                  <!-- Rank: <%= ranking.rank %> -->
-                <% }) %>
-              </td>
-            <td>
-              <!-- Delete Button -->
-              <form action="/parking/overtime/deleteBid/<%= bid._id %>" method="POST">
-                <button type="submit" class="btn btn-warning btn-sm">Delete All Bids</button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <!-- Button: Calculate Overtime Shifts -->
-    <form action="overtime/calculate" method="GET" class="row g-3">
-        <button type="submit" class="btn btn-primary">Calculate Overtime Shifts</button>
-    </form>
-
-  </section>
-
-  <!-- Temp line break -->
-  <!-- <br><hr> -->
-  <!-- Display Overtime Winners -->
-  <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
-  <% let otShiftCount = 1 %>
-  <section class="displayOvertimeWinners mb-5">
-    <h2>Overtime Winners</h2>
-    <table class="table table-striped">
-      <!-- <thead>
-        <tr>
-          <th>Shift Name</th>
-          <th>Monitor Name</th>
-        </tr>
-      </thead> -->
-      <tbody>
-        <% overtimeFlattened.forEach((shift, idx) => { %>
-          <tr>
-              <td><%=idx+1%>) <%= shift.shiftName %> <%= shift.monitorName %></td>
-              <!-- <td><%= shift.monitorName %></td> -->
-              <% otShiftCount++ %> 
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <!-- Button: Clear all Overtime Winners -->
-    <form action="overtime/deleteOvertimeAuditWinners" method="GET" class=>
-      <button type="submit" class="btn btn-primary">Delete Overtime Audit Winners</button>
-    </form>
-  </section>
-
-  <!-- Temp line break -->
-  <!-- <br><hr> -->
-  <!-- Audit Log -->
-  <section class="auditLog">
-    <h2>Audit Log/Monitors Charged</h2>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Monitors</th>
-          <th>Hours to Start</th>
-          <!-- Count OT shifts  -->
-          <% for(let i = 1; i < otShiftCount; i++){ %>
-            <th>Overtime Shift <%= i %>)</th>
-          <% } %>
-          <th>Total Hours</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Loop over each row of {monitor: [hrs]} -->
-        <% Object.keys(overtimeAudit).forEach(monitor => { %>
-          <% const startingHrs = overtimeAudit[monitor].startEndHours[0] %>
-          <% let total = startingHrs %>
-          <tr>
-            <td><%= monitor %></td>
-            <td><%= startingHrs %></td> <!-- Hours monitor starts with -->
-            <!-- Loop over just [hrs] -->
-            <% overtimeAudit[monitor].hoursCharged.forEach(hr => { %>
-              <% total += hr %>
-              <td>+<%= hr %> = <%=total %></td>
-            <% }) %>
-            <td><%= overtimeAudit[monitor].startEndHours[1] %></td> <!-- Monitor's final total -->
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </section>
 
 </main>
 
 <%- include('partials/footer') -%>
 
-
-
-
+<script src="/js/tabHelper.js"></script>
 <script>
   // document.addEventListener('DOMContentLoaded', () => {
   //   const form = document.getElementById('rankingForm');
@@ -363,7 +203,6 @@
   // form.addEventListener('invalid', (event) => {
   // console.log('Invalid field:', event.target);
   // }, true);
-
   function updateFormAction(monitorId) {
     const form = document.getElementById('rankingForm');
     form.action = `/parking/overtime/rank/${monitorId}`; //modify form action based on selected monitor Id

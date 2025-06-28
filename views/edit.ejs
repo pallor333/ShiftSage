@@ -1,6 +1,5 @@
 <%- include('partials/header') -%>
 <!-- Page 1: Add/Edit/Delete entries -->
- <!-- <div class="fixed-top">test</div> -->
 
 <main class="container">
 
@@ -24,8 +23,8 @@
     </ul>
 
     <!-- Populating the tabs with content -->
-    <!-- Monitor Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
     <div class="tab-content" id="editPageTabContent">
+        <!-- Monitor Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
         <div class="tab-pane fade show active" id="monitor-tab-pane" role="tabpanel" aria-labelledby="monitor-tab" tabindex="0">
                 <!-- Add Monitor -->
                 <section id="monitors" class="mt-5 monitors">
@@ -149,61 +148,61 @@
         <div class="tab-pane fade" id="openShift-tab-pane" role="tabpanel" aria-labelledby="openShift-tab" tabindex="0">
             <!-- Overtime Shifts -->
             <section id="openShifts" class="mt-5 openShifts">
-            <h2>Add an Overtime Shift</h2>
-            <form action="/parking/openShift" method="POST" class="row g-3">
-                <!-- Start Time Section -->
-                <section class="col-md-6">
-                    <label for="startTime" class="form-label">Start Time</label>
-                    <input type="time" class="form-control" id="addOpenShiftStartTime" name="startTime" required>
-                </section>
-                <!-- End Time Section -->
-                <section class="col-md-6">
-                    <label for="endTime" class="form-label">End Time</label>
-                    <input type="time" class="form-control" id="addOpenShiftEndTime" name="endTime" required>
-                </section>
-                <!-- Date Section -->
-                 <!-- Temp until I can figure something else out -->
-                <section class="col-md-6">
-                    <label for="shiftDate" class="form-label">Date (MM/DD)</label>
-                    <input type="text" class="form-control" id="addOpenShiftDate" name="date" required>
-                </section>
-                <!-- Day Section -->
-                <section class="col-md-6">
-                    <label for="shiftDay" class="form-label">Day</label>
-                    <select class="form-select" id="addOpenShiftDay" name="day" required>
-                        <option value="" selected disabled>Select day</option>
-                        <option value="monday">Monday</option>
-                        <option value="tuesday">Tuesday</option>
-                        <option value="wednesday">Wednesday</option>
-                        <option value="thursday">Thursday</option>
-                        <option value="friday">Friday</option>
-                        <option value="saturday">Saturday</option>
-                        <option value="sunday">Sunday</option>
-                    </select>
-                </section>
-                <!-- Shift Location Section -->
-                <section class="col-md-6">
-                    <label for="shiftLocation" class="form-label">Shift Location</label>
-                    <select class="form-select" id="addOpenShiftLocation" name="shiftLocation" required>
-                        <option value="" selected disabled>Select location</option>
-                        <% locations.forEach((location) => { %>
-                            <option value="<%= location._id %>"><%= location.name %></option>
-                        <% }) %>
-                    </select>
-                </section>
-                <!-- Recurring Every Week Section (boolean) -->
-                <section class="col-md-6">
-                    <label for="openEveryWeek" class="form-label">Repeat Weekly</label>
-                    <section class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="openEveryWeek" name="openEveryWeek" value="true">
-                        <label class="form-check-label" for="openEveryWeek">Yes</label>
+                <h2>Add an Overtime Shift</h2>
+                <form action="/parking/openShift" method="POST" class="row g-3">
+                    <!-- Start Time Section -->
+                    <section class="col-md-6">
+                        <label for="startTime" class="form-label">Start Time</label>
+                        <input type="time" class="form-control" id="addOpenShiftStartTime" name="startTime" required>
                     </section>
-                </section>
-                <!-- Submit Button -->
-                <section class="col-12">
-                    <button type="submit" class="btn btn-primary">Add Shift</button>
-                </section>
-            </form>
+                    <!-- End Time Section -->
+                    <section class="col-md-6">
+                        <label for="endTime" class="form-label">End Time</label>
+                        <input type="time" class="form-control" id="addOpenShiftEndTime" name="endTime" required>
+                    </section>
+                    <!-- Date Section -->
+                        <!-- Temp until I can figure something else out -->
+                    <section class="col-md-6">
+                        <label for="shiftDate" class="form-label">Date (MM/DD)</label>
+                        <input type="text" class="form-control" id="addOpenShiftDate" name="date" required>
+                    </section>
+                    <!-- Day Section -->
+                    <section class="col-md-6">
+                        <label for="shiftDay" class="form-label">Day</label>
+                        <select class="form-select" id="addOpenShiftDay" name="day" required>
+                            <option value="" selected disabled>Select day</option>
+                            <option value="monday">Monday</option>
+                            <option value="tuesday">Tuesday</option>
+                            <option value="wednesday">Wednesday</option>
+                            <option value="thursday">Thursday</option>
+                            <option value="friday">Friday</option>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                        </select>
+                    </section>
+                    <!-- Shift Location Section -->
+                    <section class="col-md-6">
+                        <label for="shiftLocation" class="form-label">Shift Location</label>
+                        <select class="form-select" id="addOpenShiftLocation" name="shiftLocation" required>
+                            <option value="" selected disabled>Select location</option>
+                            <% locations.forEach((location) => { %>
+                                <option value="<%= location._id %>"><%= location.name %></option>
+                            <% }) %>
+                        </select>
+                    </section>
+                    <!-- Recurring Every Week Section (boolean) -->
+                    <section class="col-md-6">
+                        <label for="openEveryWeek" class="form-label">Repeat Weekly</label>
+                        <section class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="openEveryWeek" name="openEveryWeek" value="true">
+                            <label class="form-check-label" for="openEveryWeek">Yes</label>
+                        </section>
+                    </section>
+                    <!-- Submit Button -->
+                    <section class="col-12">
+                        <button type="submit" class="btn btn-primary">Add Shift</button>
+                    </section>
+                </form>
             </section>
 
             <!-- View and Delete Overtime Shifts -->
@@ -361,73 +360,73 @@
         <div class="tab-pane fade" id="location-tab-pane" role="tabpanel" aria-labelledby="location-tab" tabindex="0">
             <!-- Add a Location -->
             <section id="locations" class="mt-5 locations">
-            <h2>Add a Location</h2>
-            <form action="/parking/location" method="POST" class="row g-3">
-                <!-- Name Section -->
-                <section class="col-md-6">
-                    <label for="locationName" class="form-label">Location Name</label>
-                    <input type="text" class="form-control" id="locationName" name="locationName" required>
-                </section>
-                <!-- Day Section -->
-                <section class="col-md-6">
-                    <!-- Option 1: None -->
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="locationSelectionType" id="none" value="none" checked>
-                        <label class="form-check-label" for="none">None, this is not a regular shift</label>
-                    </div>
-                    <!-- Option 2: Weekdays -->
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="locationSelectionType" id="weekdays" value="weekdays">
-                        <label class="form-check-label" for="weekdays">Weekdays Only</label>
-                    </div>
-                    <!-- Option 3: Everyday -->
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="locationSelectionType" id="everyday" value="everyday">
-                        <label class="form-check-label" for="everyday">Everyday</label>
-                    </div>
-                    
-                    <!-- Option 4: Custom Days -->
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="locationSelectionType" id="custom" value="custom">
-                        <label class="form-check-label" for="custom">Select specific days</label>
-                    </div>
-                    <!-- Custom Day Checkboxes (always visible) -->
-                    <div class="ms-4 mt-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="monday" value="monday">
-                            <label class="form-check-label" for="monday">Monday</label>
+                <h2>Add a Location</h2>
+                <form action="/parking/location" method="POST" class="row g-3">
+                    <!-- Name Section -->
+                    <section class="col-md-6">
+                        <label for="locationName" class="form-label">Location Name</label>
+                        <input type="text" class="form-control" id="locationName" name="locationName" required>
+                    </section>
+                    <!-- Day Section -->
+                    <section class="col-md-6">
+                        <!-- Option 1: None -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="locationSelectionType" id="none" value="none" checked>
+                            <label class="form-check-label" for="none">None, this is not a regular shift</label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="tuesday" value="tuesday">
-                            <label class="form-check-label" for="tuesday">Tuesday</label>
+                        <!-- Option 2: Weekdays -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="locationSelectionType" id="weekdays" value="weekdays">
+                            <label class="form-check-label" for="weekdays">Weekdays Only</label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="wednesday" value="wednesday">
-                            <label class="form-check-label" for="wednesday">Wednesday</label>
+                        <!-- Option 3: Everyday -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="locationSelectionType" id="everyday" value="everyday">
+                            <label class="form-check-label" for="everyday">Everyday</label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="thursday" value="thursday">
-                            <label class="form-check-label" for="thursday">Thursday</label>
+                        
+                        <!-- Option 4: Custom Days -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="locationSelectionType" id="custom" value="custom">
+                            <label class="form-check-label" for="custom">Select specific days</label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="friday" value="friday">
-                            <label class="form-check-label" for="friday">Friday</label>
+                        <!-- Custom Day Checkboxes (always visible) -->
+                        <div class="ms-4 mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="monday" value="monday">
+                                <label class="form-check-label" for="monday">Monday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="tuesday" value="tuesday">
+                                <label class="form-check-label" for="tuesday">Tuesday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="wednesday" value="wednesday">
+                                <label class="form-check-label" for="wednesday">Wednesday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="thursday" value="thursday">
+                                <label class="form-check-label" for="thursday">Thursday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="friday" value="friday">
+                                <label class="form-check-label" for="friday">Friday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="saturday" value="saturday">
+                                <label class="form-check-label" for="saturday">Saturday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="customDays[]" id="sunday" value="sunday">
+                                <label class="form-check-label" for="sunday">Sunday</label>
+                            </div>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="saturday" value="saturday">
-                            <label class="form-check-label" for="saturday">Saturday</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="customDays[]" id="sunday" value="sunday">
-                            <label class="form-check-label" for="sunday">Sunday</label>
-                        </div>
-                    </div>
-                </section>
-                <!-- Submit Button -->
-                <section class="col-12">
-                    <button type="submit" class="btn btn-primary">Add Shift</button>
-                </section>
-            </form>
+                    </section>
+                    <!-- Submit Button -->
+                    <section class="col-12">
+                        <button type="submit" class="btn btn-primary">Add Shift</button>
+                    </section>
+                </form>
             </section>
 
             <!-- Display and Delete Locations -->
@@ -532,65 +531,4 @@
 
 <%- include('partials/footer') -%>
 
-
-<script>
-/**
- * Activates a Bootstrap tab based on the current URL hash.
- * If no hash is present or no matching tab is found, does nothing.
- */
-function activateTabFromHash() {
-  var hash = window.location.hash;
-  if (hash) {
-    // Find the tab button whose data-bs-target matches the hash
-    var tabButton = document.querySelector('[data-bs-target="' + hash + '"]');
-    if (tabButton) {
-      var tab = new bootstrap.Tab(tabButton);
-      tab.show();
-    }
-  }
-}
-///example link: /parking/edit?tab=monitor-tab#monitors
-//tab=monitor-tab → tells us which tab button ID to activate.
-//#monitors → tells us which section ID to scroll to inside the tab.
-//POST = res.redirect('/edit?tab=monitor-tab#monitors');
-
-
-/**
- * Helper: Activates a Bootstrap tab and scrolls to a section inside it.
- * 
- * Expects:
- *   URL like /page?tab=monitor-tab#monitors
- */
-function activateTabAndScroll() {
-  const params = new URLSearchParams(window.location.search);
-  const tabId = params.get('tab'); // e.g. "monitor-tab"
-  const hash = window.location.hash; // e.g. "#monitors"
-
-  if (!tabId) return; // no tab? nothing to do.
-  const tabEl = document.getElementById(tabId);
-  if (!tabEl) return; // tab button not found.
-
-  const tab = new bootstrap.Tab(tabEl);
-  tab.show(); //select tab 
-
-  // If there is a hash, wait for the tab to be visible.
-  if (hash) {
-    tabEl.addEventListener('shown.bs.tab', () => {
-      const section = document.querySelector(hash);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  }
-}
-
-// Run on DOM ready
-document.addEventListener('DOMContentLoaded', activateTabAndScroll);
-
-
-// Run on page load
-// document.addEventListener("DOMContentLoaded", activateTabFromHash);
-
-// (Optional) If you want to support changing tabs by changing the hash manually:
-// window.addEventListener("hashchange", activateTabFromHash);
-</script>
+<script src="/js/tabHelper.js"></script>
