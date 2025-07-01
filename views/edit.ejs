@@ -224,7 +224,7 @@
                     <% openShifts.forEach((shift) => { %>
                         <tr>
                             <td><%= shift.name %></td>
-                            <td><%= shift.day %></td>
+                            <td><%= shift.day.slice(0,1).toUpperCase() %><%= shift.day.slice(1) %></td>
                             <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                             <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                             <!-- Location Dropdown -->
@@ -337,14 +337,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% regularShifts.forEach((shift) => { %>
+                            <% regularShifts.forEach((shift, idx) => { %>
                                 <tr>
+                                    <% const capitalized = shift.days.map(day => day.charAt(0).toUpperCase() + day.slice(1)).join(', ') %>
                                     <td><%= shift.name %></td>
-                                    <td><%= shift.days ? shift.days.join(", ") : "N/A" %></td>
+                                    <td><%= shift.days ? capitalized : "N/A" %></td>
                                     <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                                     <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                                     <td>
-                                        <!-- <a href="/parking/RegularShift/edit/<%= shift._id %>" class="btn btn-warning btn-sm">Edit</a> -->
                                         <form action="/parking/RegularShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>
@@ -496,9 +496,9 @@
             </form>
             </section>
 
-            <!-- Delete Vacation -->
-            <section id="displayVacation" class="mt-5 displayVacation">
-                <h2>View and Delete Vacation</h2>
+            <!-- View By Vacation By Monitor / Delete -->
+            <section id="displayVacationByMonitor" class="mt-5 displayVacationByMonitor">
+                <h2>View Vacation By Monitor + Delete All</h2>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -514,17 +514,50 @@
                                 <td><%= monitor.id %></td>
                                 <td><%= monitor.name %></td>
                                 <td><%= monitor.vaca.join(', ') %></td>
-                                <td> <!-- Delete Button -->
-                                    <form action="/parking/monitor/deleteVacation/<%= monitor._id %>" method="POST">
-                                        <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation</button>
+                                <td> <!-- Delete Button-->
+                                    <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
+                                        <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation For This Monitor</button>
                                     </form>
                                 </td>
-                        </td>
                             </tr>
                         <% }) %>
                     </tbody>
                 </table>
-            </section>           
+            </section>    
+            
+            <!-- View Vacation By Date + Delete -->
+            <section id="displayVacationByDate" class="mt-5 displayVacationByDate">
+                <h2>Remove Individual Vacation Dates</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Monitor(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% vacaByDate.forEach((date) => { %>
+                            <tr>
+                                <td><%= date.day %></td>
+                                <td>
+                                    <% date.monitors.forEach(m => { %>
+                                        <form action="/parking/monitor/deleteOneVacation" method="POST" style="display:inline;">
+                                            <input type="hidden" name="vacaId" value="<%= date.vacaId %>">
+                                            <input type="hidden" name="monitorId" value="<%= m._id %>">
+                                            <input type="hidden" name="date" value="<%= date.day %>">
+                                            <input type="hidden" name="dayRaw" value="<%= date.dayRaw %>">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                                Remove <%= m.name %> (<%= m.id %>)
+                                            </button>
+                                        </form>
+                                    <% }) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </section>  
+
         </div> <!--Div for vacation-tab -->
     </div> <!--Div for editPageTabContent -->
 </main>

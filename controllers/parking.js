@@ -1,9 +1,10 @@
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift} = require("../models/Parking")
+const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup} = require("../models/Parking")
 // const { findById } = require("../models/User")
 const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
+const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //Can fetch related objects now
 //const monitor = await Monitor.findById(monitorId).populate('regularShifts currentLocation');
 
@@ -13,7 +14,7 @@ const { allocateSchedule } = require('../services/scheduleServices') //Import bu
 const THISWEEK = new Date("4/30/25")
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
-const DAYMAPPING = { Monday: "MON", Tuesday: "TUE", Wednesday: "WED", Thursday: "THU", Friday: "FRI", Saturday: "SAT", Sunday: "SUN",};
+const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
 const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
 
 // Helper function to fetch data from DB
@@ -25,8 +26,9 @@ const fetchCommonData = async () => {
     const locations = await Location.find().sort({ name: 1});
     const overtimeBid = await OvertimeBid.find().populate("monitor").populate("rankings.position")
     const overtimeAudit = await OvertimeAudit.find()
+    const vacaLookup = await VacationLookup.find().populate("monitorOffArr").sort({ day: 1 })
 
-    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit };
+    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup };
   } catch (err) {
     console.error("Error fetching common data:", err);
     throw err; // Rethrow the error to handle it in the calling function
@@ -94,7 +96,7 @@ module.exports = {
   //Render Edit page
   getEditPage: async (req, res) => {
     try {
-      const { monitors, regularShifts, openShifts, locations } = await fetchCommonData()
+      const { monitors, regularShifts, openShifts, locations, vacaLookup} = await fetchCommonData()
 
       let formattedMon = monitors.map((monitor) => {
         return {
@@ -102,7 +104,19 @@ module.exports = {
           vaca: monitor.vaca.map(formatDate), // Format each vacation date
         }
       })
-      
+
+      // Formatting dates into readable format, getting monitor name/id
+      vacaByFormattedDate = vacaLookup.map(v => ({
+        day: formatDate(v.day),
+        vacaId: v._id,
+        dayRaw: v.day.toISOString(), 
+        monitors: v.monitorOffArr.map(monitor => ({
+          _id: monitor._id,
+          id: monitor.id,
+          name: monitor.name
+        })),
+      }))
+      // console.log(vacaByFormattedDate)
       // Render the edit.ejs template and pass the data
       res.render("edit.ejs", {
         user: req.user,
@@ -111,6 +125,7 @@ module.exports = {
         openShifts: openShifts,
         locations: locations,
         formattedMon: formattedMon,
+        vacaByDate: vacaByFormattedDate,
       });
     } catch (err) {
       console.error(err);
@@ -120,7 +135,7 @@ module.exports = {
   //Overtime page
   getOvertimePage: async (req, res) => {
     try { 
-      const { monitors, openShifts, locations, overtimeBid, overtimeAudit} = await fetchCommonData()
+      const { monitors, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup} = await fetchCommonData()
       // console.log(overtimeAudit)
 
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
@@ -164,7 +179,10 @@ module.exports = {
   getSchedulePage: async (req, res) => {
     try {
       const allocationResults = await allocateSchedule() //call schedule building function
-      const [wkStart, _ ] = getNextThurs(THISWEEK), wkDays = []
+      const [wkStart, wkEnd] = getNextThurs(THISWEEK), wkDays = []
+      const { vacaLookup } = await fetchCommonData() //grab monitors on vacation 
+      const vacaMonitorArr = Array(7).fill(""), [first, last] = [new Date(wkStart), new Date(wkEnd)]
+
       //Generate table headers for each day
       for(let i = 0; i < 7; i++){
         const date = new Date(wkStart)
@@ -175,13 +193,26 @@ module.exports = {
           month:"long", 
           day:"numeric" }))
       }
-      
+
+      //Create a vacation lookup table for caption
+      vacaLookup.forEach(({ day, monitorOffArr }) => {
+        const date = new Date(day)
+        if (date >= first && date <= last) { //Ensure date is this week
+          //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
+          const dayIndex = (date.getDay() + 3) % 7
+          vacaMonitorArr[dayIndex] = monitorOffArr
+            .map(m => m.name) //Create new arr of each name
+            .join(', ') //join with commas
+        }
+      })
+
       // Render the schedule.ejs template and pass the data
       res.render("schedule.ejs", {
         user: req.user,
         allocationResults: allocationResults, 
         daysArr: DAYSARRAY, 
         wkDays: wkDays,
+        vacaLookup: vacaMonitorArr,
       });
     } catch (err) {
       console.error(err);
@@ -405,14 +436,23 @@ module.exports = {
         currentDate.setDate(currentDate.getDate() + 1)
       }
 
-      //Find monitor and update vac array
+      //Find monitor and update vaca array
       const monitor = await Monitor.findOneAndUpdate(
         { _id: vacationMonitorSelect}, 
         { $addToSet: { vaca: { $each: dateRange} } }, //ensures dupes are not added to vaca array
         { new: true} // return updated document
       )
-
       if(!monitor) return res.status(404).send("Monitor not found.")
+      
+      //Loop over range, adding each date to the Schema
+      for (const date of dateRange) {
+        // Use upsert to create the document if it doesn't exist
+        await VacationLookup.findOneAndUpdate(
+          { day: date},
+          { $addToSet: { monitorOffArr: vacationMonitorSelect } }, // add monitor to array, no duplicates
+          { upsert: true, new: true }
+        );
+      }   
 
       console.log("Vacation has been added!");
       res.redirect("/parking/edit?tab=vaca-tab#vacation")
@@ -482,6 +522,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
 */
   updateOvertimeBid: async (req, res) => {
     try {
+      const { vacaLookup } = await fetchCommonData()
       //debugging
       // console.log("Request received:", req.body); // Debugging statement
       // console.log("Formatted Rankings:", rankingArr)
@@ -634,14 +675,56 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       res.redirect("/parking/home");
     }
   },
-  deleteVacation: async (req, res) => {
+  deleteOneVacation: async (req, res) => {
     try {
+      const { vacaId, monitorId, date, dayRaw} = req.body
+      // console.log(vacaId, monitorId, date, dayRaw)
+      // console.log(req.body)
+      const dateObj = new Date(dayRaw) //Processing into a date for comparison
+
+      // Remove this monitor from all vacation lookup days
+      await Monitor.findOneAndUpdate(
+        { _id: monitorId }, //find all documents where monitorId matches
+        { $pull: { vaca: date } } //$pull deletes each matched instance (5/1/25)
+      );
+
+      // Delete monitor from vacationLookup's monitorOffArr field
+      const vacLookup = await VacationLookup.findOneAndUpdate(
+        {day: dateObj}, //2025-06-23T04:00:00.000+00:00
+        {$pull: { monitorOffArr: monitorId}}, 
+        { new: true} //return updated document
+      );
+      // If monitorOffArr is now empty, delete the VacationLookup document
+      if (vacLookup && vacLookup.monitorOffArr.length === 0) {
+        await VacationLookup.deleteOne({ _id: vacLookup._id });
+        console.log("Deleted empty date!")
+      }
+
+      console.log(`Vacation cleared for date: ${date}`);
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
+    } catch (err) {
+      console.error(`Error clearing vacation for date: ${err}`);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteAllVacation: async (req, res) => {
+    try { //TODO: Implement removing empty VacationLookup documents
       const monitorId = req.params.id;
+
       // Update the monitor's vaca field to an empty array
       await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
 
-      console.log(`Vacation cleared for monitor with ID: ${monitorId}`);
-      res.redirect('/parking/edit?tab=vaca-tab#displayVacation'); // Redirect back to the vacation management section
+      // Remove this monitor from all vacation lookup days
+      await VacationLookup.updateMany(
+        { monitorOffArr: monitorId }, //find all documents where monitorId matches
+        { $pull: { monitorOffArr: monitorId } } //$pull removes monitorId from monitorOffArr in each instance
+      );
+
+      // Delete all VacationLookup documents where monitorOffArr is now empty
+      await VacationLookup.deleteMany({ monitorOffArr: { $size: 0 } });
+
+      console.log(`All vacation cleared for monitor with ID: ${monitorId}`);
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for monitor: ${err}`);
       res.redirect('/parking/home'); // Redirect to home on error

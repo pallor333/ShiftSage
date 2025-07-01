@@ -53,7 +53,8 @@ router.post("/monitor/delete/:id", ensureAuth, parkingController.deleteMonitor);
 router.post("/location/delete/:id", ensureAuth, parkingController.deleteLocation);
 router.post("/regularShift/delete/:id", ensureAuth, parkingController.deleteRegularShift);
 router.post("/openShift/delete/:id", ensureAuth, parkingController.deleteOpenShift);
-router.post('/monitor/deleteVacation/:id', ensureAuth, parkingController.deleteVacation);
+router.post('/monitor/deleteAllVacation/:id', ensureAuth, parkingController.deleteAllVacation);
+router.post('/monitor/deleteOneVacation', ensureAuth, parkingController.deleteOneVacation);
 router.post("/overtime/deleteBid/:id", ensureAuth, parkingController.deleteOvertimeBid);
 router.get("/overtime/deleteOvertimeAuditWinners", ensureAuth, parkingController.deleteOvertimeAuditWinners);
 

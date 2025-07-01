@@ -122,7 +122,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             }
           })
         })
-
+        // console.log(overtimeCalcs)
         //Filter locations for this day
         const locationsToday = locationsCopy
           .filter(l => l.scheduleType.includes(dayName)
@@ -170,16 +170,17 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
 
           // Destructuring monitors
           shift.forEach(([monitorName, overtime, start, end, locationId]) => {
-            locationMonitors[locationsToday[locationId].index][1] = 
-              locationMonitors[locationsToday[locationId].index][1] === EMPTY
-              ? monitorName //Replace "Unassigned"
-              : locationMonitors[locationsToday[locationId].index][1] + `, ${monitorName}`//append w/ comma
+            locationMonitors[locationsToday[locationId].index][1] = //Grab where monitor is suppose to go in locationMonitors
+              locationMonitors[locationsToday[locationId].index][1] === EMPTY //If it's empty
+              ? monitorName //replace EMPTY with monitor name, if there's something there already then
+              : locationMonitors[locationsToday[locationId].index][1] + `, ${monitorName}`//append another monitor w/ comma
+            if(overtime) { locationMonitors[locationsToday[locationId].index][2] = true } //update overtime flag
+
             //Each row = one shift 
             rows[`shift_${idx}`] = {
               start: start,
               end: end,
               locationMonitors: locationMonitors,
-              isOpenShift: overtime,
             }
           }) 
         }) 
@@ -241,6 +242,7 @@ function downloadAsExcelTable(weeklyTable){
   xlsx(data, settings) // Will download the excel file
     const json = JSON.stringify(weeklyTable) 
 }
+
 module.exports = {
     allocateSchedule: async() => {
       try{

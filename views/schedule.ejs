@@ -8,7 +8,7 @@
         <!-- 0 = thurs, 1 = fri, 2 = sat, 3 = sun, 4 = mon, 5 = tues, 6 = weds -->
         <h3><%= wkDays[i] %></h3>
         <table class="table table-sm table-bordered table-striped<%= i < 6 ? ' page-break' : '' %>">
-            <caption>Monitors Off Today: </caption>
+            <caption>Monitors Off Today: <%= vacaLookup[i] %></caption>
             <!-- Conditionally add page-break class if i < 6 -->
             <thead>
                 <tr>
@@ -31,7 +31,7 @@
                         </td>
                         <!-- Render Monitors horizontally -->
                         <% shift.locationMonitors.forEach(monitor => { %>
-                            <td>
+                            <td class = "<%= monitor[2] === true ? 'table-active bg-danger' : '' %>">
                                 <!-- <pre><%= JSON.stringify(shift.location, null, 2) %></pre> -->
                                 <!-- <%= typeof monitor[1] === 'object' ? monitor[1].name : monitor[1] %> -->
                                  <%= monitor[1] %>

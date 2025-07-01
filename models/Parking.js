@@ -18,11 +18,6 @@ const RegularShiftSchema = new Schema({
     type: String, // monday, tuesday, wednesday, thursday, friday,etc
     enum: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"],  //restricted to these strings
     required: true}], 
-  // location: { 
-  //   type: Schema.Types.ObjectId, 
-  //   ref: 'Location', 
-  //   required: true
-  // },
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
 });
@@ -110,6 +105,15 @@ const WeeklyScheduleSchema = new Schema({
   schedule: { type: String, required: true},
 })
 
+const vacationByDaySchema = new Schema({
+  day: { type: Date, required: true},
+  monitorOffArr: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Monitor',
+    default: []
+  }
+})
+
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
   Monitor: mongoose.model("Monitor", MonitorSchema),
@@ -119,6 +123,7 @@ module.exports = {
   OvertimeBid: mongoose.model("OvertimeBid", OvertimeBidsSchema),
   OvertimeSchedule: mongoose.model("OvertimeWinnersForSchedule", OvertimeWinnersForScheduleSchema),
   OvertimeAudit: mongoose.model("OvertimeWinnersForAudit", OvertimeWinnersForAuditSchema),
+  VacationLookup: mongoose.model("vacationByDaySchema", vacationByDaySchema),
 };
 
 

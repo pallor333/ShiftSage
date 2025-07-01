@@ -18,9 +18,9 @@
 //*****************************************************************************/ Once at the end, return 
 // 1) List of overtime shifts
 // 2) hours added to each monitor 
-const { Monitor, OpenShift, Location, OvertimeBid} = require("../models/Parking")
+const { Monitor, OpenShift, Location, OvertimeBid, VacationLookup} = require("../models/Parking")
 const { getFixedTimeRange, getNextThurs } = require('../utils/dateHelpers')
-const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable} = require('../utils/lookupHelpers')
+const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, vacationLookupByDateTable} = require('../utils/lookupHelpers')
 
 const THISWEEK = new Date("4/30/25") //temp hardcoding date:
 
@@ -117,7 +117,7 @@ function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
 }
 
 /************** Main function *******************/
-function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId){
+function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId, vacationByDate){
     // let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift
     let assignedMonitors = {} //Ensure monitor cannot pick up overlapping shift 
@@ -179,10 +179,6 @@ function assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openSh
                             'shiftName' : openShift.name, 
                             'locationId': openShift.location,
                         })
-                        //const locIdStr = openShift.location.toString();
-                        // if (!dayEntry.locIds.map(id => id.toString()).includes(locIdStr)) {
-                        // dayEntry.locIds.push(openShift.location);
-                        // }
                         
                         //2e) openShift location !== regularShift location, push to day.locIds arr
                         if((openShift.location?.scheduleType ?? []).length === 0){ 
@@ -226,7 +222,10 @@ module.exports = {
             const monitors = await Monitor.find().populate("regularShift location").sort( {hours: 1}).lean() //.lean() returns plain JS objects
             const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
             const overtimeBidMonitors = await OvertimeBid.find().populate("monitor").lean() //maybe sort by monitor id?
+            const vacaLookup = await VacationLookup.find().populate("monitorOffArr").sort({ day: 1 })
             const openShiftByOpenShiftId = openShiftLookupByOpenShiftIdTable(openShifts)
+            const vacationByDate = vacationLookupByDateTable(vacaLookup)
+            // console.log(vacationByDate)
 
             //1) Create list of monitors working each day of NEXT week. 
             //Convert date to 'YYYY-MM-DD' to match schema
@@ -239,7 +238,7 @@ module.exports = {
             // const result = monitorNoVacaThisWeek(monitors, new Date("2025-05-01"))
 
             //2) Sort working monitors with overtime bids and assign them openShifts.
-            let overtimeWinners = assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId)
+            let overtimeWinners = assignOvertimeShifts(overtimeBidMonitors, eligibleMonitorsByDay, openShiftByOpenShiftId, vacationByDate)
  
             return overtimeWinners
                 // [{

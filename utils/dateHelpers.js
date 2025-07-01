@@ -13,10 +13,10 @@ const calculateShiftHours = (startTime, endTime) => {
 }
 
 // Helper function to format dates in MM/DD/YY format
-    const formatDate = (date) => {
-      const d = new Date(date);
-      return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`
-    }
+const formatDate = (date) => {
+  const d = new Date(date);
+  return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`
+}
 
 //Formats time in HH:MM
 function formatTime(date) {
@@ -52,8 +52,8 @@ function getNextThurs(date){
   // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
   // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
 
-  return [`${wkStart.getMonth() + 1}/${wkStart.getDate()}/${wkStart.getFullYear()}`, 
-          `${wkEnd.getMonth() + 1}/${wkEnd.getDate()}/${wkEnd.getFullYear()}`
+  return [`${wkStart.getMonth() + 1}/${wkStart.getDate()}/${String(wkStart.getFullYear()).slice(-2)}`, 
+          `${wkEnd.getMonth() + 1}/${wkEnd.getDate()}/${String(wkEnd.getFullYear()).slice(-2)}`
           ] //Return string in format month/day/year
 }
 
