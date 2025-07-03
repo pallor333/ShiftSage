@@ -1,4 +1,5 @@
 /* TABLE LOOKUP HELPER FUNCTIONS ****************************************************************/
+/* //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) */
 
 // Pre-index monitors by shift _id for O(1) lookup via monitorByShiftId.get()
 function monitorLookupByShiftIdTable(monitors){
@@ -46,5 +47,5 @@ function vacationLookupByDateTable(vacationSchema){
 }
 
 
-
+//table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) 
 module.exports = { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, vacationLookupByDateTable}

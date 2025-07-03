@@ -69,10 +69,10 @@ const OvertimeBidsSchema = new Schema({
 
 // OvertimeWinnersForScheduleSchema: Sub-document schema for individual monitor entries (e.g., '68264a8179f269ffb0f939f8')
 const monitorEntrySchema = new Schema({
-  monitorId: { type: Schema.Types.ObjectId, required: true, ref: 'Monitor' },
-  monitorName: { type: String, required: true },
-  shiftName: { type: String, required: true },
-  locationId: { type: Schema.Types.ObjectId, ref: 'Location' }, 
+  monitorId: { type: Schema.Types.ObjectId, ref: 'Monitor'},
+  monitorName: { type: String},
+  shiftName: { type: String},
+  locationId: { type: Schema.Types.ObjectId, ref: 'Location'}, 
 }, { _id: false })
 // OvertimeWinnersForScheduleSchema: Sub-document schema for each day (e.g., 'thursday')
 const dayScheduleSchema = new Schema({
@@ -107,11 +107,12 @@ const WeeklyScheduleSchema = new Schema({
 
 const vacationByDaySchema = new Schema({
   day: { type: Date, required: true},
-  monitorOffArr: {
-    type: [Schema.Types.ObjectId],
-    ref: 'Monitor',
-    default: []
-  }
+  monitorAndOpenShift: [
+    {
+      monitorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Monitor' },
+      openShiftId: { type: mongoose.Schema.Types.ObjectId, ref: 'OpenShift' }
+    }
+  ]
 })
 
 //MongoDB Collection named here - will give lowercase plural of name 

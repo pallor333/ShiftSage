@@ -70,7 +70,7 @@ function normalizeShifts(shifts, monitorByShiftId, locationById) {
         endTime: shift.endTime,
         monitor: shift.name,
         location: locationById.get(shift.location._id.toString())?.name,
-        locationId: shift.location._id, 
+        locationId: shift.location?._id, 
         overtime: true
       })
     } else { //Regular Shift
@@ -107,14 +107,17 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
     const monitorByShiftId = monitorLookupByShiftIdTable(monitors)
     const locationById = locationLookupByLocationIdTable(locations)  
     const openShiftById = openShiftLookupByOpenShiftIdTable(openShifts)
+
+    // console.log(overtimeCalcs)
     //Create 7 different obj, one for each day of the week
     for(let i = 0; i < 7; i++){
         const dayName = DAYSARRAY[i], isWeekend = i === 2 || i === 3; // Sat(2), Sun(3)
         schedule[dayName] = {}, rows = {}, otShiftsToday = overtimeCalcs.days.get(dayName)
-        let locationsCopy = locations //copying so we dont mutate original
-        
+        let locationsCopy = locations //copying = dont mutate original
+        // console.log(otShiftsToday)
         //1) Preparing today's locations
         //Using scheduleType property of location to add OT locations from overtimeCalc obj
+        //Outer Loop: OT locID, Inner loop: location schema, scheduleType property
         otShiftsToday.locIds.forEach(ot => { //O(n^2)
           locationsCopy.forEach(l => { 
             if(l._id.toString() === ot?._id.toString() && (!l.scheduleType.includes(dayName))){
@@ -122,7 +125,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             }
           })
         })
-        // console.log(overtimeCalcs)
+        
         //Filter locations for this day
         const locationsToday = locationsCopy
           .filter(l => l.scheduleType.includes(dayName)
@@ -131,8 +134,8 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             index: idx,
           })).reduce((acc, loc) =>{
               if (!loc._id) {
-              console.error("Invalid object in array:", loc);
-              throw new Error("Object missing _id property");
+                console.error("Invalid object in array:", loc)
+                throw new Error("Object missing _id property")
               }
               acc[loc._id.toString()] = loc
               return acc
@@ -156,12 +159,13 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
                 endTime: openShiftById.get(shiftId).endTime, 
           })
         }) 
+        // console.log(shiftsToday)
         //Normalize regular/ot shift into one single format
         const normalizedShiftsToday = normalizeShifts(shiftsToday, monitorByShiftId, locationById)
-
+        // console.log(normalizedShiftsToday)
         //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
         const monitorShiftsArr = coaleseAndSort(normalizedShiftsToday)
-
+        // console.log(monitorShiftsArr)
         //3) Populate table
         //Loop over shifts and populate table
         monitorShiftsArr.forEach( (shift, idx) => {
@@ -263,7 +267,7 @@ module.exports = {
           })
 
         //Behold, the Meat and Potatoes
-        let weeklyTable = buildWeeklyTable(THISWEEK, monitors, regularShifts, openShifts, locations, overtimeSchedule[0]) //overtimeCalcs)
+        let weeklyTable = buildWeeklyTable(THISWEEK, monitors, regularShifts, openShifts, locations, overtimeSchedule[0]) 
         // console.log(weeklyTable)
         // downloadAsExcelTable(weeklyTable) //TODO: Use json-as-xlsx to output excel files to download
 
