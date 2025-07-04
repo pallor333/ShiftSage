@@ -496,7 +496,7 @@
             </form>
             </section>
 
-            <!-- View By Vacation By Monitor / Delete -->
+            <!-- View Vacation Indexed by Monitor / Delete -->
             <section id="displayVacationByMonitor" class="mt-5 displayVacationByMonitor">
                 <h2>View Vacation By Monitor + Delete All</h2>
                 <table class="table table-striped">
@@ -510,22 +510,24 @@
                     </thead>
                     <tbody>
                         <% formattedMon.forEach((monitor) => { %>
-                            <tr>
-                                <td><%= monitor.id %></td>
-                                <td><%= monitor.name %></td>
-                                <td><%= monitor.vaca.join(', ') %></td>
-                                <td> <!-- Delete Button-->
-                                    <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
-                                        <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation For This Monitor</button>
-                                    </form>
-                                </td>
-                            </tr>
+                            <% if (monitor.vaca.length > 0) { %>
+                                <tr>
+                                    <td><%= monitor.id %></td>
+                                    <td><%= monitor.name %></td>
+                                    <td><%= monitor.vaca.join(', ') %></td>
+                                    <td> <!-- Delete Button-->
+                                        <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
+                                            <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation For This Monitor</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% } %>
                         <% }) %>
                     </tbody>
                 </table>
             </section>    
             
-            <!-- View Vacation By Date + Delete -->
+            <!-- View Vacation Indexed by Date + Delete -->
             <section id="displayVacationByDate" class="mt-5 displayVacationByDate">
                 <h2>Remove Individual Vacation Dates</h2>
                 <table class="table table-striped">
@@ -546,7 +548,7 @@
                                             <input type="hidden" name="monitorId" value="<%= m._id %>">
                                             <input type="hidden" name="date" value="<%= date.day %>">
                                             <input type="hidden" name="dayRaw" value="<%= date.dayRaw %>">
-                                            <input type="hidden" name="openShiftId" value="<%= date.openShiftId %>">
+                                            <input type="hidden" name="openShiftId" value="<%= m.openShiftId %>">
                                             <button type="submit" class="btn btn-warning btn-sm">
                                                 Remove <%= m.name %> (<%= m.id %>)
                                             </button>

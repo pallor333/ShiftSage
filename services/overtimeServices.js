@@ -117,7 +117,7 @@ function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
 }
 
 /************** Main function *******************/
-function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors, vacationByDate){
+function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors){ //, vacationByDate){
     // let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift
     let assignedMonitors = {} //Ensure monitor cannot pick up overlapping shift 
@@ -240,9 +240,9 @@ module.exports = {
             const monitors = await Monitor.find().populate("regularShift location").sort( {hours: 1}).lean() //.lean() returns plain JS objects
             const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
             const overtimeBidMonitors = await OvertimeBid.find().populate("monitor").lean() 
-            const vacaLookup = await VacationLookup.find().populate("monitorOffArr").sort({ day: 1 })
+            // const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
             const openShiftByOpenShiftId = openShiftLookupByOpenShiftIdTable(openShifts)
-            const vacationByDate = vacationLookupByDateTable(vacaLookup)
+            // const vacationByDate = vacationLookupByDateTable(vacaLookup)
             // console.log(vacationByDate)
 
             //1) Create list of monitors working each day of NEXT week. 
@@ -256,7 +256,7 @@ module.exports = {
             // const result = monitorNoVacaThisWeek(monitors, new Date("2025-05-01"))
 
             //2) Sort working monitors with overtime bids and assign them openShifts.
-            let overtimeWinners = assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors, vacationByDate)
+            let overtimeWinners = assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors) //, vacationByDate)
  
             return overtimeWinners
                 // [{
