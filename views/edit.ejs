@@ -206,7 +206,7 @@
             </section>
 
             <!-- View and Delete Overtime Shifts -->
-            <section id="displayOpenShifts" class="mt-5 displayOpenShifts">
+            <section id="displayOpenShifts" class="mt-5">
                 <h2>Overtime Shifts</h2>
                 <table class="table table-striped">
                     <thead>
@@ -248,7 +248,7 @@
                             </td>
                             <!-- Save and Delete Buttons -->
                             <td>
-                                <form action="/parking/openShift/edit/:id %>" method="POST" style="display:inline;">
+                                <!-- <form action="/parking/openShift/edit/:id %>" method="POST" style="display:inline;"> -->
                                     <button type="submit" class="btn btn-success btn-sm">Save</button>
                                 </form>
                                 <form action="/parking/openShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
@@ -316,6 +316,17 @@
                         <label class="form-check-label" for="sunday">Sunday</label>
                     </section>
                 </section>
+                <!-- Shift Type Section -->
+                <section class="col-md-6">
+                    <label for="shiftType" class="form-label">Type</label>
+                    <select class="form-select" id="addRegularShiftType" name="type" required>
+                        <option value="" selected disabled>Select day</option>
+                        <option value="firstShift">1st Shift</option>
+                        <option value="secondShift">2nd Shift</option>
+                        <option value="thirdShift">3rd Shift</option>
+                        <option value="none">None</option>
+                    </select>
+                </section>
                 <!-- Submit Button -->
                 <section class="col-12">
                     <button type="submit" class="btn btn-primary">Add Shift</button>
@@ -331,6 +342,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Days</th>
+                                <th>Shift Type</th>
                                 <th>Start Time</th>
                                 <th>End Time</th>
                                 <th>Actions</th>
@@ -342,9 +354,20 @@
                                     <% const capitalized = shift.days.map(day => day.charAt(0).toUpperCase() + day.slice(1)).join(', ') %>
                                     <td><%= shift.name %></td>
                                     <td><%= shift.days ? capitalized : "N/A" %></td>
+                                    <td>
+                                        <form action="/parking/RegularShift/edit/<%= shift._id %>" method="POST" style="display:inline;">
+                                            <select name="type" class="form-select d-inline-block" required>
+                                                <option value="firstShift" <%= shift.type === "firstShift" ? "selected" : "" %>>1st Shift</option>
+                                                <option value="secondShift" <%= shift.type === "secondShift" ? "selected" : "" %>>2nd Shift</option>
+                                                <option value="thirdShift" <%= shift.type === "thirdShift" ? "selected" : "" %>>3rd Shift</option>
+                                                <option value="none" <%= shift.type === "none" ? "selected" : "" %>>None</option>
+                                            </select>
+                                    </td>
                                     <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                                     <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                                     <td>
+                                            <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                        </form>
                                         <form action="/parking/RegularShift/delete/<%= shift._id %>" method="POST" style="display:inline;">
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>

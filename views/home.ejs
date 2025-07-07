@@ -4,14 +4,10 @@
 <!-- <a href="/logout" class="col-3 btn btn-primary">Logout</a> -->
 <main class="container">
   <h1>Parking Information</h1>
-  <p>Please make sure all the below info is correct before moving on to the automated scheduler</p>
+  <p>Don't know where to start? Click here for the Quick Start!</p>
+  <% const todayToday = new Date() %>
+  <p>Date: <%= todayToday %></p>
   
-  <!-- Navigation to edit, overtime and schedule pages -->
-  <!-- <a href="/parking/edit" class="btn btn-primary">Manage Monitors/Shifts/Locations</a>
-  <a href="/parking/overtime" class="btn btn-primary">Overtime Sheets</a>
-  <a href="/parking/schedule" class="btn btn-primary">Weekly Schedule</a> -->
-  
-
   <section class="monitors">
     <!-- Populate dynamically with monitors + monitor attributes 
     Attributes = ID, displayname, shift time, shift location, vacation?, 
@@ -46,13 +42,6 @@
     </tbody>
   </table>
   </section>
-  <section class="shifts">
-    <!-- Populate dynamically with open OT shifts. Maybe regular shifts too -->
-  </section>
-  <!-- <section class="locations">
-    Populate dynamically with open OT shifts.
-    Maybe I don't need this 
-  </section> -->
 
 </main>
 

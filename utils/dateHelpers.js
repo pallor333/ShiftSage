@@ -20,7 +20,8 @@ const formatDate = (date) => {
 
 //Formats time in HH:MM
 function formatTime(date) {
-  return date.toISOString().substring(11, 16) // "HH:MM"
+  // return date.toISOString().substring(11, 16) // "HH:MM"
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); //HH:MM
 }
 
 function getCurrentDay(wkStart, daysElapsedSinceThursday){

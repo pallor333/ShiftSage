@@ -1,7 +1,6 @@
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup} = require("../models/Parking")
-// const { findById } = require("../models/User")
-const { calculateShiftHours, formatDate, getNextThurs } = require('../utils/dateHelpers')
+const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
+const { calculateShiftHours, formatDate, formatTime, getNextThurs } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
@@ -12,73 +11,13 @@ const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //const [month, day, year] = [new Date().getMonth() + 1, new Date().getDate(), new Date().getFullYear()];
 //console.log(`${month}/${day}/${year}`); // "5/22/2025"
 //temp hardcoding date:
-const THISWEEK = new Date("4/30/25")
+const THISWEEK = new Date("4/30/25") //new Date("6/29/25")
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
 const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
 
-// Helper function to fetch data from DB
-const fetchCommonData = async () => {
-  try {
-    const monitors = await Monitor.find().populate("regularShift location").sort( {id: 1});
-    const regularShifts = await RegularShift.find().sort({ name: 1 }) // 1 for ascending order
-    const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1});
-    const locations = await Location.find().sort({ name: 1});
-    const overtimeBid = await OvertimeBid.find().populate("monitor").populate("rankings.position")
-    const overtimeAudit = await OvertimeAudit.find()
-    const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
-
-    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup };
-  } catch (err) {
-    console.error("Error fetching common data:", err);
-    throw err; // Rethrow the error to handle it in the calling function
-  }
-}
-//Helper function to delete all documents from both overtime (audit+schedule) schemas
-async function clearOvertimeAuditAndScheduleWinners() {
-  await OvertimeAudit.deleteMany({})
-  console.log(`Helper: All Documents cleared from the Overtime Audit Winners Schema`)
-  await OvertimeSchedule.deleteMany({})
-  console.log(`Helper: All Documents cleared from the Overtime Schedule Winners Schema`)
-}
-//Helper function to process OT data for schema (map to plain object)
-function convertMapToPlainObject(overtimeCalcsMap) {
-  const forSchema = {}
-
-  for (const [day, dayData] of overtimeCalcsMap.entries()) {
-    const { locIds, shifts } = dayData
-
-    forSchema[day] = {
-      locIds,
-      shifts: Object.fromEntries(
-        Array.from(shifts.entries()).map(([shiftId, shiftData]) => [
-          shiftId,
-          {
-            monitorId: shiftData.monitorId  || null,
-            monitorName: shiftData.monitorName,
-            shiftName: shiftData.shiftName,
-            locationId: shiftData.locationId._id || shiftData.locationId, //|| null,
-          },
-        ])
-      ),
-    }
-  }
-
-  return forSchema
-}
-//Helper function: Adds open shift to open shift Schema
-async function createOpenShift(data) {
-  // Required bc monitor vacation = create open shift
-  const newOpenShift = await OpenShift.create(data)
-  return newOpenShift._id //Return for vacation schema
-}
-//Helper function: Deletes open shift from open shift Schema
-async function deleteOpenShift(openShiftId){
-  // Required bc delete monitor vaca = delete corresponding open shift
-  // Mongoose automatically converts string IDs to ObjectId in queries, but not in findById methods
-  return await OpenShift.findOneAndDelete({ _id: openShiftId })
-}
+/*********** HELPER FUNCTIONS */
 //Helper function: Create overtime shifts based on monitor vacation
 async function addOpenShiftFromVacation(monitorId, dateRange){
   const monitorAndOvertimeArray = [] //store date + monitorId + overtimeId
@@ -119,6 +58,68 @@ async function addOpenShiftFromVacation(monitorId, dateRange){
 
   return monitorAndOvertimeArray //[ [date, monitorId, openshift _id], [date, monitorId, openshift _id], etc] 
 }
+//Helper function to process OT data for schema (map to plain object)
+function convertMapToPlainObject(overtimeCalcsMap) {
+  const forSchema = {}
+
+  for (const [day, dayData] of overtimeCalcsMap.entries()) {
+    const { locIds, shifts } = dayData
+
+    forSchema[day] = {
+      locIds,
+      shifts: Object.fromEntries(
+        Array.from(shifts.entries()).map(([shiftId, shiftData]) => [
+          shiftId,
+          {
+            monitorId: shiftData.monitorId  || null,
+            monitorName: shiftData.monitorName,
+            shiftName: shiftData.shiftName,
+            locationId: shiftData.locationId._id || shiftData.locationId,
+          },
+        ])
+      ),
+    }
+  }
+
+  return forSchema
+}
+//Helper function to delete all documents from both overtime (audit+schedule) schemas
+async function clearOvertimeAuditAndScheduleWinners() {
+  await OvertimeAudit.deleteMany({})
+  console.log(`Helper: All Documents cleared from the Overtime Audit Winners Schema`)
+  await OvertimeSchedule.deleteMany({})
+  console.log(`Helper: All Documents cleared from the Overtime Schedule Winners Schema`)
+}
+//Helper function: Adds open shift to open shift Schema
+async function createOpenShift(data) {
+  // Required bc monitor vacation = create open shift
+  const newOpenShift = await OpenShift.create(data)
+  return newOpenShift._id //Return for vacation schema
+}
+//Helper function: Deletes open shift from open shift Schema
+async function deleteOpenShift(openShiftId){
+  // Required bc delete monitor vaca = delete corresponding open shift
+  // Mongoose automatically converts string IDs to ObjectId in queries, but not in findById methods
+  return await OpenShift.findOneAndDelete({ _id: openShiftId })
+}
+// Helper function to fetch data from DB
+const fetchCommonData = async () => {
+  try {
+    const monitors = await Monitor.find().populate("regularShift location").sort( {id: 1});
+    const regularShifts = await RegularShift.find().sort({ name: 1 }) // 1 for ascending order
+    const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1});
+    const locations = await Location.find().sort({ name: 1});
+    const overtimeBid = await OvertimeBid.find().populate("monitor").populate("rankings.position")
+    const overtimeAudit = await OvertimeAudit.find()
+    const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
+    const holidays = await Holiday.find()
+
+    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup, holidays };
+  } catch (err) {
+    console.error("Error fetching common data:", err);
+    throw err; // Rethrow the error to handle it in the calling function
+  }
+}
 //Helper function: Returns an array of openShiftIds given monitorId from Vacation Schema
 async function getOpenShiftsBy(monitorId){
   // Find all entries containing monitorId
@@ -136,12 +137,80 @@ async function getOpenShiftsBy(monitorId){
 
   return openShiftIds
 }
+//Helper function: Creates overtime shifts of every shift on a holiday
+async function holidayOvertimeCreator(){
+
+  //1)given this week's date start -> end => helper function returns true if there's vacation this week
+  const currentHoliday = await holidayNextWeek(getNextThurs(THISWEEK))
+  if(currentHoliday === false) return //exit early if holiday is not found
+  
+  //2)helper function returns array of regular shift IDs that qualify
+  const regularShiftIds = await qualifyingRegularShifts(currentHoliday)
+  //TODO: Need to revise this: Location+Time. PLUS, aren't uni holidays ALWAYS weekdays?
+  //If they're only weekdays then the logic changes.
+
+  //3)loop over array regular shift IDs, defining data{} -> pass to createOpenShift()
+  // regularShiftIds.forEach(shift => {
+  //   const data = {
+        //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
+      //   name: `${shortDay} ${req.body.date} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
+      //   location: req.body.shiftLocation, // ObjectId of the location
+      //   day: req.body.day,
+      //   date: paddedDate, //req.body.date,
+      //   startTime: startTime,
+      //   endTime: endTime,
+      //   totalHours: totalHours,
+      //   recurring: !!req.body.openEveryWeek // Convert truthy/falsy value to Boolean
+      // }
+  //   createOpenShift(data)
+  // })
+
+}
+//Helper function: Given this week, return holiday if found or false
+async function holidayNextWeek([wkStart, wkEnd]){
+  const { holidays } = await fetchCommonData()
+  const [wkStartMonth, wkStartDay, year] = wkStart.split('/')
+  const wkEndDay = wkEnd.split('/')[1]
+
+  for(let holiday of holidays){
+    const day = holiday.day.toString()
+    //holiday found = exit early
+    if(holiday.month.toString() === wkStartMonth){
+      if(wkStartDay <= day && day <= wkEndDay){
+        return `${holiday.month}/${day}/${year}`
+      }
+    }
+  }
+  return false
+}
+//Helper function: Given holiday, return regular shift id array
+async function qualifyingRegularShifts(currentHoliday){
+  //Holiday starts 11pm the night before. 3rd shift day of holiday does not count.
+  //E.G for July 4th: July 3rd 11pm shift, July 4th 7am shift, July 4th 2pm shift, NOT july 4 11pm 
+  const{ regularShifts } = await fetchCommonData()
+  const regularShiftArr = []
+  const dayNumberized = (new Date(currentHoliday).getDay() + 3) % 7
+  const holidayYesterday = DAYSARRAY[dayNumberized-1]
+  const holidayOf = DAYSARRAY[dayNumberized]
+  console.log(holidayOf, holidayYesterday)
+  //Regular shift -> Open shift if any hours of the shift overlap
+  regularShifts.forEach(shift=> {
+    let shiftDay = shift.days, shiftStart = shift.startTime 
+    // console.log(shiftDay)
+    if(shiftDay.includes(holidayOf) || shiftDay.includes(holidayYesterday)){
+      // console.log(shift.name, shiftDay, formatTime(shiftStart), formatTime(shift.endTime))
+    }
+  })
+
+  return regularShiftArr
+}
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
 module.exports = {
   // Rendering pages
   //
   //
+  //Home page
   getHomePage: async (req, res) => {
     try {
       const { monitors, regularShifts, openShifts, locations } = await fetchCommonData()
@@ -208,6 +277,9 @@ module.exports = {
       const { monitors, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup} = await fetchCommonData()
       // console.log(overtimeAudit)
 
+      //Automatically regular shift -> overtime shift if holiday
+      await holidayOvertimeCreator()
+
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
       const auditTable = {}
       monitors.forEach(mon => { //loop over every monitor
@@ -270,14 +342,12 @@ module.exports = {
         if (date >= first && date <= last) { //Ensure date is this week
           //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
           const dayIndex = (date.getDay() + 3) % 7
-          // console.log(dayIndex, monitorAndOpenShift)
           vacaMonitorArr[dayIndex] = monitorAndOpenShift
             .map(m => m.monitorId.name) //Create new arr of each name
             .join(', ') //join with commas
         }
       })
-      // console.log('vacalookup:', vacaLookup)
-      console.log(vacaMonitorArr)
+      // console.log(allocationResults.schedule.thursday) //shift_8: { start: undefined, end: undefined, locationMonitors: [Array] }
       // Render the schedule.ejs template and pass the data
       res.render("schedule.ejs", {
         user: req.user,
@@ -289,6 +359,30 @@ module.exports = {
     } catch (err) {
       console.error(err);
       res.redirect("/parking/home");
+    }
+  },
+  //Holiday page
+  getHolidayPage: async(req, res) => {
+    try{
+      const { holidays } = await fetchCommonData()
+      // console.log(holidays)
+      //Create holiday arr to display in the frontend
+      let frontEndHolidayArr = []
+      for(let entry of holidays){
+        frontEndHolidayArr.push({
+          name: entry.name,
+          date: `${entry.month}/${entry.day}`,
+          _id: entry._id
+        })
+      }
+
+      // console.log(frontEndHolidayArr)
+      res.render("holiday.ejs", {
+        holidays: frontEndHolidayArr,
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
     }
   },
 
@@ -313,7 +407,7 @@ module.exports = {
         console.error(err);
         res.redirect("/parking/home");
       }
-    },
+  },
   getLocation: async (req, res) => {
     try {
       // Fetch location data from the database using the Parking model
@@ -422,7 +516,6 @@ module.exports = {
       res.redirect("/parking/edit?tab=location-tab#locations");
     } catch (err) {
       console.error(err);
-      // console.log("Request body:", req.body);
       res.redirect("/parking/home");
     }
   },
@@ -485,8 +578,6 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
-  //Add helper function to automatically add OT shift when vacation is added
-  //Conversely add helper delete function when vacation is deleted
   addVacation: async (req, res) => {  
   try{
     const { vacationMonitorSelect, startDate, endDate} = req.body
@@ -541,11 +632,30 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
+  addHoliday: async(req, res) => {
+    try{
+      const { name, date } = req.body
+      let [y, month, day] = date.split('-')
+      // console.log(y, m, d)
 
-// Update info in the database
-// 
-// 
-updateMonitor: async (req, res) => {
+      await Holiday.create({
+        name: name,
+        month: month,
+        day: day,
+      })
+
+      console.log("Holiday has been added!");
+      res.redirect("/parking/holiday");
+    }catch(err){
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+
+  // Update info in the database
+  // 
+  // 
+  updateMonitor: async (req, res) => {
   try {
     const monitor = await Monitor.findById(req.params.id).populate("regularShift location");
     const regularShifts = await RegularShift.find();
@@ -567,26 +677,26 @@ updateMonitor: async (req, res) => {
     console.error(err);
     res.redirect("/parking/home");
   }
-},
-updateOpenShift: async (req, res) => {
-  try {
-    const openShift = await Location.find();
-    if(!openShift){
-      console.log("OpenShift not found")
-      return res.redirect("/parking/home")
+  },
+  updateOpenShift: async (req, res) => {
+    try {
+      const openShift = await Location.find();
+      if(!openShift){
+        console.log("OpenShift not found")
+        return res.redirect("/parking/home")
+      }
+      // console.log("Request body:", req.body)
+      await OpenShift.findByIdAndUpdate(req.params.id, {
+        location: req.body.shiftLocation, //update location field
+        recurring: req.body.recurring === "true" //convert string to boolean
+      });
+      console.log("OpenShift has been updated!");
+      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts") //displayOpenShifts"); 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-    // console.log("Request body:", req.body)
-    await OpenShift.findByIdAndUpdate(req.params.id, {
-      location: req.body.shiftLocation, //update location field
-      recurring: req.body.recurring === "true" //convert string to boolean
-    });
-    console.log("OpenShift has been updated!");
-    res.redirect("/parking/edit?tab=openShift-tab-pane#displayOpenShifts") //displayOpenShifts"); 
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
+  },
 /*
 const test = {
   monitor: '6826563dd3f7526aff07d080',
@@ -600,274 +710,311 @@ test['monitor'] or test.monitor // "6826563dd3f7526aff07d080"
 console.log(test.rankings[0].position) // "6826495e9e8667f3047c5613"
 console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", rank: 1 }
 */
-updateOvertimeBid: async (req, res) => {
-  try {
-    const { monitors, openShifts, vacaLookup } = await fetchCommonData()
-    const openShiftTable = openShiftLookupByOpenShiftIdTable(openShifts)
-    const monitorTable = monitorLookupByMonitorIdTable(monitors) 
-    let actualRank = 0 //Tracks ranking of bid
-    //debugging
-    // console.log("Request received:", req.body); // Debugging statement
-    // console.log("Formatted Rankings:", rankingArr)
-    // console.log(`Monitor: ${monId}, Hours: ${monitor.hours}, Senioritiy: ${monitor.seniority}`)
+  updateOvertimeBid: async (req, res) => {
+    try {
+      const { monitors, openShifts, vacaLookup } = await fetchCommonData()
+      const openShiftTable = openShiftLookupByOpenShiftIdTable(openShifts)
+      const monitorTable = monitorLookupByMonitorIdTable(monitors) 
+      let actualRank = 0 //Tracks ranking of bid
+      //debugging
+      // console.log("Request received:", req.body); // Debugging statement
+      // console.log("Formatted Rankings:", rankingArr)
+      // console.log(`Monitor: ${monId}, Hours: ${monitor.hours}, Senioritiy: ${monitor.seniority}`)
 
-    //monitorId from form -> URL, rankings from form submission
-    const monId = req.params.id, rankings = req.body.rankings, rankingArr = [] 
-    //monitorId: '6826563dd3f7526aff07d080',
-    //rankings: { '6826495e9e8667f3047c5613': '1', '68264a8179f269ffb0f939f8': '2', '68264ac779f269ffb0f93a04': '', }  
-    
-    //Find Monitor by ID
-    const monitor = await Monitor.findById(monId)
-    if(!monitor){
-      console.log("Monitor not found")
-      return res.redirect("/parking/home")
-    }
+      //monitorId from form -> URL, rankings from form submission
+      const monId = req.params.id, rankings = req.body.rankings, rankingArr = [] 
+      //monitorId: '6826563dd3f7526aff07d080',
+      //rankings: { '6826495e9e8667f3047c5613': '1', '68264a8179f269ffb0f939f8': '2', '68264ac779f269ffb0f93a04': '', }  
+      
+      //Find Monitor by ID
+      const monitor = await Monitor.findById(monId)
+      if(!monitor){
+        console.log("Monitor not found")
+        return res.redirect("/parking/home")
+      }
 
-    //Grab vacation dates for this monitor 
-    const vacation = monitorTable
-      .get(monId)?.vaca
-      .map(date => `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`)
+      //Grab vacation dates for this monitor 
+      const vacation = monitorTable
+        .get(monId)?.vaca
+        .map(date => `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`)
 
-    //Populate array of objects to pass to OvertimeBidsSchema later
-    for(const id in rankings){
-      if(rankings[id]){ //Filter rankings to remove empty values
-        const date = openShiftTable.get(id).date
-        // console.log(vacation, date, vacation.includes(date))
-        // Do not allow a bid if the monitor is on vacation
-        // Skip if monitor is on vacation for this date
-        if(vacation && vacation.includes(date)){ continue }
-        actualRank++
-        rankingArr.push({position: id, rank: actualRank})
-        }
-    }//TODO: Sort these in reverse order because pop() is O(1)
+      //Populate array of objects to pass to OvertimeBidsSchema later
+      for(const id in rankings){
+        if(rankings[id]){ //Filter rankings to remove empty values
+          const date = openShiftTable.get(id).date
+          // console.log(vacation, date, vacation.includes(date))
+          // Do not allow a bid if the monitor is on vacation
+          // Skip if monitor is on vacation for this date
+          if(vacation && vacation.includes(date)){ continue }
+          actualRank++
+          rankingArr.push({position: id, rank: actualRank})
+          }
+      }//TODO: Sort these in reverse order because pop() is O(1)
 
-    //Update/Create OvertimeBid document
-    await OvertimeBid.findOneAndUpdate(
-      { monitor: monId },
-      {
-        $set: {
-          rankings: rankingArr, //insert formatted rankings
-          // monitorHours: monitor.hours,
-          // monitorSeniority: monitor.seniority,
+      //Update/Create OvertimeBid document
+      await OvertimeBid.findOneAndUpdate(
+        { monitor: monId },
+        {
+          $set: {
+            rankings: rankingArr, //insert formatted rankings
+            // monitorHours: monitor.hours,
+            // monitorSeniority: monitor.seniority,
+          },
         },
-      },
-      { upsert: true } //Create new document if one doesn't exist
-    )
+        { upsert: true } //Create new document if one doesn't exist
+      )
 
-    console.log("Overtime Bid has been updated!");
-    res.redirect("/parking/overtime?tab=overtimeBid-tab#rankingForm");
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
-updateOvertimeWinnersRanked: async (req, res) => { 
-  try {
-    //   await Monitor.findByIdAndUpdate(req.params.id, {
-    //     monitorName: ,
-    //     shiftName:,
-    //     hours: ,
-    //     monitorsToCharge:,
-    // })
-    console.log("Ranked Overtime Winners have been updated!");
-    res.redirect("/parking/overtime?tab=overtimeBid-tab#displayOvertime"); 
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
-calculateOvertimeBid: async (req, res) => { //Press a button
-  try {
-    //Call overtime calculation function to get 
-    const [overtimeWinsForSchedule, overtimeWinsForAudit] = await allocateOvertime() 
-    
-    //Error messages
-    if(!OvertimeAudit) throw new Error("overtime audit unavaliable")
-    if(!overtimeWinsForSchedule || !overtimeWinsForAudit){
-      console.log("Error in retreiving overtime calculations.")
-      return res.redirect("/parking/home")
+      console.log("Overtime Bid has been updated!");
+      res.redirect("/parking/overtime?tab=overtimeBid-tab#rankingForm");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-
-    //Convert map object to plain object for insertion
-    const formattedData = convertMapToPlainObject(overtimeWinsForSchedule)
-    // console.log(formattedData.thursday)
-    // Clear both OT schemas before inserting as new documents
-    await clearOvertimeAuditAndScheduleWinners()
-    
-    //Add overtimeWinsForAudit to Schema
-    await OvertimeAudit.insertMany(overtimeWinsForAudit)
-    //Add overtimeWinsForSchedule to Schema
-    await OvertimeSchedule.create({ days: formattedData })
-
-    console.log("Overtime Audit Winners have been added to the DB")
-    console.log("Overtime Winners for Scheduling have been added to the DB")
-    res.redirect("/parking/overtime?tab=overtimeAssignment-tab#displayOvertimeWinners")
-  } catch (err) {
-    console.error(err)
-    res.redirect("/parking/home")
-  }
-},
-
-//Delete entries from DB
-//
-//
-deleteMonitor: async (req, res) => {
-  try {
-    const monitor = await Monitor.findById(req.params.id)
-    if(!monitor){
-      console.log("Monitor not found")
-      return res.redirect("/parking/home")
+  },
+  updateOvertimeWinnersRanked: async (req, res) => { 
+    try {
+      //   await Monitor.findByIdAndUpdate(req.params.id, {
+      //     monitorName: ,
+      //     shiftName:,
+      //     hours: ,
+      //     monitorsToCharge:,
+      // })
+      console.log("Ranked Overtime Winners have been updated!");
+      res.redirect("/parking/overtime?tab=overtimeBid-tab#displayOvertime"); 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-    await Monitor.findByIdAndDelete(req.params.id)
-    console.log("Monitor has been deleted!");
-    res.redirect("/parking/edit?tab=monitor-tab#displayMonitors"); 
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
-deleteLocation: async (req, res) => {
-  try {
-    const location = await Location.findById(req.params.id)
-    if(!location){
-      console.log("Location not found")
-      return res.redirect("/parking/home")
+  },
+  updateRegularShift: async (req, res) => {
+    try {
+      const regularShift = await RegularShift.findById(req.params.id)
+      if(!regularShift ){
+        console.log("Regular Shift not found")
+        return res.redirect("/parking/home")
+      }
+      // console.log("Request body:", req.body)
+      // console.log("Request body type:", req.body.type)
+
+      await RegularShift.findByIdAndUpdate(req.params.id, {
+        type: req.body.type, //firstShift, secondShift, thirdShift, none
+      });
+
+      console.log("OpenShift has been updated!");
+      res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts") 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-    await Location.findByIdAndDelete(req.params.id)
-    console.log("Location has been deleted!");
-    res.redirect("/parking/edit?tab=location-tab#displayLocations");
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
-deleteRegularShift: async (req, res) => {
-  try {
-    const regularShift = await RegularShift.findById(req.params.id)
-    if(!regularShift){
-      console.log("Regular Shift not found")
-      return res.redirect("/parking/home")
+  },
+  calculateOvertimeBid: async (req, res) => { //Press a button
+    try {
+      //Call overtime calculation function to get 
+      const [overtimeWinsForSchedule, overtimeWinsForAudit] = await allocateOvertime() 
+      
+      //Error messages
+      if(!OvertimeAudit) throw new Error("overtime audit unavaliable")
+      if(!overtimeWinsForSchedule || !overtimeWinsForAudit){
+        console.log("Error in retreiving overtime calculations.")
+        return res.redirect("/parking/home")
+      }
+
+      //Convert map object to plain object for insertion
+      const formattedData = convertMapToPlainObject(overtimeWinsForSchedule)
+      // console.log(formattedData.thursday)
+      // Clear both OT schemas before inserting as new documents
+      await clearOvertimeAuditAndScheduleWinners()
+      
+      //Add overtimeWinsForAudit to Schema
+      await OvertimeAudit.insertMany(overtimeWinsForAudit)
+      //Add overtimeWinsForSchedule to Schema
+      await OvertimeSchedule.create({ days: formattedData })
+
+      console.log("Overtime Audit Winners have been added to the DB")
+      console.log("Overtime Winners for Scheduling have been added to the DB")
+      res.redirect("/parking/overtime?tab=overtimeAssignment-tab#displayOvertimeWinners")
+    } catch (err) {
+      console.error(err)
+      res.redirect("/parking/home")
     }
-    await RegularShift.findByIdAndDelete(req.params.id)
-    console.log("Regular Shift has been deleted!");
-    res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts");
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
-deleteOpenShift: async (req, res) => {
-  try {
-    const openShift = await OpenShift.findById(req.params.id)
-    if(!openShift){
-      console.log("Open Shift not found")
-      return res.redirect("/parking/home")
+  },
+
+  //Delete entries from DB
+  //
+  //
+  deleteMonitor: async (req, res) => {
+    try {
+      const monitor = await Monitor.findById(req.params.id)
+      if(!monitor){
+        console.log("Monitor not found")
+        return res.redirect("/parking/home")
+      }
+      await Monitor.findByIdAndDelete(req.params.id)
+      console.log("Monitor has been deleted!");
+      res.redirect("/parking/edit?tab=monitor-tab#displayMonitors"); 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-    // await OpenShift.findByIdAndDelete(req.params.id)
-    await deleteOpenShift(req.params.id) //Call helper function to delete
-    console.log("Open Shift has been deleted!");
-    res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts");
-  } catch (err) {
-    console.error(err);
-    res.redirect("/parking/home");
-  }
-},
-deleteOneVacation: async (req, res) => {
-  try {
-    const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
-    console.log(vacaId, monitorId, date, dayRaw, openShiftId)
-    console.log(monitorId, openShiftId)
-    // console.log(req.body)
-    const dateObj = new Date(dayRaw) //Processing into a date for comparison
-
-    // Remove this monitor from all vacation lookup days
-    await Monitor.findOneAndUpdate(
-      { _id: monitorId }, //find all documents where monitorId matches
-      { $pull: { vaca: date } } //$pull deletes each matched instance (5/1/25)
-    );
-
-    // Delete monitor from vacationLookup's monitorAndOpenShift field
-    const vacLookup = await VacationLookup.findOneAndUpdate(
-      { day: dateObj }, //2025-06-23T04:00:00.000+00:00
-      { $pull: { monitorAndOpenShift: { monitorId: monitorId, openShiftId: openShiftId} } }, 
-      { new: true } //return updated document
-    );
-
-    // Delete corresponding overtime shift
-    await deleteOpenShift(openShiftId)
-
-    // If monitorAndOpenShift is now empty, delete the VacationLookup document
-    if (vacLookup && vacLookup.monitorAndOpenShift.length === 0) {
-      await VacationLookup.deleteOne({ _id: vacLookup._id });
-      console.log("Deleted empty date!")
+  },
+  deleteLocation: async (req, res) => {
+    try {
+      const location = await Location.findById(req.params.id)
+      if(!location){
+        console.log("Location not found")
+        return res.redirect("/parking/home")
+      }
+      await Location.findByIdAndDelete(req.params.id)
+      console.log("Location has been deleted!");
+      res.redirect("/parking/edit?tab=location-tab#displayLocations");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-
-    console.log(`Vacation cleared for date: ${date}`);
-    console.log(`Overtime shift deleted`)
-    res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
-  } catch (err) {
-    console.error(`Error clearing vacation for date: ${err}`);
-    res.redirect('/parking/home'); // Redirect to home on error
-  }
-},
-deleteAllVacation: async (req, res) => {
-  try {
-    const monitorId = req.params.id;
-    const matchingOpenShifts = await getOpenShiftsBy(monitorId) 
-    // console.log(monitorId, matchingOpenShifts)
-    
-    // Update the monitor's vaca field to an empty array
-    await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
-
-    //Remove all objects in arr where monitorId matches, regardless of openShiftId
-    await VacationLookup.updateMany(
-      {}, //Query all documents
-      { $pull: { monitorAndOpenShift: { monitorId: monitorId } } } //$pull removes all documents w/ matching monitorId
-    );
-
-    // Delete all VacationLookup documents where monitorAndOpenShift is now empty
-    await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } });
-
-    //Delete all openShifts associated with monitorId
-    for (const id of matchingOpenShifts) {
-      await deleteOpenShift(id)
+  },
+  deleteRegularShift: async (req, res) => {
+    try {
+      const regularShift = await RegularShift.findById(req.params.id)
+      if(!regularShift){
+        console.log("Regular Shift not found")
+        return res.redirect("/parking/home")
+      }
+      await RegularShift.findByIdAndDelete(req.params.id)
+      console.log("Regular Shift has been deleted!");
+      res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-
-    console.log(`All vacation cleared for monitor with ID: ${monitorId}`)
-    console.log(`All matching overtime shifts associated with monitor ID: ${monitorId} deleted`)
-    res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
-  } catch (err) {
-    console.error(`Error clearing vacation for monitor: ${err}`);
-    res.redirect('/parking/home'); // Redirect to home on error
-  }
-},
-deleteOvertimeBid: async (req, res) =>{
-  try{
-    console.log("Request ID:", req.params.id);
-    const bidId = req.params.id;
-    if(!bidId){
-      console.log("Monitor not found")
+  },
+  deleteOpenShift: async (req, res) => {
+    try {
+      const openShift = await OpenShift.findById(req.params.id)
+      if(!openShift){
+        console.log("Open Shift not found")
+        return res.redirect("/parking/home")
+      }
+      // await OpenShift.findByIdAndDelete(req.params.id)
+      await deleteOpenShift(req.params.id) //Call helper function to delete
+      console.log("Open Shift has been deleted!");
+      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
     }
-    // This deletes everything inside, leaving document intact
-    // await OvertimeBid.findByIdAndUpdate(bidId, { $set: { rankings: [] } })
-    await OvertimeBid.deleteOne({ _id: bidId }) //Delete entire document
-    console.log(`Rankings cleared for Overtime Bid with ID: ${bidId}`)
-    res.redirect("/parking/overtime?tab=openShift-tab#displayOvertime")
-  } catch(err){
-    console.error(err);
-    res.redirect('/parking/home'); // Redirect to home on error
+  },
+  deleteOneVacation: async (req, res) => {
+    try {
+      const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
+      console.log(vacaId, monitorId, date, dayRaw, openShiftId)
+      console.log(monitorId, openShiftId)
+      // console.log(req.body)
+      const dateObj = new Date(dayRaw) //Processing into a date for comparison
+
+      // Remove this monitor from all vacation lookup days
+      await Monitor.findOneAndUpdate(
+        { _id: monitorId }, //find all documents where monitorId matches
+        { $pull: { vaca: date } } //$pull deletes each matched instance (5/1/25)
+      );
+
+      // Delete monitor from vacationLookup's monitorAndOpenShift field
+      const vacLookup = await VacationLookup.findOneAndUpdate(
+        { day: dateObj }, //2025-06-23T04:00:00.000+00:00
+        { $pull: { monitorAndOpenShift: { monitorId: monitorId, openShiftId: openShiftId} } }, 
+        { new: true } //return updated document
+      );
+
+      // Delete corresponding overtime shift
+      await deleteOpenShift(openShiftId)
+
+      // If monitorAndOpenShift is now empty, delete the VacationLookup document
+      if (vacLookup && vacLookup.monitorAndOpenShift.length === 0) {
+        await VacationLookup.deleteOne({ _id: vacLookup._id });
+        console.log("Deleted empty date!")
+      }
+
+      console.log(`Vacation cleared for date: ${date}`);
+      console.log(`Overtime shift deleted`)
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
+    } catch (err) {
+      console.error(`Error clearing vacation for date: ${err}`);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteAllVacation: async (req, res) => {
+    try {
+      const monitorId = req.params.id;
+      const matchingOpenShifts = await getOpenShiftsBy(monitorId) 
+      // console.log(monitorId, matchingOpenShifts)
+      
+      // Update the monitor's vaca field to an empty array
+      await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
+
+      //Remove all objects in arr where monitorId matches, regardless of openShiftId
+      await VacationLookup.updateMany(
+        {}, //Query all documents
+        { $pull: { monitorAndOpenShift: { monitorId: monitorId } } } //$pull removes all documents w/ matching monitorId
+      );
+
+      // Delete all VacationLookup documents where monitorAndOpenShift is now empty
+      await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } });
+
+      //Delete all openShifts associated with monitorId
+      for (const id of matchingOpenShifts) {
+        await deleteOpenShift(id)
+      }
+
+      console.log(`All vacation cleared for monitor with ID: ${monitorId}`)
+      console.log(`All matching overtime shifts associated with monitor ID: ${monitorId} deleted`)
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
+    } catch (err) {
+      console.error(`Error clearing vacation for monitor: ${err}`);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteOvertimeBid: async (req, res) =>{
+    try{
+      console.log("Request ID:", req.params.id);
+      const bidId = req.params.id;
+      if(!bidId){
+        console.log("Monitor not found")
+      }
+      // This deletes everything inside, leaving document intact
+      // await OvertimeBid.findByIdAndUpdate(bidId, { $set: { rankings: [] } })
+      await OvertimeBid.deleteOne({ _id: bidId }) //Delete entire document
+      console.log(`Rankings cleared for Overtime Bid with ID: ${bidId}`)
+      res.redirect("/parking/overtime?tab=openShift-tab#displayOvertime")
+    } catch(err){
+      console.error(err);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteOvertimeAuditWinners: async (req, res) =>{
+    try{
+      clearOvertimeAuditAndScheduleWinners()
+      console.log(`Route deleteOvertimeAuditWinners successfully ran!`)
+      res.redirect("/parking/overtime?tab=overtimeAssignment-tab#overtime#displayOvertimeWinners")
+    } catch(err){
+      console.error(err);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteHoliday: async (req, res) => {
+    try{
+      const holidayToDelete  = await Holiday.findById(req.params.id)
+      if(!holidayToDelete){
+        console.log("Holiday not found")
+        return res.redirect("/parking/home")
+      }
+
+      await Holiday.findByIdAndDelete(req.params.id)
+      console.log("Holiday has been deleted!");
+      res.redirect("/parking/holiday");
+    }catch(err){
+      console.error(err);
+      res.redirect("/parking/home")
+    }
   }
-},
-deleteOvertimeAuditWinners: async (req, res) =>{
-  try{
-    clearOvertimeAuditAndScheduleWinners()
-    console.log(`Route deleteOvertimeAuditWinners successfully ran!`)
-    res.redirect("/parking/overtime?tab=overtimeAssignment-tab#overtime#displayOvertimeWinners")
-  } catch(err){
-    console.error(err);
-    res.redirect('/parking/home'); // Redirect to home on error
-  }
-},
 
   // SERVICES
   //

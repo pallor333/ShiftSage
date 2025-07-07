@@ -243,7 +243,6 @@ module.exports = {
             // const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
             const openShiftByOpenShiftId = openShiftLookupByOpenShiftIdTable(openShifts)
             // const vacationByDate = vacationLookupByDateTable(vacaLookup)
-            // console.log(vacationByDate)
 
             //1) Create list of monitors working each day of NEXT week. 
             //Convert date to 'YYYY-MM-DD' to match schema

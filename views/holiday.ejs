@@ -1,0 +1,49 @@
+<%- include('partials/header') -%>
+
+<!-- Page 4: Holiday -->
+<main class="container">
+    <!-- View and Delete Holiday -->
+    <section id="displayHoliday" class="mt-5">
+        <h2>University Holidays</h2>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <% holidays.forEach((holiday) => { %>
+                    <tr>
+                        <td><%= holiday.name %>:  <%= holiday.date %></td>
+                        <td> <!-- Delete Button-->
+                            <form action="/parking/holiday/deleteHoliday/<%= holiday._id %>" method="POST">
+                                <button type="submit" class="btn btn-warning btn-sm">Delete Holiday</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>    
+        </table>
+    </section>
+
+    <!-- Add Holiday -->
+    <section id="vacation" class="mt-5">
+        <h2>Add University Holiday</h2>
+        <form action="/parking/holiday" method="POST" class="row g-3">
+            <!-- Holiday Name Section -->
+            <section class="col-md-6">
+                <label for="displayName" class="form-label">Name</label>
+                <!-- <input type="text" class="form-control" id="regularShiftName" name="regularShiftName" required> -->
+                <input type="text" class="form-control" id="holidayName" name="name" required>
+            </section>
+            <!-- Add Holiday Date -->
+            <section class="col-md-6">
+                <label for="holiday" class="form-label">Location Name</label>
+                <input type="date" class="form-control" id="addHoliday" name="date" required>
+            </section>
+            <!-- Submit Button -->
+            <section class="col-12">
+                <button type="submit" class="btn btn-primary">Add Holiday</button>
+            </section>
+        </form>
+    </section>
+
+</main>
+
+<%- include('partials/footer') -%>
+

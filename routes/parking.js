@@ -18,10 +18,11 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 ///////////////// Routes for Shift Sage
 // Displaying dashboard page
 router.get("/home", parkingController.getHomePage);
-// Routes for edit, overtime and schedule
+// Routes for edit, overtime, schedule, holiday
 router.get("/edit", ensureAuth, parkingController.getEditPage);
 router.get("/overtime", ensureAuth, parkingController.getOvertimePage);
 router.get("/schedule", ensureAuth, parkingController.getSchedulePage);
+router.get("/holiday", ensureAuth, parkingController.getHolidayPage);
 // Button to calculate overtime bids
 router.get("/overtime/calculate", ensureAuth, parkingController.calculateOvertimeBid);
 
@@ -31,19 +32,19 @@ router.get("/monitor/:id", ensureAuth, parkingController.getMonitor);
 router.get("/location/:id", ensureAuth, parkingController.getLocation);
 router.get("/shift/:id", ensureAuth, parkingController.getRegularShift);
 
-
-
 // POST routes to add new entries
 router.post("/monitor", ensureAuth, parkingController.addMonitor)
 router.post("/location", ensureAuth, parkingController.addLocation)
 router.post("/regularShift", ensureAuth, parkingController.addRegularShift)
 router.post("/openShift", ensureAuth, parkingController.addOpenShift)
 router.post("/vacation", ensureAuth, parkingController.addVacation)
+router.post("/holiday", ensureAuth, parkingController.addHoliday)
 
 // POST routes to edit entries
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
 router.post("/openShift/edit/:id", ensureAuth, parkingController.updateOpenShift);
 router.post("/overtime/rank/:id", ensureAuth, parkingController.updateOvertimeBid);
+router.post("/regularShift/edit/:id", ensureAuth, parkingController.updateRegularShift);
 
 // router.get("/shift/edit/:id", ensureAuth, parkingController.editShift);
 // router.get("/location/edit/:id", ensureAuth, parkingController.editLocation);
@@ -57,6 +58,7 @@ router.post('/monitor/deleteAllVacation/:id', ensureAuth, parkingController.dele
 router.post('/monitor/deleteOneVacation', ensureAuth, parkingController.deleteOneVacation);
 router.post("/overtime/deleteBid/:id", ensureAuth, parkingController.deleteOvertimeBid);
 router.get("/overtime/deleteOvertimeAuditWinners", ensureAuth, parkingController.deleteOvertimeAuditWinners);
+router.post("/holiday/deleteHoliday/:id", ensureAuth, parkingController.deleteHoliday)
 
 
 module.exports = router;

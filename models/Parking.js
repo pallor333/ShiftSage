@@ -20,6 +20,11 @@ const RegularShiftSchema = new Schema({
     required: true}], 
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
+  type: { 
+    type: String,
+    enum: ["firstShift", "secondShift", "thirdShift", "none"],
+    default: "none"
+   },
 });
 
 const OpenShiftSchema = new Schema({
@@ -115,6 +120,13 @@ const vacationByDaySchema = new Schema({
   ]
 })
 
+const holidaySchema = new Schema({
+  name: { type: String, required: true},
+  month: { type: Number, required: true},
+  day: { type: Number, required: true},
+  // date: { type: Date, required: true}
+})
+
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
   Monitor: mongoose.model("Monitor", MonitorSchema),
@@ -124,7 +136,8 @@ module.exports = {
   OvertimeBid: mongoose.model("OvertimeBid", OvertimeBidsSchema),
   OvertimeSchedule: mongoose.model("OvertimeWinnersForSchedule", OvertimeWinnersForScheduleSchema),
   OvertimeAudit: mongoose.model("OvertimeWinnersForAudit", OvertimeWinnersForAuditSchema),
-  VacationLookup: mongoose.model("vacationByDaySchema", vacationByDaySchema),
+  VacationLookup: mongoose.model("VacationByDay", vacationByDaySchema),
+  Holiday: mongoose.model("Holiday", holidaySchema),
 };
 
 

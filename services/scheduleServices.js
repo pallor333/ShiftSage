@@ -147,25 +147,25 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
 
         //Filter regular shifts
         const shiftsToday = regularShifts.filter(s => s.days.includes(dayName))
-
+        // console.log(openShiftById)
         //Add OT shifts to shiftsToday 
         otShiftsToday.shifts.forEach((shiftObj, shiftId) => {
+          //BUG WHY ARE SOME OF THESE UNDEFINED? THEY SHOULD NEVER BE UNDEFINED
+          // console.log(shiftId, openShiftById.get(shiftId)?.startTime)
           shiftsToday.push({
                 _id: shiftId, //open shift Id
                 name: shiftObj.monitorName, //monitor name from obj
                 location: shiftObj.locationId._id, //location Id //overtimeCalcs[dayName][shift].locationId._id, //locationId
                 overtime: true,
-                startTime: openShiftById.get(shiftId).startTime, //use lookup table
-                endTime: openShiftById.get(shiftId).endTime, 
+                startTime: openShiftById.get(shiftId)?.startTime, //use lookup table
+                endTime: openShiftById.get(shiftId)?.endTime, 
           })
         }) 
-        // console.log(shiftsToday)
+        
         //Normalize regular/ot shift into one single format
         const normalizedShiftsToday = normalizeShifts(shiftsToday, monitorByShiftId, locationById)
-        // console.log(normalizedShiftsToday)
         //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
         const monitorShiftsArr = coaleseAndSort(normalizedShiftsToday)
-        // console.log(monitorShiftsArr)
         //3) Populate table
         //Loop over shifts and populate table
         monitorShiftsArr.forEach( (shift, idx) => {
@@ -188,7 +188,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
             }
           }) 
         }) 
-
+        // if(i===0 && Object.keys(rows).length === 9){ console.log( rows ) }
         //Compile all 7 tables
         schedule[dayName] = {
           locations: locationMonitors.map(l => l[0]), //extract location names
@@ -197,7 +197,7 @@ function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, 
           //new Date(date.getTime() + (i * 24 * 60 * 60 * 1000)), 
           // isWeekend, 
         } 
-    }
+    } //END OF FOR LOOP
 
     return{
       weekStart: wkStart, 
