@@ -1,7 +1,7 @@
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
 const { calculateShiftHours, formatDate, formatTime, getNextThurs } = require('../utils/dateHelpers')
-const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable } = require('../utils/lookupHelpers')
+const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
 const { getWorksheetColumnWidths } = require("json-as-xlsx")
@@ -139,31 +139,37 @@ async function getOpenShiftsBy(monitorId){
 }
 //Helper function: Creates overtime shifts of every shift on a holiday
 async function holidayOvertimeCreator(){
-
+  const { regularShifts } = await fetchCommonData()
+  const regularShiftLookupTable = regularShiftLookupByRegularShiftIdTable(regularShifts)
   //1)given this week's date start -> end => helper function returns true if there's vacation this week
-  const currentHoliday = await holidayNextWeek(getNextThurs(THISWEEK))
+  const currentHoliday = await holidayNextWeek(getNextThurs(new Date("6/29/25")))   //THISWEEK))
   if(currentHoliday === false) return //exit early if holiday is not found
   
   //2)helper function returns array of regular shift IDs that qualify
-  const regularShiftIds = await qualifyingRegularShifts(currentHoliday)
-  //TODO: Need to revise this: Location+Time. PLUS, aren't uni holidays ALWAYS weekdays?
-  //If they're only weekdays then the logic changes.
+  const shiftIdsByDay = await qualifyingRegularShifts(currentHoliday)
+  console.log(shiftIdsByDay)
 
   //3)loop over array regular shift IDs, defining data{} -> pass to createOpenShift()
-  // regularShiftIds.forEach(shift => {
-  //   const data = {
+  for(let day in shiftIdsByDay){
+    shiftIdsByDay[day].forEach(id => {
+      const shift = regularShiftLookupTable.get(id.toString())
+      // console.log(shift)
+      const data = {
         //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
-      //   name: `${shortDay} ${req.body.date} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
-      //   location: req.body.shiftLocation, // ObjectId of the location
-      //   day: req.body.day,
-      //   date: paddedDate, //req.body.date,
-      //   startTime: startTime,
-      //   endTime: endTime,
-      //   totalHours: totalHours,
-      //   recurring: !!req.body.openEveryWeek // Convert truthy/falsy value to Boolean
-      // }
+        // name: `${shortDay} ${req.body.date} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
+        // location: shift.shiftLocation, // ObjectId of the location
+        // day: day,
+        // date: paddedDate, //req.body.date,
+        // startTime: startTime,
+        // endTime: endTime,
+        // totalHours: totalHours,
+        // recurring: false // Convert truthy/falsy value to Boolean
+      }
+
+      // console.log(data)
+    })
+  }
   //   createOpenShift(data)
-  // })
 
 }
 //Helper function: Given this week, return holiday if found or false
@@ -185,24 +191,30 @@ async function holidayNextWeek([wkStart, wkEnd]){
 }
 //Helper function: Given holiday, return regular shift id array
 async function qualifyingRegularShifts(currentHoliday){
-  //Holiday starts 11pm the night before. 3rd shift day of holiday does not count.
-  //E.G for July 4th: July 3rd 11pm shift, July 4th 7am shift, July 4th 2pm shift, NOT july 4 11pm 
-  const{ regularShifts } = await fetchCommonData()
-  const regularShiftArr = []
+  //Qualifying shifts = 3rd shift day before + 1st and 2nd day of. 
+  const{ monitors } = await fetchCommonData()
+  // Finding the day of holiday + day before holiday
   const dayNumberized = (new Date(currentHoliday).getDay() + 3) % 7
-  const holidayYesterday = DAYSARRAY[dayNumberized-1]
-  const holidayOf = DAYSARRAY[dayNumberized]
-  console.log(holidayOf, holidayYesterday)
-  //Regular shift -> Open shift if any hours of the shift overlap
-  regularShifts.forEach(shift=> {
-    let shiftDay = shift.days, shiftStart = shift.startTime 
-    // console.log(shiftDay)
-    if(shiftDay.includes(holidayOf) || shiftDay.includes(holidayYesterday)){
-      // console.log(shift.name, shiftDay, formatTime(shiftStart), formatTime(shift.endTime))
-    }
-  })
+  const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
 
-  return regularShiftArr
+  //Loop over Monitor's regular shifts to populate { dayBefore: [shiftIds], holiday: [shiftIds] } 
+  return monitors.reduce((obj, mon) => {
+    const shift = mon.regularShift
+
+    //populating day before holiday
+    if(shift.days.includes(holidayBefore) && shift.type.includes("thirdShift")){ 
+      if(!obj[holidayBefore]) obj[holidayBefore] = []
+      obj[holidayBefore].push(shift._id)
+    } 
+    //populating holiday
+    if(shift.days.includes(holidayToday) && 
+        (shift.type.includes("firstShift") || shift.type.includes("secondShift")) ){ 
+      if(!obj[holidayToday]) obj[holidayToday] = []
+      obj[holidayToday].push(shift._id)
+    }     
+
+    return obj
+  }, {})
 }
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 

@@ -33,9 +33,17 @@ function monitorLookupByMonitorIdTable(monitors){
 function openShiftLookupByOpenShiftIdTable(openShifts){
   const openShiftByopenShiftId = new Map()
   openShifts.forEach(shift => { // openShift_id: {openShift object}
-      openShiftByopenShiftId.set(shift._id.toString(), shift) // monitorID is key
+      openShiftByopenShiftId.set(shift._id.toString(), shift) // shiftID is key
   })
   return openShiftByopenShiftId
+}
+// Pre-index regular shifts by regularshift Id for O(1) lookup
+function regularShiftLookupByRegularShiftIdTable(regularShifts){
+  const regularShiftLookupByRegularShiftId = new Map()
+  regularShifts.forEach(shift => { // regularShift_id: {regularShift object}
+      regularShiftLookupByRegularShiftId.set(shift._id.toString(), shift) // shiftID is key
+  })
+  return regularShiftLookupByRegularShiftId
 }
 // Pre-index vacation by date for O(1) lookup
 function vacationLookupByDateTable(vacationSchema){
@@ -48,4 +56,4 @@ function vacationLookupByDateTable(vacationSchema){
 
 
 //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) 
-module.exports = { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, vacationLookupByDateTable}
+module.exports = { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, vacationLookupByDateTable}
