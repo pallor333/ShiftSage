@@ -19,10 +19,10 @@
 // 1) List of overtime shifts
 // 2) hours added to each monitor 
 const { Monitor, OpenShift, OvertimeBid, VacationLookup} = require("../models/Parking")
-const { getFixedTimeRange, getNextThurs } = require('../utils/dateHelpers')
+const { convertDateToMDYY, getFixedTimeRange, getNextThursDateObj} = require('../utils/dateHelpers')
 const { openShiftLookupByOpenShiftIdTable, vacationLookupByDateTable} = require('../utils/lookupHelpers')
 
-const THISWEEK = new Date("4/30/25") //temp hardcoding date:
+const THISWEEK = new Date("6/29/25")  //new Date("4/30/25") //temp hardcoding date:
 
 /************** Helper functions *******************/
 //Given monitor and overtimeShift, returns true/false for scheduling conflict
@@ -72,18 +72,19 @@ function monitorNoVacaThisWeek(monitors, date){
         return { ...m, vacaSet } 
     })
 
+    //Convert to M/D/YY
+    // const strDate = convertDateToMDYY(date)
     //Each day, get date str and include monitors NOT on vaca
     dayNames.forEach((day, i) => {
         const currentDateStr = new Date(date.getTime() + i * msPerDay).toISOString().slice(0, 10)
         // console.log(`\n📅 ${day.toUpperCase()} (${currentDateStr})`)
-        // workingMonitors[day] = monitorsWithVacaSet.filter(m => !m.vacaSet.has(currentDateStr))
         workingMonitors[day] = monitorsWithVacaSet.filter(m => {
             const isOnVacation = m.vacaSet.has(currentDateStr);
             // console.log(`  - ${m.name}: ${isOnVacation ? "❌ ON VACATION" : "✅ AVAILABLE"}`);
             return !isOnVacation;
         })
-        
     })
+
     //Returns an array of monitor objects who are not on vacation keyed by day
     return workingMonitors
     // Filter monitors on vacation by converting dates to strings
@@ -170,7 +171,7 @@ function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpen
             //2b) Ensure openShift is not assigned to more than one person
             while(entry.rankings.length > 0 && !assigned){
                 const shiftId = entry.rankings[0].position.toString() //From monitor's first pick get openShift_id
-                const openShift = openShiftByOpenShiftId.get(shiftId) //grab openShift object from lookup table
+                const openShift = openShiftByOpenShiftId.get(shiftId.toString()) //grab openShift object from lookup table
                 const startEnd = getFixedTimeRange(openShift.startTime, openShift.endTime)
                 const monId = entry.monitor._id
 
@@ -229,32 +230,41 @@ function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpen
     }
     // overtimeWinnersByOpenShift is an object keyed by day -> use for scheduling
     // assignedShiftsByOrder is an array sorted by order of shift assignment -> use in auditing
-    // console.log(overtimeWinnersByOpenShift.get('thursday'))
+    console.log(overtimeWinnersByOpenShift.get('thursday'))
     return [overtimeWinnersByOpenShift, assignedShiftsByOrder]
 }
 
 module.exports = {
     allocateOvertime: async() => {
         try{
+            //1) Create list of monitors working each day of NEXT week. 
+            //Convert date to 'YYYY-MM-DD' to match schema
+            const [wkStart, wkEnd] = getNextThursDateObj(THISWEEK)
+            // console.log(wkStart, wkEnd)
+            // const [m, d, y] = wkStart.split("/").map(Number)
+            // const formattedDate = new Date(y, m - 1, d) //2025-05-01T04:00:00.000Z or 5/1/25
+            // const startDateObj = new Date(wkStart), endDateObj = new Date(wkEnd)
+
+            //2) Grabbing data from DB
             //Using lean() bcos reading data and not calling .save() or Mongoose instance methods.
             const monitors = await Monitor.find().populate("regularShift location").sort( {hours: 1}).lean() //.lean() returns plain JS objects
-            const openShifts = await OpenShift.find().populate("location").sort({ date: 1, startTime: 1})
-            const overtimeBidMonitors = await OvertimeBid.find().populate("monitor").lean() 
             // const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
+            const openShifts = await OpenShift.find({ // Dates >= 5/1/25 // Dates <= 5/7/25
+                date: { $gte: wkStart, $lte: wkEnd } //grab shifts bound by start/end of next week
+            }).populate("location").sort({ date: 1, startTime: 1})
+            // console.log(openShifts)
+            // console.log(wkStart.toISOString(), wkEnd.toISOString());
+
+            const overtimeBidMonitors = await OvertimeBid.find().populate("monitor").lean() 
             const openShiftByOpenShiftId = openShiftLookupByOpenShiftIdTable(openShifts)
             // const vacationByDate = vacationLookupByDateTable(vacaLookup)
 
-            //1) Create list of monitors working each day of NEXT week. 
-            //Convert date to 'YYYY-MM-DD' to match schema
-            const [wkStart, _] = getNextThurs(THISWEEK)
-            const [m, d, y] = wkStart.split("/").map(Number)
-            const formattedDate = new Date(y, m - 1, d) //2025-05-01T04:00:00.000Z or 5/1/25
-
+            //2.5) Remove monitors on vacation this week
             // {thursday: [list of monitor objects working today], friday: [monitor objects], etc} - 7 days
-            let eligibleMonitorsByDay = monitorNoVacaThisWeek(monitors, formattedDate) 
+            let eligibleMonitorsByDay = monitorNoVacaThisWeek(monitors, wkStart) 
             // const result = monitorNoVacaThisWeek(monitors, new Date("2025-05-01"))
 
-            //2) Sort working monitors with overtime bids and assign them openShifts.
+            //3) Sort working monitors with overtime bids and assign them openShifts.
             let overtimeWinners = assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors) //, vacationByDate)
  
             return overtimeWinners

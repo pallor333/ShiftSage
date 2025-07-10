@@ -1,10 +1,10 @@
 {
-  "name": "binary-upload-boom",
+  "name": "ShiftSage",
   "version": "1.0.0",
-  "description": "100Devs Social Network",
+  "description": "Calculating overtime bids hours charged, and rendering a schedule",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon server.js --ignore debug_weeklyTable.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

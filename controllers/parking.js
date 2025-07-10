@@ -1,7 +1,7 @@
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
-const { calculateShiftHours, formatDate, formatTime, getNextThurs } = require('../utils/dateHelpers')
-const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable } = require('../utils/lookupHelpers')
+const { calculateShiftHours, formatDate, formatTime, getNextThurs, getPreviousDay, getNextThursDateObj } = require('../utils/dateHelpers')
+const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
 const { getWorksheetColumnWidths } = require("json-as-xlsx")
@@ -11,7 +11,7 @@ const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //const [month, day, year] = [new Date().getMonth() + 1, new Date().getDate(), new Date().getFullYear()];
 //console.log(`${month}/${day}/${year}`); // "5/22/2025"
 //temp hardcoding date:
-const THISWEEK = new Date("4/30/25") //new Date("6/29/25")
+const THISWEEK = new Date("6/29/25")//new Date("4/30/25") //new Date("6/29/25")
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
@@ -36,7 +36,7 @@ async function addOpenShiftFromVacation(monitorId, dateRange){
   for(const date of dateRange){
     //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
     const currentDay = DAYSARRAY[(date.getDay() + 3) % 7]
-    const currentDate = `${date.getMonth() + 1}/${date.getDate()}`
+    const currentDate = date //`${date.getMonth() + 1}/${date.getDate()}`
 
     //If vacation day = day in monitor's regular shift
     if(shiftDays.includes(currentDay)){ 
@@ -92,6 +92,16 @@ async function clearOvertimeAuditAndScheduleWinners() {
 }
 //Helper function: Adds open shift to open shift Schema
 async function createOpenShift(data) {
+    const existingShift = await OpenShift.findOne({
+    date: data.date,
+    startTime: data.startTime,
+    location: data.location
+  });
+
+  if (existingShift) { //if entry already in the schema
+    return existingShift._id; 
+  }
+
   // Required bc monitor vacation = create open shift
   const newOpenShift = await OpenShift.create(data)
   return newOpenShift._id //Return for vacation schema
@@ -139,49 +149,56 @@ async function getOpenShiftsBy(monitorId){
 }
 //Helper function: Creates overtime shifts of every shift on a holiday
 async function holidayOvertimeCreator(){
+  //0)given this week's date start -> end => helper function returns true if there's vacation this week
+  const currentHoliday = await holidayNextWeek(getNextThursDateObj(new Date("6/29/25")))   //THISWEEK))
+  if(currentHoliday === false) {
+    console.log("No Holiday this week.")
+    return //exit early if holiday is not found
+  }
+  //1) Grab regularShifts and create a lookup table
   const { regularShifts } = await fetchCommonData()
   const regularShiftLookupTable = regularShiftLookupByRegularShiftIdTable(regularShifts)
-  //1)given this week's date start -> end => helper function returns true if there's vacation this week
-  const currentHoliday = await holidayNextWeek(getNextThurs(new Date("6/29/25")))   //THISWEEK))
-  if(currentHoliday === false) return //exit early if holiday is not found
-  
+
   //2)helper function returns array of regular shift IDs that qualify
   const shiftIdsByDay = await qualifyingRegularShifts(currentHoliday)
-  console.log(shiftIdsByDay)
+  // console.log(shiftIdsByDay)
 
   //3)loop over array regular shift IDs, defining data{} -> pass to createOpenShift()
   for(let day in shiftIdsByDay){
-    shiftIdsByDay[day].forEach(id => {
-      const shift = regularShiftLookupTable.get(id.toString())
-      // console.log(shift)
+    shiftIdsByDay[day].forEach(entry => {
+      //Format data for overtime Schema
+      const shift = regularShiftLookupTable.get(entry.id.toString())
+      const totalHours = calculateShiftHours(shift.startTime, shift.endTime)
+      const formattedStartTime = shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      const formattedEndTime = shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      // console.log(new Date(entry.date))
       const data = {
         //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
-        // name: `${shortDay} ${req.body.date} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
-        // location: shift.shiftLocation, // ObjectId of the location
-        // day: day,
-        // date: paddedDate, //req.body.date,
-        // startTime: startTime,
-        // endTime: endTime,
-        // totalHours: totalHours,
-        // recurring: false // Convert truthy/falsy value to Boolean
+        name: `${DAYMAPPING[entry.day]} ${formatDate(entry.date)} ${entry.location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
+        location: entry.location, // ObjectId of the location
+        day: entry.day,
+        date: new Date(entry.date), 
+        startTime: shift.startTime,
+        endTime: shift.endTime,
+        totalHours: totalHours,
+        recurring: false // Convert truthy/falsy value to Boolean
       }
-
-      // console.log(data)
+      // if(data.day==='thursday') console.log(data)
+      createOpenShift(data) //Pass data to create new OT shift
     })
   }
-  //   createOpenShift(data)
-
 }
 //Helper function: Given this week, return holiday if found or false
 async function holidayNextWeek([wkStart, wkEnd]){
   const { holidays } = await fetchCommonData()
-  const [wkStartMonth, wkStartDay, year] = wkStart.split('/')
-  const wkEndDay = wkEnd.split('/')[1]
+  const wkStartMonth = wkStart.getMonth() + 1, wkStartDay = wkStart.getDate()
+  const wkEndDay = wkEnd.getDate(), year = String(wkEnd.getFullYear()).slice(-2)
+  // console.log(wkStartMonth, wkStartDay, wkEndDay, year) //7 3 9 25
 
   for(let holiday of holidays){
-    const day = holiday.day.toString()
+    const day = holiday.day
     //holiday found = exit early
-    if(holiday.month.toString() === wkStartMonth){
+    if(holiday.month === wkStartMonth){
       if(wkStartDay <= day && day <= wkEndDay){
         return `${holiday.month}/${day}/${year}`
       }
@@ -190,32 +207,44 @@ async function holidayNextWeek([wkStart, wkEnd]){
   return false
 }
 //Helper function: Given holiday, return regular shift id array
-async function qualifyingRegularShifts(currentHoliday){
+async function qualifyingRegularShifts(dateHoliday){
   //Qualifying shifts = 3rd shift day before + 1st and 2nd day of. 
   const{ monitors } = await fetchCommonData()
   // Finding the day of holiday + day before holiday
-  const dayNumberized = (new Date(currentHoliday).getDay() + 3) % 7
+  const dateBefore = getPreviousDay(dateHoliday)
+  const dayNumberized = (new Date(dateHoliday).getDay() + 3) % 7
   const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
-
-  //Loop over Monitor's regular shifts to populate { dayBefore: [shiftIds], holiday: [shiftIds] } 
+  
+  //Loop over Monitor's regular shifts to populate { thursday: [ { id: objectId, date: date, day: day, location: location } ] } 
   return monitors.reduce((obj, mon) => {
     const shift = mon.regularShift
 
     //populating day before holiday
     if(shift.days.includes(holidayBefore) && shift.type.includes("thirdShift")){ 
       if(!obj[holidayBefore]) obj[holidayBefore] = []
-      obj[holidayBefore].push(shift._id)
+      obj[holidayBefore].push({
+        id: shift._id,
+        day: holidayBefore,
+        date: dateBefore,
+        location: mon.location,
+      }) 
     } 
     //populating holiday
     if(shift.days.includes(holidayToday) && 
         (shift.type.includes("firstShift") || shift.type.includes("secondShift")) ){ 
       if(!obj[holidayToday]) obj[holidayToday] = []
-      obj[holidayToday].push(shift._id)
+      obj[holidayToday].push({
+        id: shift._id,
+        day: holidayToday,
+        date: dateHoliday,
+        location: mon.location,
+      })
     }     
 
     return obj
   }, {})
 }
+
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
 module.exports = {
@@ -286,7 +315,14 @@ module.exports = {
   //Overtime page
   getOvertimePage: async (req, res) => {
     try { 
-      const { monitors, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup} = await fetchCommonData()
+      const { monitors, locations, overtimeBid, overtimeAudit, vacaLookup} = await fetchCommonData()
+
+      //openShifts
+      const [wkStart, wkEnd] = getNextThurs(THISWEEK)
+      const startDateObj = new Date(wkStart), endDateObj = new Date(wkEnd)
+      const openShifts = await OpenShift.find({ // Dates >= 5/1/25 // Dates <= 5/7/25
+          date: { $gte: startDateObj, $lte: endDateObj } //grab shifts bound by start/end of next week
+      }).populate("location").sort({ date: 1, startTime: 1})
       // console.log(overtimeAudit)
 
       //Automatically regular shift -> overtime shift if holiday
@@ -561,13 +597,9 @@ module.exports = {
       const formattedStartTime = startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       const formattedEndTime = endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       const location = await Location.findById(req.body.shiftLocation) //Get location
-
-      //Pad to normalize MM/DD format
-      const padDateString = (dateStr) => {
-        const [month, day] = dateStr.split('/');
-        return `${month.padStart(2, '0')}/${day.padStart(2, '0')}`;
-      }
-      const paddedDate = padDateString(req.body.date)
+      //Date
+      const rawDate = req.body.date; // Native browser input is always YYYY-MM-DD e.g. "2025-05-01"
+      const parsedDate = new Date(rawDate); // => Date("2025-05-01T00:00:00.000Z")
 
       //await OpenShift.create({
       const data = {
@@ -575,7 +607,7 @@ module.exports = {
         name: `${shortDay} ${req.body.date} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
         location: req.body.shiftLocation, // ObjectId of the location
         day: req.body.day,
-        date: paddedDate, //req.body.date,
+        date: parsedDate, 
         startTime: startTime,
         endTime: endTime,
         totalHours: totalHours,
@@ -592,7 +624,7 @@ module.exports = {
   },
   addVacation: async (req, res) => {  
   try{
-    const { vacationMonitorSelect, startDate, endDate} = req.body
+    const { vacationMonitorSelect, startDate, endDate } = req.body
     // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
 
     //Parse local dates + split before declaring the date
@@ -754,7 +786,6 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       for(const id in rankings){
         if(rankings[id]){ //Filter rankings to remove empty values
           const date = openShiftTable.get(id).date
-          // console.log(vacation, date, vacation.includes(date))
           // Do not allow a bid if the monitor is on vacation
           // Skip if monitor is on vacation for this date
           if(vacation && vacation.includes(date)){ continue }
@@ -769,8 +800,6 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
         {
           $set: {
             rankings: rankingArr, //insert formatted rankings
-            // monitorHours: monitor.hours,
-            // monitorSeniority: monitor.seniority,
           },
         },
         { upsert: true } //Create new document if one doesn't exist
@@ -783,6 +812,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       res.redirect("/parking/home");
     }
   },
+  //IDK why this is empty / commented out.
   updateOvertimeWinnersRanked: async (req, res) => { 
     try {
       //   await Monitor.findByIdAndUpdate(req.params.id, {
@@ -834,6 +864,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       //Convert map object to plain object for insertion
       const formattedData = convertMapToPlainObject(overtimeWinsForSchedule)
       // console.log(formattedData.thursday)
+
       // Clear both OT schemas before inserting as new documents
       await clearOvertimeAuditAndScheduleWinners()
       
@@ -1027,7 +1058,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       res.redirect("/parking/home")
     }
   }
-
+  
   // SERVICES
   //
   //

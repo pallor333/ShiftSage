@@ -17,7 +17,8 @@ const RegularShiftSchema = new Schema({
   days: [{ 
     type: String, // monday, tuesday, wednesday, thursday, friday,etc
     enum: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"],  //restricted to these strings
-    required: true}], 
+    required: true
+  }], 
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
   type: { 
@@ -34,13 +35,22 @@ const OpenShiftSchema = new Schema({
     ref: 'Location', 
     required: true
   },
-  day: {type: String, required: true },     // monday/tuesday/wednesday, etc
-  date: {type: String, required: true},     // MM/DD
+  day: {
+    type: String, 
+    enum: ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"],
+    required: true 
+  },     
+  date: {type: Date, required: true},  // MM/DD/YY
   startTime: { type: Date, required: true, },
   endTime: { type: Date, required: true },
   totalHours: {type: Number},
   recurring: { type: Boolean, default: false },
 });
+// Add a compound unique index to prevent duplicates
+OpenShiftSchema.index( //MongoDB will block duplicate entries where date, startTime, and location are the same.
+  { date: 1, startTime: 1, location: 1 }, 
+  { unique: true }
+);
 
 const MonitorSchema = new Schema({
   id: { type: Number, required: true },
@@ -66,9 +76,6 @@ const OvertimeBidsSchema = new Schema({
     position: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
     rank: { type: Number }, // Rank assigned to the position
   }],
-  
-  // monitorHours: { type: Schema.Types.Decimal128, required: true, },
-  // monitorSeniority: {type: Date, required: true},
   //week: { type: Date, default: () => new Date() }, // Timestamp for the week
 });
 

@@ -11,7 +11,26 @@ const calculateShiftHours = (startTime, endTime) => {
   const diffInHours = diffInMilliseconds / (1000 * 60 * 60) // Convert to hours
   return diffInHours.toFixed(1) // Round to 1 decimal place
 }
+//Helper converts Date Objects or Strings to M/D/YY
+function convertDateToMDYY(input) {
+  let month, day, year;
 
+  if (input instanceof Date) {
+    month = String(input.getMonth() + 1).padStart(2, '0');
+    day = String(input.getDate()).padStart(2, '0');
+    year = String(input.getFullYear()).slice(-2);
+    return `${month}/${day}/${year}`;
+  }
+
+  // If it's already a string like M/D/YY:
+  if (typeof input === 'string') {
+    const [m, d, y] = input.split('/');
+    const fullYear = y.length === 2 ? 2000 + parseInt(y) : parseInt(y);
+    return new Date(fullYear, parseInt(m) - 1, parseInt(d));
+  }
+
+  throw new Error(`convertDateToMDYY: invalid input ${input}`);
+}
 // Helper function to format dates in MM/DD/YY format
 const formatDate = (date) => {
   const d = new Date(date);
@@ -41,7 +60,7 @@ const getFixedTimeRange = (start, end) => {
     return [startMs, endMs]
 }
 
-//Helper function to get next Thurs
+//Helper function to get next Thurs as String
 function getNextThurs(date){
   const day = date.getDay() //0 = Sun, 6 = Sat
   const wkStart = new Date(date)
@@ -49,7 +68,7 @@ function getNextThurs(date){
   //Calculate days till next Thurs
   const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7;
   wkStart.setDate(date.getDate() + daysUntilThursday)
-  const wkEnd = new Date(wkStart.getTime() + 518400000) //6 days in ms  /.604800000) // 7 days in ms
+  const wkEnd = new Date(wkStart.getTime() + 518400000) //6 days in ms  
   // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
   // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
 
@@ -57,11 +76,40 @@ function getNextThurs(date){
           `${wkEnd.getMonth() + 1}/${wkEnd.getDate()}/${String(wkEnd.getFullYear()).slice(-2)}`
           ] //Return string in format month/day/year
 }
+//Helper function to get next Thurs as Date
+function getNextThursDateObj(date){
+  const day = date.getDay() //0 = Sun, 6 = Sat
+  const wkStart = new Date(date)
 
+  //Calculate days till next Thurs
+  const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7;
+  wkStart.setDate(date.getDate() + daysUntilThursday)
+  const wkEnd = new Date(wkStart.getTime() + 518400000) //6 days in ms  
+  // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
+  // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
+
+  return [wkStart, wkEnd] //Return as Date Object
+}
+//Helper function to get previous day
+function getPreviousDay(dateStr) {
+  // Parse the input date (M/D/YY)
+  const [month, day, year] = dateStr.split('/').map(Number);
+  const date = new Date(2000 + year, month - 1, day); // 2000 + year for YY support
+
+  // Subtract 1 day (handles month/year rollover automatically)
+  date.setDate(date.getDate() - 1);
+
+  // Format back to M/D/YY
+  const prevMonth = String(date.getMonth() + 1)
+  const prevDay = String(date.getDate())
+  const prevYear = String(date.getFullYear()).slice(-2);
+
+  return `${prevMonth}/${prevDay}/${prevYear}`;
+}
 // Helper to convert 'HH:MM' to total minutes
 function toMinutes(timeStr) {
   const [hour, minute] = timeStr.split(':').map(Number)
   return hour * 60 + minute
 }
 
-module.exports = { calculateShiftHours, formatDate, formatTime, getCurrentDay, getFixedTimeRange, getNextThurs, toMinutes}
+module.exports = { calculateShiftHours, convertDateToMDYY, formatDate, formatTime, getCurrentDay, getFixedTimeRange, getNextThurs, getNextThursDateObj, getPreviousDay, toMinutes}
