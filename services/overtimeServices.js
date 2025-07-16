@@ -18,11 +18,11 @@
 //*****************************************************************************/ Once at the end, return 
 // 1) List of overtime shifts
 // 2) hours added to each monitor 
-const { Monitor, OpenShift, OvertimeBid, VacationLookup} = require("../models/Parking")
-const { convertDateToMDYY, getFixedTimeRange, getNextThursDateObj} = require('../utils/dateHelpers')
-const { openShiftLookupByOpenShiftIdTable, vacationLookupByDateTable} = require('../utils/lookupHelpers')
+const { Monitor, OpenShift, OvertimeBid, RegularShift, VacationLookup} = require("../models/Parking")
+const { convertDateToMDYY, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThursDateObj} = require('../utils/dateHelpers')
+const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, vacationLookupByDateTable} = require('../utils/lookupHelpers')
 
-const THISWEEK = new Date("6/29/25")  //new Date("4/30/25") //temp hardcoding date:
+const THISWEEK = new Date("4/30/25") //temp hardcoding date: //new Date("6/29/25")  
 
 /************** Helper functions *******************/
 //Given monitor and overtimeShift, returns true/false for scheduling conflict
@@ -30,16 +30,17 @@ const checkShiftConflict = (monitor, overtimeShift) => {
     if(!monitor.regularShift) return false
 
     //1) check if openShift conflicts with regularShift
-    const regularDays = monitor.regularShift.days // e.g. ["monday", "wednewday", "friday"]
+    const regularDays = monitor.regularShift.days // e.g. ["monday", "wednesday", "friday"]
     const overtimeDay = overtimeShift.day // e.g. "wednesday"
 
-    //only check time overlap if days conflict
+    //2) only check time overlap if days conflict
     if(!regularDays.includes(overtimeDay)) return false
 
     const [regStart, regEnd] = getFixedTimeRange(monitor.regularShift.startTime, monitor.regularShift.endTime)
     const [otStart, otEnd]   = getFixedTimeRange(overtimeShift.startTime, overtimeShift.endTime)
+    // console.log(`💡 Checking overlap: Reg [${regStart}-${regEnd}] vs OT [${otStart}-${otEnd}]`);
 
-    //check for any overlap, true = no conflict dont get charged, false = conflict, get charged
+    //3) check for any overlap, true = no conflict dont get charged, false = conflict, get charged
     return (otStart < regEnd && otEnd > regStart)
 } 
 
@@ -95,18 +96,31 @@ function monitorNoVacaThisWeek(monitors, date){
     // }) // console.log(workingMonitors.thursday)
     // return workingMonitors //Duplicate list of monitors, removing all on vacation and creating a monitor array for each day of the week
 }
+//Regular: true = overlap + dont assign shift; False = no overlap + ok to assign shift
+function monitorRegularShiftOverlapConflict(shiftTime, regStart, regEnd, monitorDays, openShiftDay){
+    if(!monitorDays.includes(openShiftDay)) return false
+    const twoHoursInMilliseconds = 1000 * 60 * 60 * 2 //1000ms, 60s, 60min = 1 hr
+    const [currSt, _] = shiftTime 
 
-//True = overlap + dont assign shift; False = no overlap + ok to assign shift
-function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
+    //1) Compare against regular shift first
+    const [regularShiftStart, rEnd] = getFixedTimeRange(regStart, regEnd)
+    const early = Math.min(currSt, regularShiftStart)
+    const later = Math.max(currSt, regularShiftStart)
+    const regTwoHrsLater = early + twoHoursInMilliseconds
+    // start2 <= (start1 + 2 hrs) = ot overlaps with regular
+    return later <= regTwoHrsLater
+}
+//Overtime true = overlap + dont assign shift; False = no overlap + ok to assign shift
+function monitorOvertimeShiftOverlapConflict(assignedMonitors, monId, shiftTime){
     // assignedMonitors = { monitorId: {shift_1: [start/endTime], shift_2: [start/endTime], shift_3: [start/endTime]} }
-    //monitor not assigned any shifts, immediately exit
+    //1) Monitor not assigned any shifts, immediately exit
     if(!assignedMonitors[monId] || !assignedMonitors[monId].time) return false
 
     const twoHoursInMilliseconds = 1000 * 60 * 60 * 2 //1000ms, 60s, 60min = 1 hr
     const [currSt, _] = shiftTime 
     const assignedShifts = assignedMonitors[monId].time
 
-    //Loop over monitor's assigned shifts
+    //2) Loop over monitor's assigned shifts
     return assignedShifts.some(([assignedSt, _]) => {
         // start times within two hours of each other = overlap
         const smallSt = Math.min(currSt, assignedSt)
@@ -116,9 +130,52 @@ function monitorShiftOverlapConflict(assignedMonitors, monId, shiftTime){
         return (smallSt <= largeSt && largeSt <= plusTwoHrs)
     })
 }
+//true = 3 shifts in a row, false means this shift would not create 3 shifts in a row
+function threeInARow(assignedMonitors, monId, openShift, regShiftAttributes, workingMultipleOT){
+    //monitor not assigned any shifts, immediately exit
+    if(!assignedMonitors[monId] || !assignedMonitors[monId].time) return false
+    //Monitor doesn't want to work more than 1 shift this week -> exit
+    // if(!workingMultipleOT) return false
+    
+    const date = openShift.date
+    //1) Grab reg shift, current ot shifts and assigned ot shifts
+    // Get regular+new shift in 'ms since epoch' format
+    const regularShift = getFixedTimeRangeISO(regShiftAttributes.start, regShiftAttributes.end, date)
+    const newShift = getFixedTimeRangeISO(openShift.startTime, openShift.endTime, date)
+    const existing = assignedMonitors[monId]?.time || [] // Get current shifts for this monitor.
+    //2) Consolidate shifts via merge and sort by start time
+    const allShifts = [regularShift, ...existing, newShift].sort((a, b) => a[0] - b[0]) 
+    //debug
+    // if(monId.toString()==='680bf5d07162e106742ea838'){
+    //     console.log("reg start/end", regShiftAttributes.start, regShiftAttributes.end)
+    //     console.log("ot start/end", openShift.startTime, openShift.endTime)
+    //     console.log("regular shift:", regularShift)
+    //     console.log("ot shift:", newShift)
+    //     console.log(allShifts)
+    // }
+    //'680bf5d07162e106742ea838' === JEFFERSON
+
+    // Now scan for any 3 consecutive shifts chained together.
+    for (let i = 0; i < allShifts.length - 2; i++) {
+        const shift1 = allShifts[i];
+        const shift2 = allShifts[i + 1];
+        const shift3 = allShifts[i + 2];
+
+        // Check if these three shifts form a consecutive block
+        const diff1 = shift1[0] <= shift2[0] && shift1[1] >= shift2[0] //start1 <= start1 <= end1
+        const diff2 = shift2[0] <= shift3[1] && shift2[1] >= shift3[0] //start2 <= start3 <= end2
+        if (diff1 && diff2) {
+            console.log(`❗ Monitor ${monId} would have 3 consecutive shifts`);
+            return true;
+        }
+    }
+
+    return false //no three consecutive shifts found
+}
+
 
 /************** Main function *******************/
-function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors){ //, vacationByDate){
+function assignOvertimeShifts(eligibleMonitorsByDay, regularShiftTable, openShifts, openShiftByOpenShiftId, overtimeBidMonitors, monTable){ //, vacationByDate){
     // let overtimeWinnersByOpenShift = {thursday: {locIds: []}, friday: {locIds: []}, saturday: {locIds: []}, sunday: {locIds: []}, monday: {locIds: []}, tuesday: {locIds: []}, wednesday: {locIds: []}}
     let assignedShifts = new Set() //Ensure two monitors don't get assigned the same shift
     let assignedMonitors = {} //Ensure monitor cannot pick up overlapping shift 
@@ -150,15 +207,15 @@ function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpen
             dayEntry.locIds.push(shift.location._id) 
         }
     })
-                        
     //1)Sort overtimeBid monitors based on hours, if hrs equal then sort based upon seniority. 
     //Create new arr w/ map() to avoid mutating original
-    let sortedOvertimeBidMonitors = overtimeBidMonitors.map(entry => ({ 
+    let sortedOvertimeBidMonitors = overtimeBidMonitors.map(entry => ({     
         ...entry, 
-        rankings: [...entry.rankings] //clone rankings array
+        rankings: [...entry.rankings], //clone rankings array
     })).sort( (a,b) => 
         a.monitor.hours - b.monitor.hours || a.monitor.seniority - b.monitor.seniority
     )
+    // console.log(sortedOvertimeBidMonitors)
 
     //2a)Loop over sortedOvertimeBidMonitors, assigning their first choice of shift
     while(sortedOvertimeBidMonitors.length > 0){ 
@@ -172,14 +229,32 @@ function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpen
             while(entry.rankings.length > 0 && !assigned){
                 const shiftId = entry.rankings[0].position.toString() //From monitor's first pick get openShift_id
                 const openShift = openShiftByOpenShiftId.get(shiftId.toString()) //grab openShift object from lookup table
-                const startEnd = getFixedTimeRange(openShift.startTime, openShift.endTime)
+                const startEnd = getFixedTimeRangeISO(openShift.startTime, openShift.endTime, openShift.date)
                 const monId = entry.monitor._id
+                const workingMultipleOT = entry.workMoreThanOne
 
-                //Check if current shift overlaps in time with an assigned shift
-                let isThereShiftOverlap = monitorShiftOverlapConflict(assignedMonitors, monId, startEnd)
+                const regShiftObj = regularShiftTable.get(entry.monitor.regularShift.toString())
+                const regShiftAttributes = { 
+                    start: regShiftObj.startTime,
+                    end: regShiftObj.endTime,
+                    type: regShiftObj.type
+                }
+                // console.log(openShift)
+                // console.log(regularShiftTable.get(monRegularShiftId.toString()))
+                // console.log(regShiftAttributes )
+
+                //Check if current shift overlaps with an assigned shift
+                const isThereRegularShiftOverlap = monitorRegularShiftOverlapConflict(startEnd, regShiftObj.startTime, regShiftObj.endTime, regShiftObj.days, openShift.day)
+                const isThereOvertimeShiftOverlap = monitorOvertimeShiftOverlapConflict(assignedMonitors, monId, startEnd)
+                //Prevent monitor working three consecutive shifts
+                const areThereThreeShiftsInARow =  threeInARow(assignedMonitors, monId, openShift, regShiftAttributes, workingMultipleOT)
+
+                // console.log(entry.monitor.name, openShift.name, isThereRegularShiftOverlap)
+                // console.log(entry.monitor.name, openShift.name, checkShiftConflict(regShiftPopulatedMonitor, openShift))
+                // console.log(monId, entry.monitor.name, openShift.name, areThereThreeShiftsInARow)
 
                 //Valid if shift_id is unique + current shift doesn't overlap with a shift taken by monitor
-                if (!assignedShifts.has(shiftId) && !isThereShiftOverlap){  
+                if (!assignedShifts.has(shiftId) && !isThereOvertimeShiftOverlap && !isThereRegularShiftOverlap && !areThereThreeShiftsInARow){  
                     assignedShifts.add(shiftId)
                     //Add new monitorId to assignedMonitors if it does not exist. else push startTime and endTime
                     !assignedMonitors[monId] 
@@ -190,7 +265,7 @@ function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpen
                         //2c) Return array of monitors to charge hours for NOT getting the shift for billing later
                         const chargeHoursToMonitors = findEligibleMonitorsAndCharge(openShift, eligibleMonitorsByDay[openShift.day], entry.monitor._id) 
 
-                        //2d) Assigning monitor their first choice
+                        //2d) Assigning monitor their first choice  
                         //Add monitorId| thursday: { openShiftId456: monitorId, //..etc }
                         const dayEntry = overtimeWinnersByOpenShift.get(openShift.day)
                         dayEntry.shifts.set(shiftId, { //.set() overwrites value for existing key
@@ -230,7 +305,8 @@ function assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpen
     }
     // overtimeWinnersByOpenShift is an object keyed by day -> use for scheduling
     // assignedShiftsByOrder is an array sorted by order of shift assignment -> use in auditing
-    console.log(overtimeWinnersByOpenShift.get('thursday'))
+    // console.log(overtimeWinnersByOpenShift.get('thursday'))
+    // console.log(assignedShiftsByOrder)
     return [overtimeWinnersByOpenShift, assignedShiftsByOrder]
 }
 
@@ -248,6 +324,7 @@ module.exports = {
             //2) Grabbing data from DB
             //Using lean() bcos reading data and not calling .save() or Mongoose instance methods.
             const monitors = await Monitor.find().populate("regularShift location").sort( {hours: 1}).lean() //.lean() returns plain JS objects
+            const monTable = monitorLookupByMonitorIdTable(monitors)
             // const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
             const openShifts = await OpenShift.find({ // Dates >= 5/1/25 // Dates <= 5/7/25
                 date: { $gte: wkStart, $lte: wkEnd } //grab shifts bound by start/end of next week
@@ -258,6 +335,11 @@ module.exports = {
             const overtimeBidMonitors = await OvertimeBid.find().populate("monitor").lean() 
             const openShiftByOpenShiftId = openShiftLookupByOpenShiftIdTable(openShifts)
             // const vacationByDate = vacationLookupByDateTable(vacaLookup)
+            
+            const regularShifts = await RegularShift.find()
+            const regularShiftTable = regularShiftLookupByRegularShiftIdTable(regularShifts)
+            // const await monitors = Monitor.find().lean()
+
 
             //2.5) Remove monitors on vacation this week
             // {thursday: [list of monitor objects working today], friday: [monitor objects], etc} - 7 days
@@ -265,7 +347,7 @@ module.exports = {
             // const result = monitorNoVacaThisWeek(monitors, new Date("2025-05-01"))
 
             //3) Sort working monitors with overtime bids and assign them openShifts.
-            let overtimeWinners = assignOvertimeShifts(eligibleMonitorsByDay, openShifts, openShiftByOpenShiftId, overtimeBidMonitors) //, vacationByDate)
+            let overtimeWinners = assignOvertimeShifts(eligibleMonitorsByDay, regularShiftTable, openShifts, openShiftByOpenShiftId, overtimeBidMonitors, monTable) //, vacationByDate)
  
             return overtimeWinners
                 // [{

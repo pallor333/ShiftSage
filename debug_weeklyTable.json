@@ -159,11 +159,51 @@
   ],
   "openShifts": [
     {
-      "_id": "686ffecc34015753614e9e96",
-      "name": "THU 7/3/25 SFPG/1WES 11:00 PM - 07:30 AM (8.5)",
+      "_id": "68683f1c002fa2340301c132",
+      "name": "THU 5/1 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
       "location": {
-        "_id": "6850e48a841052db64eb4209",
-        "name": "SFPG/1WES",
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "totalHours": 3.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6826495e9e8667f3047c5613",
+      "name": "THU 5/1 RECYCLE 07:00 AM - 03:30 PM (8.5)",
+      "location": {
+        "_id": "6850e6c11c9aa50730b201fe",
+        "name": "RECYCLE",
+        "scheduleType": [],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264a8179f269ffb0f939f8",
+      "name": "THU 5/1 HBS 03:00 PM - 11:00 PM (8.0)",
+      "location": {
+        "_id": "6850e2e6841052db64eb415a",
+        "name": "HBS",
         "scheduleType": [
           "monday",
           "tuesday",
@@ -176,7 +216,55 @@
         "__v": 0
       },
       "day": "thursday",
-      "date": "2025-07-03T04:00:00.000Z",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264ac779f269ffb0f93a04",
+      "name": "THU 5/1 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+      "location": {
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264add79f269ffb0f93a10",
+      "name": "THU 5/1 52OX 11:00 PM - 07:30 AM (8.5)",
+      "location": {
+        "_id": "6850e2d9841052db64eb4128",
+        "name": "52OX",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
       "startTime": "1970-01-02T04:00:00.000Z",
       "endTime": "1970-01-01T12:30:00.000Z",
       "totalHours": 8.5,
@@ -184,8 +272,33 @@
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e8a",
-      "name": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+      "_id": "68264af879f269ffb0f93a1c",
+      "name": "THU 5/1 52OX 11:00 PM - 07:30 AM (8.5)",
+      "location": {
+        "_id": "6850e2d9841052db64eb4128",
+        "name": "52OX",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68683f1c002fa2340301c134",
+      "name": "FRI 5/2 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
       "location": {
         "_id": "6850e46b841052db64eb41d7",
         "name": "SFPG BOOTH",
@@ -199,7 +312,7 @@
         "__v": 0
       },
       "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
+      "date": "2025-05-02T04:00:00.000Z",
       "startTime": "1970-01-01T10:30:00.000Z",
       "endTime": "1970-01-01T14:00:00.000Z",
       "totalHours": 3.5,
@@ -207,11 +320,11 @@
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e94",
-      "name": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 02:00 PM (8.5)",
+      "_id": "686f0a77caef49ae36b1d8fd",
+      "name": "FRI 5/2 10EV 07:00 AM - 03:30 PM (8.5)",
       "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
+        "_id": "6850e2c9841052db64eb410f",
+        "name": "10EV",
         "scheduleType": [
           "monday",
           "tuesday",
@@ -222,30 +335,7 @@
         "__v": 0
       },
       "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T10:30:00.000Z",
-      "endTime": "1970-01-01T19:00:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "686ffecc34015753614e9e86",
-      "name": "FRI 7/4/25 SFPG BOOTH 07:00 AM - 03:30 PM (8.5)",
-      "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
-        ],
-        "__v": 0
-      },
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
+      "date": "2025-05-02T04:00:00.000Z",
       "startTime": "1970-01-01T12:00:00.000Z",
       "endTime": "1970-01-01T20:30:00.000Z",
       "totalHours": 8.5,
@@ -253,8 +343,8 @@
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e8c",
-      "name": "FRI 7/4/25 HBS 07:00 AM - 03:30 PM (8.5)",
+      "_id": "68264b1279f269ffb0f93a28",
+      "name": "FRI 5/2 HBS 03:00 PM - 11:00 PM (8.0)",
       "location": {
         "_id": "6850e2e6841052db64eb415a",
         "name": "HBS",
@@ -270,19 +360,19 @@
         "__v": 0
       },
       "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T12:00:00.000Z",
-      "endTime": "1970-01-01T20:30:00.000Z",
-      "totalHours": 8.5,
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
       "recurring": false,
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e88",
-      "name": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.5)",
+      "_id": "68264b4f79f269ffb0f93a40",
+      "name": "FRI 5/2 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
       "location": {
-        "_id": "6850e2c9841052db64eb410f",
-        "name": "10EV",
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
         "scheduleType": [
           "monday",
           "tuesday",
@@ -293,19 +383,89 @@
         "__v": 0
       },
       "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T12:00:00.000Z",
-      "endTime": "1970-01-01T20:30:00.000Z",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264b3179f269ffb0f93a34",
+      "name": "FRI 5/2 HBS 11:00 PM - 07:30 AM (8.5)",
+      "location": {
+        "_id": "6850e2e6841052db64eb415a",
+        "name": "HBS",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "friday",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e8e",
-      "name": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.5)",
+      "_id": "6866fcb9c298bf0eb6d2c9b0",
+      "name": "SAT 5/3 RIVER 07:00 AM - 03:00 PM (8.0)",
       "location": {
-        "_id": "6850e2c9841052db64eb410f",
-        "name": "10EV",
+        "_id": "6850e6951c9aa50730b201b3",
+        "name": "RIVER",
+        "scheduleType": [
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264d0679f269ffb0f93a9f",
+      "name": "SAT 5/3 NRTH 07:00 AM - 03:00 PM (8.0)",
+      "location": {
+        "_id": "6850e2f0841052db64eb4173",
+        "name": "NORTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264ce679f269ffb0f93a93",
+      "name": "SAT 5/3 RIVER ROVER 07:00 AM - 03:00 PM (8.0)",
+      "location": {
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
         "scheduleType": [
           "monday",
           "tuesday",
@@ -315,40 +475,42 @@
         ],
         "__v": 0
       },
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
       "startTime": "1970-01-01T12:00:00.000Z",
-      "endTime": "1970-01-01T20:30:00.000Z",
-      "totalHours": 8.5,
+      "endTime": "1970-01-01T20:00:00.000Z",
+      "totalHours": 8,
       "recurring": false,
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e98",
-      "name": "FRI 7/4/25 SFPG BOOTH 08:00 AM - 04:30 PM (8.5)",
+      "_id": "68264c0179f269ffb0f93a7b",
+      "name": "SAT 5/3 BWYG 07:00 AM - 03:00 PM (8.0)",
       "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
+        "_id": "6850e2e1841052db64eb4141",
+        "name": "BWYG",
         "scheduleType": [
           "monday",
           "tuesday",
           "wednesday",
           "thursday",
-          "friday"
+          "friday",
+          "saturday",
+          "sunday"
         ],
         "__v": 0
       },
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T13:00:00.000Z",
-      "endTime": "1970-01-01T21:30:00.000Z",
-      "totalHours": 8.5,
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:00:00.000Z",
+      "totalHours": 8,
       "recurring": false,
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e90",
-      "name": "FRI 7/4/25 SFPG/1WES 03:00 PM - 11:30 PM (8.5)",
+      "_id": "68264bc779f269ffb0f93a64",
+      "name": "SAT 5/3 SFPG/1WES 07:00 AM - 03:00 PM (8.0)",
       "location": {
         "_id": "6850e48a841052db64eb4209",
         "name": "SFPG/1WES",
@@ -363,17 +525,17 @@
         ],
         "__v": 0
       },
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T20:00:00.000Z",
-      "endTime": "1970-01-02T04:30:00.000Z",
-      "totalHours": 8.5,
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:00:00.000Z",
+      "totalHours": 8,
       "recurring": false,
       "__v": 0
     },
     {
-      "_id": "686ffecc34015753614e9e92",
-      "name": "FRI 7/4/25 ROVING 03:30 PM - 12:00 AM (8.5)",
+      "_id": "68264d1a79f269ffb0f93aab",
+      "name": "SAT 5/3 ROVING 03:00 PM - 11:00 PM (8.0)",
       "location": {
         "_id": "6850e465841052db64eb41be",
         "name": "ROVING",
@@ -388,29 +550,521 @@
         ],
         "__v": 0
       },
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T20:30:00.000Z",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264c1579f269ffb0f93a87",
+      "name": "SAT 5/3 BWYG 03:00 PM - 12:00 AM (9.0)",
+      "location": {
+        "_id": "6850e2e1841052db64eb4141",
+        "name": "BWYG",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
       "endTime": "1970-01-01T05:00:00.000Z",
+      "totalHours": 9,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264b6379f269ffb0f93a4c",
+      "name": "SAT 5/3 HBS 03:00 PM - 11:00 PM (8.0)",
+      "location": {
+        "_id": "6850e2e6841052db64eb415a",
+        "name": "HBS",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687716f0176904ca9773ed85",
+      "name": "SAT 5/3/25 ROVING 11:00 PM - 07:00 AM (8.0)",
+      "location": {
+        "_id": "6850e465841052db64eb41be",
+        "name": "ROVING",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-04T03:00:00.000Z",
+      "endTime": "2025-05-04T11:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264d3279f269ffb0f93ab7",
+      "name": "SUN 5/4 BWYG 07:00 AM - 03:00 PM (8.0)",
+      "location": {
+        "_id": "6850e2e1841052db64eb4141",
+        "name": "BWYG",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264d4779f269ffb0f93ac3",
+      "name": "SUN 5/4 BWYG 03:00 PM - 11:30 PM (8.5)",
+      "location": {
+        "_id": "6850e2e1841052db64eb4141",
+        "name": "BWYG",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:30:00.000Z",
       "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68683f1c002fa2340301c136",
+      "name": "MON 5/5 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "totalHours": 3.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264fbfce37d60bde524f49",
+      "name": "MON 5/5 HBS 07:00 AM - 11:00 PM (16.0)",
+      "location": {
+        "_id": "6850e2e6841052db64eb415a",
+        "name": "HBS",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 16,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264fd6ce37d60bde524f55",
+      "name": "MON 5/5 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+      "location": {
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68264fface37d60bde524f61",
+      "name": "MON 5/5 ROVING 11:00 PM - 07:30 AM (8.5)",
+      "location": {
+        "_id": "6850e465841052db64eb41be",
+        "name": "ROVING",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68683f1c002fa2340301c138",
+      "name": "TUE 5/6 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "totalHours": 3.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68265025ce37d60bde524f79",
+      "name": "TUE 5/6 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+      "location": {
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68265014ce37d60bde524f6d",
+      "name": "TUE 5/6 HBS 03:30 PM - 11:00 PM (7.5)",
+      "location": {
+        "_id": "6850e2e6841052db64eb415a",
+        "name": "HBS",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "1970-01-01T20:30:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68683f1c002fa2340301c13a",
+      "name": "WED 5/7 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "totalHours": 3.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6826504fce37d60bde524f85",
+      "name": "WED 5/7 HBS 03:00 PM - 11:00 PM (8.0)",
+      "location": {
+        "_id": "6850e2e6841052db64eb415a",
+        "name": "HBS",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6826507ece37d60bde524f91",
+      "name": "WED 5/7 RIVER ROVER 03:30 PM - 09:00 PM (5.5)",
+      "location": {
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "1970-01-01T20:30:00.000Z",
+      "endTime": "1970-01-02T02:00:00.000Z",
+      "totalHours": 5.5,
       "recurring": false,
       "__v": 0
     }
   ],
   "overtimeSchedule": [
     {
-      "_id": "687024c36e13f7f2403c2bcb",
+      "_id": "687732547704352ea0caac90",
       "days": {
         "thursday": {
-          "locIds": [],
+          "locIds": [
+            {
+              "_id": "6850e6c11c9aa50730b201fe",
+              "name": "RECYCLE",
+              "scheduleType": [],
+              "__v": 0
+            }
+          ],
           "shifts": {
-            "686ffecc34015753614e9e96": {
+            "68683f1c002fa2340301c132": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "THU 7/3/25 SFPG/1WES 11:00 PM - 07:30 AM (8.5)",
+              "shiftName": "THU 5/1 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
               "locationId": {
-                "_id": "6850e48a841052db64eb4209",
-                "name": "SFPG/1WES",
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "6826495e9e8667f3047c5613": {
+              "monitorId": {
+                "_id": "68433752b08726f40bada443",
+                "id": 97,
+                "name": "TESTERTWO",
+                "regularShift": "6811518eb6f51dc6bfdcb20e",
+                "location": "6850e46b841052db64eb41d7",
+                "vaca": [],
+                "hours": {
+                  "$numberDecimal": "200"
+                },
+                "seniority": "2020-02-06T00:00:00.000Z",
+                "lastUpdated": "2025-06-06T18:45:38.074Z",
+                "__v": 0
+              },
+              "monitorName": "TESTERTWO",
+              "shiftName": "THU 5/1 RECYCLE 07:00 AM - 03:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e6c11c9aa50730b201fe",
+                "name": "RECYCLE",
+                "scheduleType": [],
+                "__v": 0
+              }
+            },
+            "68264a8179f269ffb0f939f8": {
+              "monitorId": {
+                "_id": "68433739b08726f40bada434",
+                "id": 98,
+                "name": "TESTERONE",
+                "regularShift": "6811518eb6f51dc6bfdcb20e",
+                "location": "6850e2c9841052db64eb410f",
+                "vaca": [],
+                "hours": {
+                  "$numberDecimal": "300"
+                },
+                "seniority": "2022-02-06T00:00:00.000Z",
+                "lastUpdated": "2025-06-06T18:45:13.697Z",
+                "__v": 0
+              },
+              "monitorName": "TESTERONE",
+              "shiftName": "THU 5/1 HBS 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e2e6841052db64eb415a",
+                "name": "HBS",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264ac779f269ffb0f93a04": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "THU 5/1 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264add79f269ffb0f93a10": {
+              "monitorId": {
+                "_id": "68433752b08726f40bada443",
+                "id": 97,
+                "name": "TESTERTWO",
+                "regularShift": "6811518eb6f51dc6bfdcb20e",
+                "location": "6850e46b841052db64eb41d7",
+                "vaca": [],
+                "hours": {
+                  "$numberDecimal": "200"
+                },
+                "seniority": "2020-02-06T00:00:00.000Z",
+                "lastUpdated": "2025-06-06T18:45:38.074Z",
+                "__v": 0
+              },
+              "monitorName": "TESTERTWO",
+              "shiftName": "THU 5/1 52OX 11:00 PM - 07:30 AM (8.5)",
+              "locationId": {
+                "_id": "6850e2d9841052db64eb4128",
+                "name": "52OX",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264af879f269ffb0f93a1c": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "THU 5/1 52OX 11:00 PM - 07:30 AM (8.5)",
+              "locationId": {
+                "_id": "6850e2d9841052db64eb4128",
+                "name": "52OX",
                 "scheduleType": [
                   "monday",
                   "tuesday",
@@ -428,10 +1082,10 @@
         "friday": {
           "locIds": [],
           "shifts": {
-            "686ffecc34015753614e9e8a": {
+            "68683f1c002fa2340301c134": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+              "shiftName": "FRI 5/2 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
               "locationId": {
                 "_id": "6850e46b841052db64eb41d7",
                 "name": "SFPG BOOTH",
@@ -445,13 +1099,13 @@
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e94": {
+            "686f0a77caef49ae36b1d8fd": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 02:00 PM (8.5)",
+              "shiftName": "FRI 5/2 10EV 07:00 AM - 03:30 PM (8.5)",
               "locationId": {
-                "_id": "6850e46b841052db64eb41d7",
-                "name": "SFPG BOOTH",
+                "_id": "6850e2c9841052db64eb410f",
+                "name": "10EV",
                 "scheduleType": [
                   "monday",
                   "tuesday",
@@ -462,27 +1116,25 @@
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e86": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 SFPG BOOTH 07:00 AM - 03:30 PM (8.5)",
-              "locationId": {
-                "_id": "6850e46b841052db64eb41d7",
-                "name": "SFPG BOOTH",
-                "scheduleType": [
-                  "monday",
-                  "tuesday",
-                  "wednesday",
-                  "thursday",
-                  "friday"
+            "68264b1279f269ffb0f93a28": {
+              "monitorId": {
+                "_id": "6837b7c2edc516002e09f434",
+                "id": 100,
+                "name": "VACACHECK2",
+                "regularShift": "6811518eb6f51dc6bfdcb20e",
+                "location": "6850e2c9841052db64eb410f",
+                "vaca": [
+                  "2025-05-02T04:00:00.000Z"
                 ],
+                "hours": {
+                  "$numberDecimal": "50"
+                },
+                "seniority": "2025-01-29T00:00:00.000Z",
+                "lastUpdated": "2025-05-29T01:26:26.340Z",
                 "__v": 0
-              }
-            },
-            "686ffecc34015753614e9e8c": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 HBS 07:00 AM - 03:30 PM (8.5)",
+              },
+              "monitorName": "VACACHECK2",
+              "shiftName": "FRI 5/2 HBS 03:00 PM - 11:00 PM (8.0)",
               "locationId": {
                 "_id": "6850e2e6841052db64eb415a",
                 "name": "HBS",
@@ -498,13 +1150,13 @@
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e88": {
+            "68264b4f79f269ffb0f93a40": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.5)",
+              "shiftName": "FRI 5/2 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
               "locationId": {
-                "_id": "6850e2c9841052db64eb410f",
-                "name": "10EV",
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
                 "scheduleType": [
                   "monday",
                   "tuesday",
@@ -515,13 +1167,83 @@
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e8e": {
+            "68264b3179f269ffb0f93a34": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.5)",
+              "shiftName": "FRI 5/2 HBS 11:00 PM - 07:30 AM (8.5)",
               "locationId": {
-                "_id": "6850e2c9841052db64eb410f",
-                "name": "10EV",
+                "_id": "6850e2e6841052db64eb415a",
+                "name": "HBS",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            }
+          }
+        },
+        "saturday": {
+          "locIds": [
+            {
+              "_id": "6850e524841052db64eb423b",
+              "name": "RIVER ROVER",
+              "scheduleType": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday"
+              ],
+              "__v": 0
+            }
+          ],
+          "shifts": {
+            "6866fcb9c298bf0eb6d2c9b0": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3 RIVER 07:00 AM - 03:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e6951c9aa50730b201b3",
+                "name": "RIVER",
+                "scheduleType": [
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264d0679f269ffb0f93a9f": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3 NRTH 07:00 AM - 03:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e2f0841052db64eb4173",
+                "name": "NORTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264ce679f269ffb0f93a93": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3 RIVER ROVER 07:00 AM - 03:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
                 "scheduleType": [
                   "monday",
                   "tuesday",
@@ -532,27 +1254,44 @@
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e98": {
+            "68264c0179f269ffb0f93a7b": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 SFPG BOOTH 08:00 AM - 04:30 PM (8.5)",
+              "shiftName": "SAT 5/3 BWYG 07:00 AM - 03:00 PM (8.0)",
               "locationId": {
-                "_id": "6850e46b841052db64eb41d7",
-                "name": "SFPG BOOTH",
+                "_id": "6850e2e1841052db64eb4141",
+                "name": "BWYG",
                 "scheduleType": [
                   "monday",
                   "tuesday",
                   "wednesday",
                   "thursday",
-                  "friday"
+                  "friday",
+                  "saturday",
+                  "sunday"
                 ],
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e90": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 SFPG/1WES 03:00 PM - 11:30 PM (8.5)",
+            "68264bc779f269ffb0f93a64": {
+              "monitorId": {
+                "_id": "6837b7c2edc516002e09f434",
+                "id": 100,
+                "name": "VACACHECK2",
+                "regularShift": "6811518eb6f51dc6bfdcb20e",
+                "location": "6850e2c9841052db64eb410f",
+                "vaca": [
+                  "2025-05-02T04:00:00.000Z"
+                ],
+                "hours": {
+                  "$numberDecimal": "50"
+                },
+                "seniority": "2025-01-29T00:00:00.000Z",
+                "lastUpdated": "2025-05-29T01:26:26.340Z",
+                "__v": 0
+              },
+              "monitorName": "VACACHECK2",
+              "shiftName": "SAT 5/3 SFPG/1WES 07:00 AM - 03:00 PM (8.0)",
               "locationId": {
                 "_id": "6850e48a841052db64eb4209",
                 "name": "SFPG/1WES",
@@ -568,10 +1307,80 @@
                 "__v": 0
               }
             },
-            "686ffecc34015753614e9e92": {
+            "68264d1a79f269ffb0f93aab": {
               "monitorId": null,
               "monitorName": "OPEN",
-              "shiftName": "FRI 7/4/25 ROVING 03:30 PM - 12:00 AM (8.5)",
+              "shiftName": "SAT 5/3 ROVING 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e465841052db64eb41be",
+                "name": "ROVING",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264c1579f269ffb0f93a87": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3 BWYG 03:00 PM - 12:00 AM (9.0)",
+              "locationId": {
+                "_id": "6850e2e1841052db64eb4141",
+                "name": "BWYG",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264b6379f269ffb0f93a4c": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3 HBS 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e2e6841052db64eb415a",
+                "name": "HBS",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "687716f0176904ca9773ed85": {
+              "monitorId": {
+                "_id": "680bf5d07162e106742ea838",
+                "id": 130,
+                "name": "JEFFERSON",
+                "regularShift": "680c069e0c35e34c1fd0991f",
+                "location": "6850e2e6841052db64eb415a",
+                "vaca": [],
+                "hours": {
+                  "$numberDecimal": "200"
+                },
+                "seniority": "2015-01-07T00:00:00.000Z",
+                "__v": 0,
+                "lastUpdated": "2025-07-16T05:02:16.460Z"
+              },
+              "monitorName": "JEFFERSON",
+              "shiftName": "SAT 5/3/25 ROVING 11:00 PM - 07:00 AM (8.0)",
               "locationId": {
                 "_id": "6850e465841052db64eb41be",
                 "name": "ROVING",
@@ -589,35 +1398,264 @@
             }
           }
         },
-        "saturday": {
-          "locIds": [],
-          "shifts": {}
-        },
         "sunday": {
           "locIds": [],
-          "shifts": {}
+          "shifts": {
+            "68264d3279f269ffb0f93ab7": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SUN 5/4 BWYG 07:00 AM - 03:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e2e1841052db64eb4141",
+                "name": "BWYG",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264d4779f269ffb0f93ac3": {
+              "monitorId": {
+                "_id": "680bf5d07162e106742ea838",
+                "id": 130,
+                "name": "JEFFERSON",
+                "regularShift": "680c069e0c35e34c1fd0991f",
+                "location": "6850e2e6841052db64eb415a",
+                "vaca": [],
+                "hours": {
+                  "$numberDecimal": "200"
+                },
+                "seniority": "2015-01-07T00:00:00.000Z",
+                "__v": 0,
+                "lastUpdated": "2025-07-16T05:02:16.460Z"
+              },
+              "monitorName": "JEFFERSON",
+              "shiftName": "SUN 5/4 BWYG 03:00 PM - 11:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e2e1841052db64eb4141",
+                "name": "BWYG",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            }
+          }
         },
         "monday": {
           "locIds": [],
-          "shifts": {}
+          "shifts": {
+            "68683f1c002fa2340301c136": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264fbfce37d60bde524f49": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5 HBS 07:00 AM - 11:00 PM (16.0)",
+              "locationId": {
+                "_id": "6850e2e6841052db64eb415a",
+                "name": "HBS",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264fd6ce37d60bde524f55": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "68264fface37d60bde524f61": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5 ROVING 11:00 PM - 07:30 AM (8.5)",
+              "locationId": {
+                "_id": "6850e465841052db64eb41be",
+                "name": "ROVING",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            }
+          }
         },
         "tuesday": {
           "locIds": [],
-          "shifts": {}
+          "shifts": {
+            "68683f1c002fa2340301c138": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "68265025ce37d60bde524f79": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "68265014ce37d60bde524f6d": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6 HBS 03:30 PM - 11:00 PM (7.5)",
+              "locationId": {
+                "_id": "6850e2e6841052db64eb415a",
+                "name": "HBS",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            }
+          }
         },
         "wednesday": {
           "locIds": [],
-          "shifts": {}
+          "shifts": {
+            "68683f1c002fa2340301c13a": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7 SFPG BOOTH 05:30 AM - 09:00 AM (3.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
+            "6826504fce37d60bde524f85": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7 HBS 03:00 PM - 11:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e2e6841052db64eb415a",
+                "name": "HBS",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
+                "__v": 0
+              }
+            },
+            "6826507ece37d60bde524f91": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7 RIVER ROVER 03:30 PM - 09:00 PM (5.5)",
+              "locationId": {
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            }
+          }
         }
       },
-      "createdAt": "2025-07-10T20:38:27.215Z",
-      "updatedAt": "2025-07-10T20:38:27.215Z",
+      "createdAt": "2025-07-16T05:02:12.777Z",
+      "updatedAt": "2025-07-16T05:02:12.777Z",
       "__v": 0
     }
   ],
   "weeklyTable": {
-    "weekStart": "7/3/25",
-    "weekEnd": "7/9/25",
+    "weekStart": "5/1/25",
+    "weekEnd": "5/7/25",
     "schedule": {
       "thursday": {
         "locations": [
@@ -626,6 +1664,7 @@
           "BWYG",
           "HBS",
           "NORTH",
+          "RECYCLE",
           "RIVER ROVER",
           "RIVER/MAKL",
           "ROVING",
@@ -664,6 +1703,11 @@
                 false
               ],
               [
+                "RECYCLE",
+                "",
+                false
+              ],
+              [
                 "RIVER ROVER",
                 "",
                 false
@@ -680,8 +1724,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -721,6 +1765,11 @@
               ],
               [
                 "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
                 "",
                 false
               ],
@@ -786,6 +1835,11 @@
                 false
               ],
               [
+                "RECYCLE",
+                "TESTERTWO",
+                true
+              ],
+              [
                 "RIVER ROVER",
                 "",
                 false
@@ -847,6 +1901,11 @@
                 false
               ],
               [
+                "RECYCLE",
+                "",
+                false
+              ],
+              [
                 "RIVER ROVER",
                 "",
                 false
@@ -880,6 +1939,72 @@
           },
           "shift_4": {
             "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "TESTERONE",
+                true
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_5": {
+            "start": "1970-01-01T20:00:00.000Z",
             "end": "1970-01-02T04:30:00.000Z",
             "locationMonitors": [
               [
@@ -904,6 +2029,11 @@
               ],
               [
                 "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
                 "",
                 false
               ],
@@ -939,7 +2069,7 @@
               ]
             ]
           },
-          "shift_5": {
+          "shift_6": {
             "start": "1970-01-01T20:30:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -965,6 +2095,11 @@
               ],
               [
                 "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
                 "",
                 false
               ],
@@ -1000,7 +2135,7 @@
               ]
             ]
           },
-          "shift_6": {
+          "shift_7": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -1011,8 +2146,8 @@
               ],
               [
                 "52OX",
-                "",
-                false
+                "TESTERTWO, OPEN",
+                true
               ],
               [
                 "BWYG",
@@ -1026,6 +2161,11 @@
               ],
               [
                 "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
                 "",
                 false
               ],
@@ -1056,13 +2196,13 @@
               ],
               [
                 "SFPG/1WES",
-                "WASHINGTON, OPEN",
-                true
+                "WASHINGTON",
+                false
               ]
             ]
           }
         },
-        "date": "7/3/25"
+        "date": "5/1/25"
       },
       "friday": {
         "locations": [
@@ -1186,8 +2326,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "HARRISON, OPEN",
-                true
+                "HARRISON",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -1207,7 +2347,7 @@
             "locationMonitors": [
               [
                 "10EV",
-                "TESTERONE, VACACHECK2, OPEN, OPEN",
+                "TESTERONE, VACACHECK2, OPEN",
                 true
               ],
               [
@@ -1222,8 +2362,8 @@
               ],
               [
                 "HBS",
-                "ADAMS, COOLIDGE, OPEN",
-                true
+                "ADAMS, COOLIDGE",
+                false
               ],
               [
                 "NORTH",
@@ -1247,8 +2387,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "TESTERTWO, OPEN",
-                true
+                "TESTERTWO",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -1308,8 +2448,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "GARFIELD, OPEN",
-                true
+                "GARFIELD",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -1324,6 +2464,67 @@
             ]
           },
           "shift_4": {
+            "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "VACACHECK2",
+                true
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_5": {
             "start": "1970-01-01T20:00:00.000Z",
             "end": "1970-01-02T04:30:00.000Z",
             "locationMonitors": [
@@ -1379,12 +2580,12 @@
               ],
               [
                 "SFPG/1WES",
-                "KENNEDY, OPEN",
-                true
+                "KENNEDY",
+                false
               ]
             ]
           },
-          "shift_5": {
+          "shift_6": {
             "start": "1970-01-01T20:30:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -1425,8 +2626,8 @@
               ],
               [
                 "ROVING",
-                "MADISON, OPEN",
-                true
+                "MADISON",
+                false
               ],
               [
                 "SFPG BOOTH",
@@ -1445,7 +2646,7 @@
               ]
             ]
           },
-          "shift_6": {
+          "shift_7": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -1466,8 +2667,8 @@
               ],
               [
                 "HBS",
-                "",
-                false
+                "OPEN",
+                true
               ],
               [
                 "NORTH",
@@ -1507,7 +2708,7 @@
             ]
           }
         },
-        "date": "7/4/25"
+        "date": "5/2/25"
       },
       "saturday": {
         "locations": [
@@ -1516,6 +2717,7 @@
           "HBS",
           "NORTH",
           "RIVER",
+          "RIVER ROVER",
           "ROVING",
           "SFPG/1WES"
         ],
@@ -1550,6 +2752,11 @@
                 false
               ],
               [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
                 "ROVING",
                 "",
                 false
@@ -1562,6 +2769,52 @@
             ]
           },
           "shift_1": {
+            "start": "1970-01-01T12:00:00.000Z",
+            "end": "1970-01-01T20:00:00.000Z",
+            "locationMonitors": [
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "OPEN",
+                true
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "VACACHECK2",
+                true
+              ]
+            ]
+          },
+          "shift_2": {
             "start": "1970-01-01T19:45:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -1591,6 +2844,11 @@
                 false
               ],
               [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
                 "ROVING",
                 "",
                 false
@@ -1602,7 +2860,99 @@
               ]
             ]
           },
-          "shift_2": {
+          "shift_3": {
+            "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "OPEN",
+                true
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "OPEN",
+                true
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_4": {
+            "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-01T05:00:00.000Z",
+            "locationMonitors": [
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "OPEN",
+                true
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_5": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -1632,6 +2982,11 @@
                 false
               ],
               [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
                 "ROVING",
                 "VAN BUREN",
                 false
@@ -1642,9 +2997,55 @@
                 false
               ]
             ]
+          },
+          "shift_6": {
+            "start": "2025-05-04T03:00:00.000Z",
+            "end": "2025-05-04T11:00:00.000Z",
+            "locationMonitors": [
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "JEFFERSON",
+                true
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
           }
         },
-        "date": "7/5/25"
+        "date": "5/3/25"
       },
       "sunday": {
         "locations": [
@@ -1699,6 +3100,47 @@
             ]
           },
           "shift_1": {
+            "start": "1970-01-01T12:00:00.000Z",
+            "end": "1970-01-01T20:00:00.000Z",
+            "locationMonitors": [
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "OPEN",
+                true
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_2": {
             "start": "1970-01-01T19:45:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -1739,7 +3181,48 @@
               ]
             ]
           },
-          "shift_2": {
+          "shift_3": {
+            "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:30:00.000Z",
+            "locationMonitors": [
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "JEFFERSON",
+                true
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_4": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -1781,7 +3264,7 @@
             ]
           }
         },
-        "date": "7/6/25"
+        "date": "5/4/25"
       },
       "monday": {
         "locations": [
@@ -1844,8 +3327,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -1982,6 +3465,67 @@
             ]
           },
           "shift_3": {
+            "start": "1970-01-01T12:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "OPEN",
+                true
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_4": {
             "start": "1970-01-01T13:00:00.000Z",
             "end": "1970-01-01T21:30:00.000Z",
             "locationMonitors": [
@@ -2042,7 +3586,68 @@
               ]
             ]
           },
-          "shift_4": {
+          "shift_5": {
+            "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_6": {
             "start": "1970-01-01T20:00:00.000Z",
             "end": "1970-01-02T04:30:00.000Z",
             "locationMonitors": [
@@ -2103,7 +3708,7 @@
               ]
             ]
           },
-          "shift_5": {
+          "shift_7": {
             "start": "1970-01-01T20:30:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -2164,7 +3769,7 @@
               ]
             ]
           },
-          "shift_6": {
+          "shift_8": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -2205,8 +3810,8 @@
               ],
               [
                 "ROVING",
-                "",
-                false
+                "OPEN",
+                true
               ],
               [
                 "SFPG BOOTH",
@@ -2226,7 +3831,7 @@
             ]
           }
         },
-        "date": "7/7/25"
+        "date": "5/5/25"
       },
       "tuesday": {
         "locations": [
@@ -2289,8 +3894,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -2489,6 +4094,67 @@
           },
           "shift_4": {
             "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_5": {
+            "start": "1970-01-01T20:00:00.000Z",
             "end": "1970-01-02T04:30:00.000Z",
             "locationMonitors": [
               [
@@ -2548,7 +4214,68 @@
               ]
             ]
           },
-          "shift_5": {
+          "shift_6": {
+            "start": "1970-01-01T20:30:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "OPEN",
+                true
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_7": {
             "start": "1970-01-01T20:30:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -2609,7 +4336,7 @@
               ]
             ]
           },
-          "shift_6": {
+          "shift_8": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -2671,7 +4398,7 @@
             ]
           }
         },
-        "date": "7/8/25"
+        "date": "5/6/25"
       },
       "wednesday": {
         "locations": [
@@ -2734,8 +4461,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -2934,6 +4661,67 @@
           },
           "shift_4": {
             "start": "1970-01-01T20:00:00.000Z",
+            "end": "1970-01-02T04:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "OPEN",
+                true
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_5": {
+            "start": "1970-01-01T20:00:00.000Z",
             "end": "1970-01-02T04:30:00.000Z",
             "locationMonitors": [
               [
@@ -2993,7 +4781,68 @@
               ]
             ]
           },
-          "shift_5": {
+          "shift_6": {
+            "start": "1970-01-01T20:30:00.000Z",
+            "end": "1970-01-02T02:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_7": {
             "start": "1970-01-01T20:30:00.000Z",
             "end": "1970-01-01T05:00:00.000Z",
             "locationMonitors": [
@@ -3054,7 +4903,7 @@
               ]
             ]
           },
-          "shift_6": {
+          "shift_8": {
             "start": "1970-01-02T04:00:00.000Z",
             "end": "1970-01-01T12:30:00.000Z",
             "locationMonitors": [
@@ -3116,7 +4965,7 @@
             ]
           }
         },
-        "date": "7/9/25"
+        "date": "5/7/25"
       }
     }
   }

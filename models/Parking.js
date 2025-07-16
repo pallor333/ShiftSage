@@ -76,6 +76,8 @@ const OvertimeBidsSchema = new Schema({
     position: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
     rank: { type: Number }, // Rank assigned to the position
   }],
+  workMoreThanOne: { type: Boolean, default: false }, //monitor works more than one overtime shift this week
+  workAnyShift: { type: Boolean, default: false },    //monitor will work ANY shift this week
   //week: { type: Date, default: () => new Date() }, // Timestamp for the week
 });
 

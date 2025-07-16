@@ -1,13 +1,13 @@
 const xlsx = require("json-as-xlsx") //package to download JSON data as excel file
 const { jsPDF } = require("jspdf"); //generate PDF from JS 
-const { Monitor, RegularShift, OpenShift, Location, OvertimeSchedule} = require("../models/Parking");
-const { getCurrentDay, getFixedTimeRange, getNextThurs, } = require('../utils/dateHelpers')
+const { Monitor, RegularShift, OpenShift, Location, OvertimeSchedule, Holiday } = require("../models/Parking");
+const { getCurrentDay, getFixedTimeRange, getNextThurs, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts} = require('../utils/dateHelpers')
 const { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, openShiftLookupByOpenShiftIdTable} = require('../utils/lookupHelpers')
 // const { allocateOvertime } = require('./overtimeServices') // './' imports from same directory
 const fs = require('fs') //for writing JSON to file
 
 //temp hardcoding date for testing
-const THISWEEK = new Date("6/29/25") //new Date("4/30/25") //new Date()
+const THISWEEK = new Date("4/30/25") //new Date() //new Date("6/29/25") 
 const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
 const EMPTY = ""//"Unassigned"
 
@@ -43,6 +43,7 @@ function coaleseAndSort(shifts){
       shift.startTime, 
       shift.endTime,
       shift.locationId,
+      shift.type,
     ])
   }
 
@@ -73,6 +74,7 @@ function normalizeShifts(shifts, monitorByShiftId, locationById) {
         monitor: shift.name,
         location: locationById.get(shift.location._id.toString())?.name,
         locationId: shift.location?._id, 
+        type: "none",
         overtime: true
       })
     } else { //Regular Shift
@@ -86,6 +88,7 @@ function normalizeShifts(shifts, monitorByShiftId, locationById) {
           monitor: monitor.name,
           location: locationById.get(monitor.location._id.toString())?.name,
           locationId: monitor.location._id, 
+          type: shift.type,
           overtime: false
         })
       }
@@ -102,118 +105,145 @@ function resetLocationToday(locationsToday){
   return Object.entries(locationsToday).map(([_, loc]) => [loc.name, EMPTY, false]) 
 }
 
+
 /************** Main functions *******************/
 //Create the 7 day table for display in the frontend
-function buildWeeklyTable(date, monitors, regularShifts, openShifts, locations, overtimeCalcs){
-    const [wkStart, wkEnd] = getNextThurs(date), schedule = {} 
-    const monitorByShiftId = monitorLookupByShiftIdTable(monitors)
-    const locationById = locationLookupByLocationIdTable(locations)  
-    const openShiftById = openShiftLookupByOpenShiftIdTable(openShifts)
+function buildWeeklyTable({ date, monitors, regularShifts, openShifts, locations, overtimeCalcs, holidays }){
+  const [wkStart, wkEnd] = getNextThurs(date), schedule = {} 
+  const monitorByShiftId = monitorLookupByShiftIdTable(monitors)
+  const locationById = locationLookupByLocationIdTable(locations)  
+  const openShiftById = openShiftLookupByOpenShiftIdTable(openShifts)
 
-    // console.log(overtimeCalcs)
-    //Create 7 different obj, one for each day of the week
-    for(let i = 0; i < 7; i++){
-        const dayName = DAYSARRAY[i], isWeekend = i === 2 || i === 3 // Sat(2), Sun(3)
-        schedule[dayName] = {}
-        const rows = {}
-        const otShiftsToday = overtimeCalcs?.days.get(dayName)
-        let locationsCopy = locations //copying = dont mutate original
+  //Temp variables for holiday
+  let holidayDaysArr = [], beforeHoliday = false, todayHoliday = false
+  //Holiday check
+  const currentHoliday = holidayNextWeek(getNextThursDateObj(THISWEEK), holidays) 
+  if(currentHoliday !== false){
+      console.log(`holiday = ${currentHoliday}`)
+      const dayNumberized = (new Date(currentHoliday).getDay() + 3) % 7
+      const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
+      holidayDaysArr = [holidayBefore, holidayToday]
+  } //console.log("No Holiday this week.")
+  // console.log(holidayDaysArr)
 
-        //1) Preparing today's locations
-        //Using scheduleType property of location to add OT locations from overtimeCalc obj
-        //Outer Loop: OT locID, Inner loop: location schema, scheduleType property
-        if(otShiftsToday){ //avoid errors: skip if no overtime shifts
-          otShiftsToday.locIds.forEach(ot => { //O(n^2)
-            locationsCopy.forEach(l => { 
-              if(l._id.toString() === ot?._id.toString() && (!l.scheduleType.includes(dayName))){
-                l?.scheduleType.push(dayName) 
-              }
-            })
-          })
-        }
+  //Create 7 different obj, one for each day of the week
+  for(let i = 0; i < 7; i++){
+      const dayName = DAYSARRAY[i], isWeekend = i === 2 || i === 3 // Sat(2), Sun(3)
+      schedule[dayName] = {}
+      const rows = {}
+      const otShiftsToday = overtimeCalcs?.days.get(dayName)
+      let locationsCopy = locations //copying = dont mutate original
 
-        //Filter locations for this day
-        const locationsToday = locationsCopy
-          .filter(l => l.scheduleType.includes(dayName)
-          ).map( (loc, idx) => ({ //Add a counter to each entry
-            ...(loc._doc || loc), // spread mongoose document or spread manual object
-            index: idx,
-          })).reduce((acc, loc) =>{
-              if (!loc._id) {
-                console.error("Invalid object in array:", loc)
-                throw new Error("Object missing _id property")
-              }
-              acc[loc._id.toString()] = loc
-              return acc
-          }, {}) //use ID as the key
-        
-          
-        //2) Preparing today's shifts 
-        //Create a sorted array of location / monitors for insertion later
-        let locationMonitors = resetLocationToday(locationsToday)
-
-        //Filter regular shifts
-        const shiftsToday = regularShifts.filter(s => s.days.includes(dayName))
-        // console.log(openShiftById)
-
-        //Add OT shifts to shiftsToday 
-        if(otShiftsToday){ //avoid errors: skip if no overtime shifts
-          otShiftsToday.shifts.forEach((shiftObj, shiftId) => {
-          // console.log(shiftId, openShiftById.get(shiftId)?.startTime)
-            shiftsToday.push({
-              _id: shiftId, //open shift Id
-              name: shiftObj.monitorName, //monitor name from obj
-              location: shiftObj.locationId._id, //location Id //overtimeCalcs[dayName][shift].locationId._id, //locationId
-              overtime: true,
-              startTime: openShiftById.get(shiftId)?.startTime, //use lookup table
-              endTime: openShiftById.get(shiftId)?.endTime, 
-            })
-          }) 
-        }
-
-        //Normalize regular/ot shift into one single format
-        const normalizedShiftsToday = normalizeShifts(shiftsToday, monitorByShiftId, locationById)
-        //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
-        const monitorShiftsArr = coaleseAndSort(normalizedShiftsToday)
-
-        //3) Populate table
-        //Loop over shifts and populate table
-        monitorShiftsArr.forEach( (shift, idx) => {
-          //Reset locationMonitors for current shift
-          locationMonitors = resetLocationToday(locationsToday)
-
-          // Destructuring monitors
-          shift.forEach(([monitorName, overtime, start, end, locationId]) => {
-            locationMonitors[locationsToday[locationId].index][1] = //Grab where monitor is suppose to go in locationMonitors
-              locationMonitors[locationsToday[locationId].index][1] === EMPTY //If it's empty
-              ? monitorName //replace EMPTY with monitor name, if there's something there already then
-              : locationMonitors[locationsToday[locationId].index][1] + `, ${monitorName}`//append another monitor w/ comma
-            if(overtime) { locationMonitors[locationsToday[locationId].index][2] = true } //update overtime flag
-
-            //Each row = one shift 
-            rows[`shift_${idx}`] = {
-              start: start,
-              end: end,
-              locationMonitors: locationMonitors,
+      //1) Preparing today's locations
+      //Using scheduleType property of location to add OT locations from overtimeCalc obj
+      //Outer Loop: OT locID, Inner loop: location schema, scheduleType property
+      if(otShiftsToday){ //avoid errors: skip if no overtime shifts
+        otShiftsToday.locIds.forEach(ot => { //O(n^2)
+          locationsCopy.forEach(l => { 
+            if(l._id.toString() === ot?._id.toString() && (!l.scheduleType.includes(dayName))){
+              l?.scheduleType.push(dayName) 
             }
-          }) 
-        }) 
-        // if(i===0 && Object.keys(rows).length === 9){ console.log( rows ) }
-        //Compile all 7 tables
-        schedule[dayName] = {
-          locations: locationMonitors.map(l => l[0]), //extract location names
-          row: rows,
-          date: getCurrentDay(wkStart, i)  //Get exact date for day
-          //new Date(date.getTime() + (i * 24 * 60 * 60 * 1000)), 
-          // isWeekend, 
-        } 
-    } //END OF FOR LOOP
+          })
+        })
+      }
+      //Filter locations for this day
+      const locationsToday = locationsCopy
+        .filter(l => l.scheduleType.includes(dayName)
+        ).map( (loc, idx) => ({ //Add a counter to each entry
+          ...(loc._doc || loc), // spread mongoose document or spread manual object
+          index: idx,
+        })).reduce((acc, loc) =>{
+            if (!loc._id) {
+              console.error("Invalid object in array:", loc)
+              throw new Error("Object missing _id property")
+            }
+            acc[loc._id.toString()] = loc
+            return acc
+        }, {}) //use ID as the key
+      
+        
+      //2) Preparing today's shifts 
+      //Create a sorted array of location / monitors for insertion later
+      let locationMonitors = resetLocationToday(locationsToday)
 
-    return{
-      weekStart: wkStart, 
-      weekEnd: wkEnd, 
-      schedule
-    } 
+      //Filter regular shifts
+      const shiftsToday = regularShifts.filter(s => s.days.includes(dayName))
+      // if(i===0)console.log(shiftsToday)
+
+      //Add OT shifts to shiftsToday 
+      if(otShiftsToday){ //avoid errors: skip if no overtime shifts
+        otShiftsToday.shifts.forEach((shiftObj, shiftId) => {
+        // console.log(shiftId, openShiftById.get(shiftId)?.startTime)
+          shiftsToday.push({
+            _id: shiftId, //open shift Id
+            name: shiftObj.monitorName, //monitor name from obj
+            location: shiftObj.locationId._id, //location Id 
+            overtime: true,
+            startTime: openShiftById.get(shiftId)?.startTime, //use lookup table
+            endTime: openShiftById.get(shiftId)?.endTime, 
+          })
+        }) 
+      }
+
+      //Normalize regular/ot shift into matching format
+      const normalizedShiftsToday = normalizeShifts(shiftsToday, monitorByShiftId, locationById)
+      //Coalesce same shifts + sort: [location, monitorName, overtime, start, end, locationID]
+      const monitorShiftsArr = coaleseAndSort(normalizedShiftsToday)
+
+      //Trigger flag if today or the day before is a holiday
+      if(currentHoliday !== false){
+        beforeHoliday = dayName === holidayDaysArr[0] ? true : false
+        todayHoliday = dayName === holidayDaysArr[1] ? true : false
+      }
+
+      //3) Populate table
+      //Loop over shifts and populate table
+      monitorShiftsArr.forEach( (shift, idx) => {
+        //Reset locationMonitors for current shift
+        locationMonitors = resetLocationToday(locationsToday)
+        // if(i===0) console.log(locationMonitors) //console.log(dayName, shift)
+
+        // Destructuring monitors
+        shift.forEach(([monitorName, overtime, start, end, locationId, shiftType]) => {
+          // Grab where monitor is suppose to go in locationMonitors
+          const index = locationsToday[locationId].index
+          // Holiday check: skip adding holiday shifts
+          const holidaySkipMonitorAddition = 
+            (beforeHoliday && shiftType === "thirdShift") ||
+            (todayHoliday && (shiftType === "firstShift" || shiftType === "secondShift"))
+
+          if(!holidaySkipMonitorAddition){
+            locationMonitors[index][1] = locationMonitors[index][1] === EMPTY //If it's empty
+              ? monitorName //replace EMPTY with monitor name, if there's something there already then
+              : locationMonitors[index][1] + `, ${monitorName}`//append another monitor w/ comma
+          }
+          if(overtime) { locationMonitors[index][2] = true } //update overtime flag
+
+          //Each row = one shift 
+          rows[`shift_${idx}`] = {
+            start: start,
+            end: end,
+            locationMonitors: locationMonitors,
+          }
+
+        }) 
+      }) 
+      // if(i===0 && Object.keys(rows).length === 9){ console.log( rows ) }
+      //Compile all 7 tables
+      schedule[dayName] = {
+        locations: locationMonitors.map(l => l[0]), //extract location names
+        row: rows,
+        date: getCurrentDay(wkStart, i)  //Get exact date for day
+        //new Date(date.getTime() + (i * 24 * 60 * 60 * 1000)), 
+        // isWeekend, 
+      } 
+  } //END OF FOR LOOP
+
+  return{
+    weekStart: wkStart, 
+    weekEnd: wkEnd, 
+    schedule
+  } 
 }
 
 //Convert weeklyTable to json then xlsx -> excel file with all fields populated
@@ -280,9 +310,18 @@ module.exports = {
             path: 'days.$*.shifts.$*.locationId',
             model: 'Location'
           })
+        const holidays = await Holiday.find()
 
-        //Main function: Does all of the heavy lifting
-        let weeklyTable = buildWeeklyTable(THISWEEK, monitors, regularShifts, openShifts, locations, overtimeSchedule[0]) 
+        //Main function: Creates schedule object for frontend
+        const weeklyTable = buildWeeklyTable({
+          date: THISWEEK, 
+          monitors, 
+          regularShifts, 
+          openShifts, 
+          locations, 
+          overtimeCalcs: overtimeSchedule[0], 
+          holidays
+        }) 
         // console.log(weeklyTable)
 
         // Write the weeklyTable to disk as pretty JSON
