@@ -62,7 +62,7 @@ function getFixedTimeRangeISO(startTime, endTime, shiftDate){
   // Clone dates to avoid mutation
   const start = new Date(startTime);
   const end = new Date(endTime);
-  const date = new Date(shiftDate);
+  const date = new Date(shiftDate); //e.g. 2025-05-01T04:00:00Z
 
   // Set the dates to match the shift date
   start.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
@@ -72,10 +72,9 @@ function getFixedTimeRangeISO(startTime, endTime, shiftDate){
   if (end <= start) {
     end.setDate(end.getDate() + 1);
   }
-
+  
   return [start.getTime(), end.getTime()];
 }
-
 //Helper function to get next Thurs as String
 function getNextThurs(date){
   const day = date.getDay() //0 = Sun, 6 = Sat

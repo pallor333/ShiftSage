@@ -1,6 +1,6 @@
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
-const { calculateShiftHours, formatDate, formatTime, getNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
+const { calculateShiftHours, formatDate, formatTime, getFixedTimeRange, getNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
@@ -82,6 +82,27 @@ function convertMapToPlainObject(overtimeCalcsMap) {
   }
 
   return forSchema
+}
+//Helper: takes monitorId and deletes all vaca associated w/ that id
+async function clearMonitorVacationShiftsAndOvertimeBids(monitorId) {
+  // Update the monitor's vaca field to an empty array
+  await Monitor.findByIdAndUpdate(monitorId, { vaca: [] })
+
+  //Remove all objects in arr where monitorId matches, regardless of openShiftId
+  await VacationLookup.updateMany(
+    {},
+    { $pull: { monitorAndOpenShift: { monitorId: monitorId } } }
+  )
+
+  // Delete all VacationLookup documents where monitorAndOpenShift is now empty
+  await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } })
+  
+  //Delete all openShifts associated with monitorId
+  const matchingOpenShifts = await getOpenShiftsBy(monitorId)
+  for (const id of matchingOpenShifts) {
+    await deleteOpenShift(id);
+  }
+  console.log(`All vacation + overtime shifts cleared for monitor ID: ${monitorId}`)
 }
 //Helper function to delete all documents from both overtime (audit+schedule) schemas
 async function clearOvertimeAuditAndScheduleWinners() {
@@ -189,6 +210,49 @@ async function holidayOvertimeCreator(){
     })
   }
 }
+//Helper: takes monitor and generates random rankings for all eligible bids
+async function rankingsBidGenerator(monitorObj, openShiftTable, rankings){
+  const eligibleShifts = []
+  const monStart = monitorObj.regularShift.startTime, monEnd = monitorObj.regularShift.endTime, monDay = monitorObj.regularShift.days
+  //1)Discard any rankings that this monitor isn't eligible for
+  for(const id in rankings){
+    let shift = openShiftTable.get(id)
+    let shiftStart = shift.startTime, shiftEnd = shift.endTime, shiftDay = shift.day
+    // console.log("mon:", monStart, monEnd, monDay)
+    // console.log("shift:", shiftStart, shiftEnd, shiftDay)
+    if(monDay.includes(shiftDay)){ 
+      const [mStart, mEnd] = getFixedTimeRange(monStart, monEnd)
+      const [sStart, sEnd] = getFixedTimeRange(shiftStart, shiftEnd)
+      const shiftConflict = (mStart < sEnd && sStart < mEnd) 
+      // console.log("m:", mStart, mEnd, )
+      // console.log("s:", sStart, sEnd, shiftConflict)
+      if(shiftConflict) { continue }  //Conflict = Skip adding
+    } 
+    //Populate if monitor is eligible
+    eligibleShifts.push( {
+      position: id, rank: "", 
+    }) 
+  }
+
+  //2) generate random arr of values from 1 -> ranking.length
+  const len = eligibleShifts.length
+  let randomizedRankings = Array.from({length: len}, (_, i) => i + 1)
+  //Fischer-Yates shuffle algo
+  for(let i = 0; i < len; i++){
+    let randIdx = Math.floor(Math.random() * len)
+    let temp = randomizedRankings[i]
+    randomizedRankings[i] = randomizedRankings[randIdx]
+    randomizedRankings[randIdx] = temp
+  }
+
+  //3) assign rankings based upon array
+  for(const idx in eligibleShifts){
+    eligibleShifts[idx].rank = randomizedRankings[idx]
+  }
+
+  //4) Sort and return
+  return eligibleShifts.sort((a, b) => a.rank - b.rank)
+}
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
 module.exports = {
@@ -234,10 +298,10 @@ module.exports = {
         vacaId: v._id,
         dayRaw: v.day.toISOString(), 
         monitors: v.monitorAndOpenShift.map(el => ({ //[{monitorId: obj}, {openshiftId: obj}]
-          _id: el.monitorId._id,
-          id: el.monitorId.id,
-          name: el.monitorId.name,
-          openShiftId: el.openShiftId._id
+          _id: el?.monitorId._id,
+          id: el?.monitorId.id,
+          name: el?.monitorId.name,
+          openShiftId: el?.openShiftId._id
         })),
       }))
       
@@ -714,13 +778,9 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       const openShiftTable = openShiftLookupByOpenShiftIdTable(openShifts)
       const monitorTable = monitorLookupByMonitorIdTable(monitors) 
       let actualRank = 0 //Tracks ranking of bid
-      //debugging
-      // console.log("Request received:", req.body); // Debugging statement
-      // console.log("Formatted Rankings:", rankingArr)
-      // console.log(`Monitor: ${monId}, Hours: ${monitor.hours}, Senioritiy: ${monitor.seniority}`)
-
       //monitorId from form -> URL, rankings from form submission
-      const monId = req.params.id, rankings = req.body.rankings, rankingArr = [] 
+      const monId = req.params.id, rankings = req.body.rankings
+      let rankingArr = [], finalRanking = []
       //check => [false, true], comparision logic filters to just true or just false
       const workingMoreThanOne = req.body.moreThanOneShift.length === 2 
       const anyShift = req.body.anyShift.length === 2 
@@ -735,29 +795,55 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
         return res.redirect("/parking/home")
       }
 
+      //debugging
+      // console.log("Request received:", req.body); // Debugging statement
+      // console.log("Formatted Rankings:", rankingArr)
+      // console.log(`Monitor: ${monId}, Hours: ${monitor.hours}, Senioritiy: ${monitor.seniority}`)
+
       //Grab vacation dates for this monitor 
       const vacation = monitorTable
         .get(monId)?.vaca
         .map(date => `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`)
 
-      //Populate array of objects to pass to OvertimeBidsSchema later
-      for(const id in rankings){
-        if(rankings[id]){ //Filter rankings to remove empty values
-          const date = openShiftTable.get(id).date
-          // Do not allow a bid if the monitor is on vacation
-          // Skip if monitor is on vacation for this date
-          if(vacation && vacation.includes(date)){ continue }
-            actualRank++
-            rankingArr.push({position: id, rank: actualRank})
+      if(anyShift){//Monitor will work any shift
+        finalRanking = await rankingsBidGenerator(monitorTable.get(monId.toString()), openShiftTable, rankings)
+      }else{
+        //Populate array of objects to pass to OvertimeBidsSchema later
+        for(const id in rankings){
+          if(rankings[id]){ //Filter rankings to remove empty values
+            const date = openShiftTable.get(id).date
+            // Do not allow a bid if the monitor is on vacation
+            // Skip if monitor is on vacation for this date
+            if(vacation && vacation.includes(date)){ continue }
+              // actualRank++
+              rankingArr.push({
+                position: id, 
+                rank: +rankings[id],
+                originalPosition: Object.keys(rankings).indexOf(id),
+              })
+            }
+        }//TODO: Sort these in reverse order because pop() is O(1)
+        //Sort by rank, then by originalPosition
+        const sortedArr = rankingArr.sort((a, b) => {
+        if (a.rank === b.rank) {
+              return a.originalPosition - b.originalPosition;
           }
-      }//TODO: Sort these in reverse order because pop() is O(1)
+          return a.rank - b.rank;
+        })
+        //Compile into object without 'originalPosition'
+        for(const idx in sortedArr){
+          let obj = sortedArr[idx]
+          finalRanking[idx] = {position: obj.position, rank: +idx+1}
+        }
+      }
 
+      // console.log(test)
       //Update/Create OvertimeBid document
       await OvertimeBid.findOneAndUpdate(
         { monitor: monId },
         { 
           $set: { 
-            rankings: rankingArr, //insert formatted rankings
+            rankings: finalRanking, //insert formatted rankings
             workMoreThanOne: workingMoreThanOne, //monitor works 1+ shift
             workAnyShift: anyShift, //monitor will work ANY shift
           },
@@ -852,7 +938,10 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
         console.log("Monitor not found")
         return res.redirect("/parking/home")
       }
-      await Monitor.findByIdAndDelete(req.params.id)
+      console.log(req.params.id)
+      //delete vaca + associated openshifts, and overtime bids
+      await clearMonitorVacationShiftsAndOvertimeBids(req.params.id) 
+      await Monitor.findByIdAndDelete(req.params.id) //delete MONITOR
       console.log("Monitor has been deleted!");
       res.redirect("/parking/edit?tab=monitor-tab#displayMonitors"); 
     } catch (err) {
@@ -946,29 +1035,30 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
   },
   deleteAllVacation: async (req, res) => {
     try {
-      const monitorId = req.params.id;
-      const matchingOpenShifts = await getOpenShiftsBy(monitorId) 
-      // console.log(monitorId, matchingOpenShifts)
+      //const monitorId = req.params.id;
+      // const matchingOpenShifts = await getOpenShiftsBy(monitorId) 
+      // // console.log(monitorId, matchingOpenShifts)
       
-      // Update the monitor's vaca field to an empty array
-      await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
+      // // Update the monitor's vaca field to an empty array
+      // await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
 
-      //Remove all objects in arr where monitorId matches, regardless of openShiftId
-      await VacationLookup.updateMany(
-        {}, //Query all documents
-        { $pull: { monitorAndOpenShift: { monitorId: monitorId } } } //$pull removes all documents w/ matching monitorId
-      );
+      // //Remove all objects in arr where monitorId matches, regardless of openShiftId
+      // await VacationLookup.updateMany(
+      //   {}, //Query all documents
+      //   { $pull: { monitorAndOpenShift: { monitorId: monitorId } } } //$pull removes all documents w/ matching monitorId
+      // );
 
-      // Delete all VacationLookup documents where monitorAndOpenShift is now empty
-      await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } });
+      // // Delete all VacationLookup documents where monitorAndOpenShift is now empty
+      // await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } });
 
-      //Delete all openShifts associated with monitorId
-      for (const id of matchingOpenShifts) {
-        await deleteOpenShift(id)
-      }
+      // //Delete all openShifts associated with monitorId
+      // for (const id of matchingOpenShifts) {
+      //   await deleteOpenShift(id)
+      // }
 
-      console.log(`All vacation cleared for monitor with ID: ${monitorId}`)
-      console.log(`All matching overtime shifts associated with monitor ID: ${monitorId} deleted`)
+      // console.log(`All vacation cleared for monitor with ID: ${monitorId}`)
+      // console.log(`All matching overtime shifts associated with monitor ID: ${monitorId} deleted`)
+      await clearMonitorVacationShiftsAndOvertimeBids(req.params.id)
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for monitor: ${err}`);

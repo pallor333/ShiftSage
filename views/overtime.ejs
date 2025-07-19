@@ -100,9 +100,9 @@
         <table class="table table-sm table-striped">
           <thead>
             <tr>
-              <th>ID (Monitor Name)</th>
+              <th>Monitor Name (ID)</th>
               <th>Overtime Rankings</th>
-              <th>Want 1+ OT Shift</th>
+              <th>Work 1+ Overtime Shifts</th>
               <th>Work Any Shift</th>
               <th>Actions</th>
             </tr>
@@ -110,14 +110,14 @@
           <tbody>
             <% overtimeBid.forEach((bid) => { %>
               <tr>
-                <td><%= bid.monitor.name %> (<%= bid.monitor.id %>)</td>
+                <td><%= bid?.monitor?.name %> (<%= bid.monitor?.id %>)</td>
                 <td>
                   <% bid.rankings.forEach((ranking) => { %>
-                    <p><%= ranking.rank %>) <%= ranking.position.name %> </p>
+                    <p><%= ranking?.rank %>) <%= ranking?.position?.name %> </p>
                   <% }) %>
                 </td>
-                <td><%= bid.workMoreThanOne %></td>
-                <td><%= bid.workAnyShift %></td>
+                <td><%= bid?.workMoreThanOne %></td>
+                <td><%= bid?.workAnyShift %></td>
                 <td>
                   <!-- Delete Button -->
                   <form action="/parking/overtime/deleteBid/<%= bid._id %>" method="POST">
@@ -165,11 +165,11 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Monitors</th>
-            <th>Hours to Start</th>
+            <th>Monitor</th>
+            <th>Start</th>
             <!-- Count OT shifts  -->
             <% for(let i = 1; i < otShiftCount; i++){ %>
-              <th>Overtime Shift <%= i %>)</th>
+              <th><%= i %>)</th>
             <% } %>
             <th>Total Hours</th>
           </tr>

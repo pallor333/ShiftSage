@@ -8,7 +8,7 @@ const methodOverride = require("method-override");
 const flash = require("express-flash");
 const logger = require("morgan");
 const connectDB = require("./config/database");
-const mainRoutes = require("./routes/main");
+// const mainRoutes = require("./routes/main");
 //const postRoutes = require("./routes/posts");
 const parkingRoutes = require("./routes/parking");
 
@@ -63,7 +63,7 @@ app.use(flash());
 // });
 
 //Setup Routes For Which The Server Is Listening
-app.use("/", mainRoutes);
+// app.use("/", mainRoutes);
 //app.use("/post", postRoutes);
 app.use("/parking", parkingRoutes)
 
