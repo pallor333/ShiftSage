@@ -11,7 +11,7 @@ const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //const [month, day, year] = [new Date().getMonth() + 1, new Date().getDate(), new Date().getFullYear()];
 //console.log(`${month}/${day}/${year}`); // "5/22/2025"
 //temp hardcoding date:
-const THISWEEK = new Date("4/30/25") //new Date("6/29/25")
+const THISWEEK = new Date("6/29/25") //new Date("4/30/25") //
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
@@ -191,6 +191,9 @@ async function holidayOvertimeCreator(){
       //Format data for overtime Schema
       const shift = regularShiftLookupTable.get(entry.id.toString())
       const totalHours = calculateShiftHours(shift.startTime, shift.endTime)
+      const date2 = new Date(`${entry.date}T00:00:00`)
+      const date3 = date2.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit" })
+      const parsedDate = new Date(`${entry.date}T0:00:00`).toLocaleString("en-US", { timeZone: "America/New_York"})
       const formattedStartTime = shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       const formattedEndTime = shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       // console.log(new Date(entry.date))
@@ -205,8 +208,8 @@ async function holidayOvertimeCreator(){
         totalHours: totalHours,
         recurring: false // Convert truthy/falsy value to Boolean
       }
-      // if(data.day==='thursday') console.log(data)
-      createOpenShift(data) //Pass data to create new OT shift
+      if(data.day==='thursday') console.log(entry.date, date2, date3, parsedDate)
+      // createOpenShift(data) //Pass data to create new OT shift
     })
   }
 }
@@ -333,7 +336,8 @@ module.exports = {
       }).populate("location").sort({ date: 1, startTime: 1})
       // console.log(overtimeAudit)
 
-      //Automatically regular shift -> overtime shift if holiday
+      //Automatically generate overtime shifts if NEXTWEEK is holiday
+      // if(holiday){regular shift => overtime shift}
       await holidayOvertimeCreator()
 
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
@@ -699,6 +703,7 @@ module.exports = {
       const { name, date } = req.body
       let [y, month, day] = date.split('-')
       // console.log(y, m, d)
+      console.log(name, month, day)
 
       await Holiday.create({
         name: name,

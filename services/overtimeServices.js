@@ -36,7 +36,7 @@ const checkShiftConflict = (monitor, overtimeShift) => {
     // if(monitor.name==='VACACHECK2'){ console.log(regularDays, overtimeDay, !regularDays.includes(overtimeDay)) } 
     //2) only check time overlap if days conflict
     if(!regularDays.includes(overtimeDay)) return false
-
+    if(monitor.name==='VACACHECK2'){ console.log(overtimeShift.startTime, overtimeShift.endTime, date) }
     const [regStart, regEnd] = getFixedTimeRangeISO(monitor.regularShift.startTime, monitor.regularShift.endTime, date)
     const [otStart, otEnd]   = getFixedTimeRangeISO(overtimeShift.startTime, overtimeShift.endTime, date)
 
@@ -45,36 +45,14 @@ const checkShiftConflict = (monitor, overtimeShift) => {
     // const overlap = otStart < regEnd && otEnd > regStart
     // if(overlap) return true
 
-    //4) check gap (true = conflict, charge, false = no conflict, no charge)
+    //4) check gap (true = conflict + charge, false = no conflict, no charge)
     const twoHoursInMs = 1000 * 60 * 60 * 2 //1000ms, 60s, 60min = 1 hr
     const startsWithinTwoHrsBefore = regStart - otStart;
     const early = Math.min(otStart, regStart)
     const later = Math.max(otStart, regStart)
-    const plusTwoHrs = later + twoHoursInMs
-    if(monitor.name==='VACACHECK2'){
-        console.log(overtimeShift.name, early, later, plusTwoHrs, startsWithinTwoHrsBefore > 0 && startsWithinTwoHrsBefore <= twoHoursInMs)
-    }
-    return later <= plusTwoHrs
+    const plusTwoHrs = early + twoHoursInMs
 
-    if (startsWithinTwoHrsBefore > 0 && startsWithinTwoHrsBefore <= twoHoursInMs) {
-        return true;
-    }
-
-    return false; // no conflict
-
-    // const early = Math.min(otStart, regStart)
-    // const later = Math.max(otStart, regStart)
-    // const plusTwoHrs = later + twoHoursInMs
-    const timeBetween = Math.abs(otStart - regStart)
-    if(monitor.name==='VACACHECK2'){
-        console.log(overtimeShift.name, regStart, otStart, early, later, plusTwoHrs, (early <= later && later <= plusTwoHrs) )
-    }
-    // if(timeBetween > twoHoursInMs) return true //too close -> conflict
-    // Regular/OT shift conflict = true 
-    // start1 <= start2 <= start1+2hrs
-    // return later <= plusTwoHrs
-    //07:00 AM - 03:00 PM vs (05:30 AM - 09:00 AM)
-    // return (otStart < regEnd && otEnd > regStart)
+    return plusTwoHrs >= later 
 } 
 //Helper: Has the current monitor bid on the current open shift? True = no bid => charge
 function monitorHasBidOnOpenShift(monId, currentShiftId, monitorRankingTable){
