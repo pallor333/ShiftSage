@@ -159,6 +159,31 @@
   ],
   "openShifts": [
     {
+      "_id": "687ae572fb700a9f97019849",
+      "name": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
+      "location": {
+        "_id": "6850e465841052db64eb41be",
+        "name": "ROVING",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "2025-05-01T04:00:00.000Z",
+      "endTime": "2025-05-01T11:00:00.000Z",
+      "totalHours": 7,
+      "recurring": false,
+      "__v": 0
+    },
+    {
       "_id": "687ad636a88bee7e030675c1",
       "name": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
       "location": {
@@ -176,31 +201,6 @@
       "__v": 0
     },
     {
-      "_id": "687ad607a88bee7e030675b0",
-      "name": "THU 5/1/25 ROVING 12:00 PM - 07:00 AM (19.0)",
-      "location": {
-        "_id": "6850e465841052db64eb41be",
-        "name": "ROVING",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday",
-          "saturday",
-          "sunday"
-        ],
-        "__v": 0
-      },
-      "day": "thursday",
-      "date": "2025-05-01T04:00:00.000Z",
-      "startTime": "2025-05-01T16:00:00.000Z",
-      "endTime": "2025-05-02T11:00:00.000Z",
-      "totalHours": 19,
-      "recurring": false,
-      "__v": 0
-    },
-    {
       "_id": "687ad680a88bee7e030675e3",
       "name": "THU 5/1/25 HBS 02:00 PM - 11:00 PM (9.0)",
       "location": {
@@ -214,29 +214,6 @@
           "friday",
           "saturday",
           "sunday"
-        ],
-        "__v": 0
-      },
-      "day": "thursday",
-      "date": "2025-05-01T04:00:00.000Z",
-      "startTime": "2025-05-01T18:00:00.000Z",
-      "endTime": "2025-05-02T03:00:00.000Z",
-      "totalHours": 9,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "687ad657a88bee7e030675d2",
-      "name": "THU 5/1/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
-      "location": {
-        "_id": "6850e524841052db64eb423b",
-        "name": "RIVER ROVER",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
         ],
         "__v": 0
       },
@@ -422,6 +399,29 @@
       "__v": 0
     },
     {
+      "_id": "687ae5adfb700a9f9701986d",
+      "name": "SAT 5/3/25 RIVER ROVER 07:00 AM - 03:00 PM (8.0)",
+      "location": {
+        "_id": "6850e524841052db64eb423b",
+        "name": "RIVER ROVER",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T11:00:00.000Z",
+      "endTime": "2025-05-03T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
       "_id": "687adeaaa88bee7e0306769c",
       "name": "SAT 5/3/25 HBS 03:00 PM - 11:00 PM (8.0)",
       "location": {
@@ -493,26 +493,6 @@
       "startTime": "2025-05-03T20:00:00.000Z",
       "endTime": "2025-05-04T04:00:00.000Z",
       "totalHours": 8,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "687ade38a88bee7e03067649",
-      "name": "SAT 5/3/25 RIVER 07:00 PM - 03:00 PM (20.0)",
-      "location": {
-        "_id": "6850e6951c9aa50730b201b3",
-        "name": "RIVER",
-        "scheduleType": [
-          "saturday",
-          "sunday"
-        ],
-        "__v": 0
-      },
-      "day": "saturday",
-      "date": "2025-05-03T04:00:00.000Z",
-      "startTime": "2025-05-03T23:00:00.000Z",
-      "endTime": "2025-05-04T19:00:00.000Z",
-      "totalHours": 20,
       "recurring": false,
       "__v": 0
     },
@@ -858,7 +838,7 @@
   ],
   "overtimeSchedule": [
     {
-      "_id": "687ae242a88bee7e030679a6",
+      "_id": "687bdc8adf74979e054467cb",
       "days": {
         "thursday": {
           "locIds": [
@@ -870,7 +850,7 @@
             }
           ],
           "shifts": {
-            "687ad636a88bee7e030675c1": {
+            "687ae572fb700a9f97019849": {
               "monitorId": {
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
@@ -886,15 +866,23 @@
                 "__v": 0
               },
               "monitorName": "TESTERTWO",
-              "shiftName": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
+              "shiftName": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
               "locationId": {
-                "_id": "6850e6c11c9aa50730b201fe",
-                "name": "RECYCLE",
-                "scheduleType": [],
+                "_id": "6850e465841052db64eb41be",
+                "name": "ROVING",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ],
                 "__v": 0
               }
             },
-            "687ad607a88bee7e030675b0": {
+            "687ad636a88bee7e030675c1": {
               "monitorId": {
                 "_id": "68433739b08726f40bada434",
                 "id": 98,
@@ -910,19 +898,11 @@
                 "__v": 0
               },
               "monitorName": "TESTERONE",
-              "shiftName": "THU 5/1/25 ROVING 12:00 PM - 07:00 AM (19.0)",
+              "shiftName": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
               "locationId": {
-                "_id": "6850e465841052db64eb41be",
-                "name": "ROVING",
-                "scheduleType": [
-                  "monday",
-                  "tuesday",
-                  "wednesday",
-                  "thursday",
-                  "friday",
-                  "saturday",
-                  "sunday"
-                ],
+                "_id": "6850e6c11c9aa50730b201fe",
+                "name": "RECYCLE",
+                "scheduleType": [],
                 "__v": 0
               }
             },
@@ -941,23 +921,6 @@
                   "friday",
                   "saturday",
                   "sunday"
-                ],
-                "__v": 0
-              }
-            },
-            "687ad657a88bee7e030675d2": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "THU 5/1/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
-              "locationId": {
-                "_id": "6850e524841052db64eb423b",
-                "name": "RIVER ROVER",
-                "scheduleType": [
-                  "monday",
-                  "tuesday",
-                  "wednesday",
-                  "thursday",
-                  "friday"
                 ],
                 "__v": 0
               }
@@ -1006,16 +969,7 @@
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
-                "vaca": [
-                  "2025-05-01T04:00:00.000Z",
-                  "2025-05-02T04:00:00.000Z",
-                  "2025-05-03T04:00:00.000Z",
-                  "2025-05-04T04:00:00.000Z",
-                  "2025-05-05T04:00:00.000Z",
-                  "2025-05-06T04:00:00.000Z",
-                  "2025-05-07T04:00:00.000Z",
-                  "2025-05-08T04:00:00.000Z"
-                ],
+                "vaca": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1047,16 +1001,7 @@
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
-                "vaca": [
-                  "2025-05-01T04:00:00.000Z",
-                  "2025-05-02T04:00:00.000Z",
-                  "2025-05-03T04:00:00.000Z",
-                  "2025-05-04T04:00:00.000Z",
-                  "2025-05-05T04:00:00.000Z",
-                  "2025-05-06T04:00:00.000Z",
-                  "2025-05-07T04:00:00.000Z",
-                  "2025-05-08T04:00:00.000Z"
-                ],
+                "vaca": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1101,7 +1046,20 @@
           }
         },
         "saturday": {
-          "locIds": [],
+          "locIds": [
+            {
+              "_id": "6850e524841052db64eb423b",
+              "name": "RIVER ROVER",
+              "scheduleType": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday"
+              ],
+              "__v": 0
+            }
+          ],
           "shifts": {
             "687ade91a88bee7e0306768b": {
               "monitorId": {
@@ -1110,16 +1068,7 @@
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
-                "vaca": [
-                  "2025-05-01T04:00:00.000Z",
-                  "2025-05-02T04:00:00.000Z",
-                  "2025-05-03T04:00:00.000Z",
-                  "2025-05-04T04:00:00.000Z",
-                  "2025-05-05T04:00:00.000Z",
-                  "2025-05-06T04:00:00.000Z",
-                  "2025-05-07T04:00:00.000Z",
-                  "2025-05-08T04:00:00.000Z"
-                ],
+                "vaca": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1182,6 +1131,23 @@
                 "__v": 0
               }
             },
+            "687ae5adfb700a9f9701986d": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 RIVER ROVER 07:00 AM - 03:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e524841052db64eb423b",
+                "name": "RIVER ROVER",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
             "687adeaaa88bee7e0306769c": {
               "monitorId": null,
               "monitorName": "OPEN",
@@ -1233,20 +1199,6 @@
                   "wednesday",
                   "thursday",
                   "friday",
-                  "saturday",
-                  "sunday"
-                ],
-                "__v": 0
-              }
-            },
-            "687ade38a88bee7e03067649": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "SAT 5/3/25 RIVER 07:00 PM - 03:00 PM (20.0)",
-              "locationId": {
-                "_id": "6850e6951c9aa50730b201b3",
-                "name": "RIVER",
-                "scheduleType": [
                   "saturday",
                   "sunday"
                 ],
@@ -1328,7 +1280,7 @@
                 },
                 "seniority": "2015-01-07T00:00:00.000Z",
                 "__v": 0,
-                "lastUpdated": "2025-07-19T00:11:06.319Z"
+                "lastUpdated": "2025-07-25T02:50:28.530Z"
               },
               "monitorName": "JEFFERSON",
               "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
@@ -1544,8 +1496,8 @@
           }
         }
       },
-      "createdAt": "2025-07-19T00:09:38.124Z",
-      "updatedAt": "2025-07-19T00:09:38.124Z",
+      "createdAt": "2025-07-19T17:57:30.235Z",
+      "updatedAt": "2025-07-19T17:57:30.235Z",
       "__v": 0
     }
   ],
@@ -2098,6 +2050,72 @@
             ]
           },
           "shift_8": {
+            "start": "2025-05-01T04:00:00.000Z",
+            "end": "2025-05-01T11:00:00.000Z",
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "TESTERTWO",
+                true
+              ],
+              [
+                "SFPG BOOTH",
+                "",
+                false
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_9": {
             "start": "2025-05-01T11:00:00.000Z",
             "end": "2025-05-01T19:00:00.000Z",
             "locationMonitors": [
@@ -2128,89 +2146,23 @@
               ],
               [
                 "RECYCLE",
-                "TESTERTWO",
-                true
-              ],
-              [
-                "RIVER ROVER",
-                "",
-                false
-              ],
-              [
-                "RIVER/MAKL",
-                "",
-                false
-              ],
-              [
-                "ROVING",
-                "",
-                false
-              ],
-              [
-                "SFPG BOOTH",
-                "",
-                false
-              ],
-              [
-                "SFPG ROVER",
-                "",
-                false
-              ],
-              [
-                "SFPG/1WES",
-                "",
-                false
-              ]
-            ]
-          },
-          "shift_9": {
-            "start": "2025-05-01T16:00:00.000Z",
-            "end": "2025-05-02T11:00:00.000Z",
-            "locationMonitors": [
-              [
-                "10EV",
-                "",
-                false
-              ],
-              [
-                "52OX",
-                "",
-                false
-              ],
-              [
-                "BWYG",
-                "",
-                false
-              ],
-              [
-                "HBS",
-                "",
-                false
-              ],
-              [
-                "NORTH",
-                "",
-                false
-              ],
-              [
-                "RECYCLE",
-                "",
-                false
-              ],
-              [
-                "RIVER ROVER",
-                "",
-                false
-              ],
-              [
-                "RIVER/MAKL",
-                "",
-                false
-              ],
-              [
-                "ROVING",
                 "TESTERONE",
                 true
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
               ],
               [
                 "SFPG BOOTH",
@@ -2265,8 +2217,8 @@
               ],
               [
                 "RIVER ROVER",
-                "OPEN",
-                true
+                "",
+                false
               ],
               [
                 "RIVER/MAKL",
@@ -2999,6 +2951,7 @@
           "HBS",
           "NORTH",
           "RIVER",
+          "RIVER ROVER",
           "ROVING",
           "SFPG/1WES"
         ],
@@ -3029,6 +2982,11 @@
               ],
               [
                 "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
                 "",
                 false
               ],
@@ -3074,6 +3032,11 @@
                 false
               ],
               [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
                 "ROVING",
                 "",
                 false
@@ -3111,6 +3074,11 @@
               ],
               [
                 "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
                 "",
                 false
               ],
@@ -3156,6 +3124,11 @@
                 false
               ],
               [
+                "RIVER ROVER",
+                "OPEN",
+                true
+              ],
+              [
                 "ROVING",
                 "",
                 false
@@ -3193,6 +3166,11 @@
               ],
               [
                 "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
                 "",
                 false
               ],
@@ -3238,45 +3216,9 @@
                 false
               ],
               [
-                "ROVING",
+                "RIVER ROVER",
                 "",
                 false
-              ],
-              [
-                "SFPG/1WES",
-                "",
-                false
-              ]
-            ]
-          },
-          "shift_6": {
-            "start": "2025-05-03T23:00:00.000Z",
-            "end": "2025-05-04T19:00:00.000Z",
-            "locationMonitors": [
-              [
-                "52OX",
-                "",
-                false
-              ],
-              [
-                "BWYG",
-                "",
-                false
-              ],
-              [
-                "HBS",
-                "",
-                false
-              ],
-              [
-                "NORTH",
-                "",
-                false
-              ],
-              [
-                "RIVER",
-                "OPEN",
-                true
               ],
               [
                 "ROVING",
@@ -3290,7 +3232,7 @@
               ]
             ]
           },
-          "shift_7": {
+          "shift_6": {
             "start": "2025-05-04T03:00:00.000Z",
             "end": "2025-05-04T11:00:00.000Z",
             "locationMonitors": [
@@ -3316,6 +3258,11 @@
               ],
               [
                 "RIVER",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
                 "",
                 false
               ],

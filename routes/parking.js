@@ -23,6 +23,8 @@ router.get("/edit", ensureAuth, parkingController.getEditPage);
 router.get("/overtime", ensureAuth, parkingController.getOvertimePage);
 router.get("/schedule", ensureAuth, parkingController.getSchedulePage);
 router.get("/holiday", ensureAuth, parkingController.getHolidayPage);
+router.get("/quickstart", ensureAuth, parkingController.getQuickstartPage);
+router.get("/exportovertime", ensureAuth, parkingController.getExportOvertimePage);
 // Button to calculate overtime bids
 router.get("/overtime/calculate", ensureAuth, parkingController.calculateOvertimeBid);
 

@@ -1,0 +1,48 @@
+<%- include('partials/header') -%>
+<!-- Quickstart Page -->
+<main class="container">
+  <h1>Quickstart</h1>
+  <section class="mt-5">
+    <h2>Setup</h2>
+    <span>Pre-requisite data required before adding overtime shifts.</span>
+        <ol>
+            <li>Fill out <a href="/parking/edit?tab=location-tab#locations">locations</a></li>
+            <li>Add in regular shifts <a href="/parking/edit?tab=regularShift-tab#regularShifts">regular shifts</a></li>
+            <li>With the previous two data populated, you can begin add each <a href="/parking/edit?tab=monitor-tab #monitors">monitor</a>. The display name is what will show on the schedule.</li>
+            <li>Add every <a href="/parking/holiday">university holiday for this year</a>. 
+              Holidays that have passed will be removed automatically, however they must be manually re-added every year. 
+              Holidays will auto create overtime shifts for that date.</li>
+        </ol>
+    <h2>Week Start</h2>
+    <ol>
+        <li>TODO:Add post-week corrections before starting calculations</li>
+        <li>Double check the <a href="/parking/edit?tab=vaca-tab#vacation">vacation page</a>. Is the time accurate for each monitor?</li>
+        <li>Add <a href="/parking/edit?tab=openShift-tab">overtime</a> shifts for the week after next to print out monitor overtime bid sheets.</li>
+        <li>Move to the <a href="/parking/overtime">overtime sheets</a> page. Double check that the overtime shifts are correct before proceeding.</li>
+        <li>Now overtime bids can be added. Select the monitor, check if they're working more than one week / want to work any shift and rank them starting from 1. 
+            Make sure you do not accidently rank two shifts the same number or errors will occur. Once done, hit 'submit rankings' at the bottom of the section. 
+            Then the page will refresh and you should see the monitor and their respective choices. If something is wrong, feel free to delete and re-add.</li>
+        <li>Once all monitors bids have been added, hit the large 'calculate overtime shifts' buttom at the very bottom of the page. This will bring you into the second tab, Overtime Shift Assignments.</li>
+        <li>The Overtime Shift Assignments tabs shows every overtime shift assigned, in the order of assignment. Under it is a table of monitors being charged for the above shifts. 
+            If everything looks correct then you may proceed with the next step.</li>
+    </ol>
+    <h2>Post Calculations</h2>
+    <ol>
+        <li>Head over to the <a href="/parking/schedule">Weekly Schedule. It should automatically download as a pdf.</a></li>
+        <li>TODO:Go to the overtime exports page. It will auto download the overtime audit and </li>
+    </ol>
+  </section>
+
+  <section class="mt-5">
+    <h2>FAQ</h2>
+    <ul>
+        <li>Q: Can I change the week range? A: No, each week is hardcoded to be Thursday (Fri, Sat, Sun, etc) through Wednesday.</li>
+        <li>Q: Is it possible to see all overtime shifts? A: In the edit page and Overtime Shifts tab, there is a list of every overtime shift added. </li>
+
+    </ul>
+  </section>
+  
+
+</main>
+
+<%- include('partials/footer') -%>

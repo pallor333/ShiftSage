@@ -119,7 +119,7 @@ function buildWeeklyTable({ date, monitors, regularShifts, openShifts, locations
   //Holiday check
   const currentHoliday = holidayNextWeek(getNextThursDateObj(THISWEEK), holidays) 
   if(currentHoliday !== false){
-      console.log(`holiday = ${currentHoliday}`)
+      // console.log(`holiday = ${currentHoliday}`) //holiday debugging
       const dayNumberized = (new Date(currentHoliday).getDay() + 3) % 7
       const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
       holidayDaysArr = [holidayBefore, holidayToday]

@@ -67,6 +67,11 @@ app.use(flash());
 //app.use("/post", postRoutes);
 app.use("/parking", parkingRoutes)
 
+//Redirect / to /parking
+app.get("/", (req, res) => {
+  res.redirect("/parking");
+});
+
 //Server Running
 app.listen(process.env.PORT, () => {
   console.log("Server is running, you better catch it!");

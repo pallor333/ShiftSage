@@ -133,6 +133,8 @@ const holidaySchema = new Schema({
   name: { type: String, required: true},
   month: { type: Number, required: true},
   day: { type: Number, required: true},
+  year: { type: Number, required: true},
+  openShiftArr: [{ type: mongoose.Schema.Types.ObjectId, ref: 'OpenShift' }],
   // date: { type: Date, required: true}
 })
 

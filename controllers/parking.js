@@ -1,6 +1,6 @@
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
-const { calculateShiftHours, formatDate, formatTime, getFixedTimeRange, getNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
+const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
@@ -11,7 +11,7 @@ const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //const [month, day, year] = [new Date().getMonth() + 1, new Date().getDate(), new Date().getFullYear()];
 //console.log(`${month}/${day}/${year}`); // "5/22/2025"
 //temp hardcoding date:
-const THISWEEK = new Date("6/29/25") //new Date("4/30/25") //
+const THISWEEK = new Date("4/30/25") //new Date("6/29/25") 
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
@@ -36,12 +36,13 @@ async function addOpenShiftFromVacation(monitorId, dateRange){
   for(const date of dateRange){
     //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
     const currentDay = DAYSARRAY[(date.getDay() + 3) % 7]
-    const currentDate = date //`${date.getMonth() + 1}/${date.getDate()}`
+    const currentDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().slice(-2)}` //date 
+    console.log(currentDate)
 
     //If vacation day = day in monitor's regular shift
     if(shiftDays.includes(currentDay)){ 
       const data = {
-        //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
+        //[date][location][time][number of hours] e.g.  THU 5/1/25 52OX 11:00PM-7:00AM (8.0) 
         name: `${DAYMAPPING[currentDay]} ${currentDate} ${locationName} ${formattedStart} - ${formattedEnd} (${totalHours})`, 
         location: locationId, // ObjectId of the location
         day: currentDay,
@@ -111,6 +112,31 @@ async function clearOvertimeAuditAndScheduleWinners() {
   await OvertimeSchedule.deleteMany({})
   console.log(`Helper: All Documents cleared from the Overtime Schedule Winners Schema`)
 }
+//Helper: create audit table from overtimeAudit
+async function createAuditTable(monitors, overtimeAudit){
+  const auditTable = {}
+  monitors.forEach(mon => { //loop over every monitor
+    // overtimeWins.forEach(shift => { //loop over every OTshift
+    overtimeAudit.forEach(shift => { //loop over every OTshift
+      let name = mon.name, startingHrs = +mon.hours, endingHrs = startingHrs
+      let hrs = shift.monitorsToCharge[name]
+      if(!auditTable[name]){
+        auditTable[name] = {
+          hoursCharged: [],
+          startEndHours: [startingHrs, endingHrs]
+        }
+      }
+
+      if(hrs){
+        auditTable[name].hoursCharged.push(hrs)
+        auditTable[name].startEndHours[1] += hrs
+      }else{
+        auditTable[name].hoursCharged.push(0)
+      }
+    })
+  })
+  return auditTable 
+}
 //Helper function: Adds open shift to open shift Schema
 async function createOpenShift(data) {
     const existingShift = await OpenShift.findOne({
@@ -169,37 +195,43 @@ async function getOpenShiftsBy(monitorId){
   return openShiftIds
 }
 //Helper function: Creates overtime shifts of every shift on a holiday
-async function holidayOvertimeCreator(){
-  const { holidays } = await fetchCommonData()
+async function holidayOvertimeCreator(holidays){
+  // const { holidays } = await fetchCommonData()
   //0)given this week's date start -> end => helper function returns true if there's vacation this week
-  const currentHoliday = holidayNextWeek(getNextThursDateObj(THISWEEK), holidays)   
-  if(currentHoliday === false) {
-    console.log("No Holiday this week.")
-    return //exit early if holiday is not found
-  }
+  let currentHoliday = holidayNextWeek(getNextThursDateObj(THISWEEK), holidays)   
+  // if(currentHoliday.length === 0) {
+  //   console.log("No Holiday this week.")
+  //   return //exit early if holiday is not found
+  // }
+
+  //Grabs empty holiday to populate - only should ever be length === 1
+  const emptyOpenShiftHolidays = holidays
+    .filter( holiday => holiday.openShiftArr.length === 0)
+    .map(hol => `${hol.month}/${hol.day}/${hol.year.toString().slice(-2)}`)
+
+  // console.log(holidays)
+
   //1) Grab regularShifts and create a lookup table
   const { regularShifts, monitors } = await fetchCommonData()
   const regularShiftLookupTable = regularShiftLookupByRegularShiftIdTable(regularShifts)
 
   //2)helper function returns array of regular shift IDs that qualify
-  const shiftIdsByDay = qualifyingRegularShifts(currentHoliday, monitors, DAYSARRAY)
-  // console.log(shiftIdsByDay)
+  // const shiftIdsByDay = qualifyingRegularShifts(currentHoliday, monitors, DAYSARRAY)
+  const shiftIdsByDay = qualifyingRegularShifts(emptyOpenShiftHolidays, monitors, DAYSARRAY)
 
   //3)loop over array regular shift IDs, defining data{} -> pass to createOpenShift()
   for(let day in shiftIdsByDay){
-    shiftIdsByDay[day].forEach(entry => {
+    for (const entry of shiftIdsByDay[day]) {
       //Format data for overtime Schema
       const shift = regularShiftLookupTable.get(entry.id.toString())
       const totalHours = calculateShiftHours(shift.startTime, shift.endTime)
-      const date2 = new Date(`${entry.date}T00:00:00`)
-      const date3 = date2.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit" })
-      const parsedDate = new Date(`${entry.date}T0:00:00`).toLocaleString("en-US", { timeZone: "America/New_York"})
+      let [mm, dd, _] = (entry.date.split('/')).map(Number)
       const formattedStartTime = shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       const formattedEndTime = shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       // console.log(new Date(entry.date))
       const data = {
-        //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
-        name: `${DAYMAPPING[entry.day]} ${formatDate(entry.date)} ${entry.location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
+        //[date][location][time][number of hours] e.g.  THU 5/1/25 52OX 11:00PM-7:00AM (8.0) 
+        name: `${DAYMAPPING[entry.day]} ${entry.date} ${entry.location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
         location: entry.location, // ObjectId of the location
         day: entry.day,
         date: new Date(entry.date), 
@@ -208,9 +240,17 @@ async function holidayOvertimeCreator(){
         totalHours: totalHours,
         recurring: false // Convert truthy/falsy value to Boolean
       }
-      if(data.day==='thursday') console.log(entry.date, date2, date3, parsedDate)
-      // createOpenShift(data) //Pass data to create new OT shift
-    })
+      console.log(data.name)
+      // if(data.day==='thursday') console.log(entry.date, date2, date3, parsedDate)
+      const openShiftId = await createOpenShift(data); //Pass data to create new OT shift
+      [mm,dd] = findClosestHoliday([mm, dd], shift);
+
+      await Holiday.findOneAndUpdate(
+        { month: mm, day: dd },
+        { $addToSet: {openShiftArr: openShiftId}}, 
+        { upsert: true, new: true}
+      )
+    }
   }
 }
 //Helper: takes monitor and generates random rankings for all eligible bids
@@ -338,31 +378,34 @@ module.exports = {
 
       //Automatically generate overtime shifts if NEXTWEEK is holiday
       // if(holiday){regular shift => overtime shift}
-      await holidayOvertimeCreator()
+      // await holidayOvertimeCreator()
 
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
-      const auditTable = {}
-      monitors.forEach(mon => { //loop over every monitor
-        // overtimeWins.forEach(shift => { //loop over every OTshift
-        overtimeAudit.forEach(shift => { //loop over every OTshift
-          let name = mon.name, startingHrs = +mon.hours, endingHrs = startingHrs
-          let hrs = shift.monitorsToCharge[name]
-          if(!auditTable[name]){
-            auditTable[name] = {
-              hoursCharged: [],
-              startEndHours: [startingHrs, endingHrs]
-            }
-          }
+      const auditTable = await createAuditTable(monitors, overtimeAudit)
+      
+      // const auditTable = {}
+      // monitors.forEach(mon => { //loop over every monitor
+      //   // overtimeWins.forEach(shift => { //loop over every OTshift
+      //   overtimeAudit.forEach(shift => { //loop over every OTshift
+      //     let name = mon.name, startingHrs = +mon.hours, endingHrs = startingHrs
+      //     let hrs = shift.monitorsToCharge[name]
+      //     if(!auditTable[name]){
+      //       auditTable[name] = {
+      //         hoursCharged: [],
+      //         startEndHours: [startingHrs, endingHrs]
+      //       }
+      //     }
 
-          if(hrs){
-            auditTable[name].hoursCharged.push(hrs)
-            auditTable[name].startEndHours[1] += hrs
-          }else{
-            auditTable[name].hoursCharged.push(0)
-          }
-        })
-      })
+      //     if(hrs){
+      //       auditTable[name].hoursCharged.push(hrs)
+      //       auditTable[name].startEndHours[1] += hrs
+      //     }else{
+      //       auditTable[name].hoursCharged.push(0)
+      //     }
+      //   })
+      // })
 
+      console.log(auditTable)
       // Render the edit.ejs template and pass the data
       res.render("overtime.ejs", {
         monitors: monitors,
@@ -431,14 +474,51 @@ module.exports = {
       for(let entry of holidays){
         frontEndHolidayArr.push({
           name: entry.name,
-          date: `${entry.month}/${entry.day}`,
+          date: `${entry.month}/${entry.day}/${entry.year}`,
           _id: entry._id
         })
       }
 
+      //Automatically generate overtime shifts if NEXTWEEK is holiday
+      // if(holiday){regular shift => overtime shift}
+      await holidayOvertimeCreator(holidays)
+
       // console.log(frontEndHolidayArr)
       res.render("holiday.ejs", {
         holidays: frontEndHolidayArr,
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Quickstart page
+  getQuickstartPage: async(req, res) => {
+    try{
+      res.render("quickstart.ejs"),{}
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Export Overtime page
+  getExportOvertimePage: async(req, res) => {
+    const { monitors, overtimeAudit } = await fetchCommonData()
+
+    //grab shifts bound by start/end of next next week
+    const [nextNextWeekStart,  nextNextWeekEnd] = getNextNextThurs(THISWEEK)
+    const openShifts = await OpenShift.find({ // Dates >= 5/8/25 // Dates <= 5/14/25
+        date: { $gte: nextNextWeekStart, $lte: nextNextWeekEnd } 
+    }).populate("location").sort({ date: 1, startTime: 1})
+
+    const auditTable = await createAuditTable(monitors, overtimeAudit)
+    console.log(nextNextWeekStart,  nextNextWeekEnd, openShifts)
+
+    try{
+      res.render("exportovertime.ejs",{
+        nextNextWeekOpenShifts: openShifts, //open shifts next next week
+        overtimeFlattened: overtimeAudit, //ot bids structured for easy display
+        overtimeAudit: auditTable, //audit table for charging monitors
       })
     }catch(err){
       console.error(err)
@@ -701,14 +781,15 @@ module.exports = {
   addHoliday: async(req, res) => {
     try{
       const { name, date } = req.body
-      let [y, month, day] = date.split('-')
-      // console.log(y, m, d)
-      console.log(name, month, day)
+      let [year, month, day] = date.split('-')
+      console.log(year, month, day)
+      // console.log(name, month, day)
 
       await Holiday.create({
         name: name,
         month: month,
         day: day,
+        year: year,
       })
 
       console.log("Holiday has been added!");
@@ -1099,10 +1180,14 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
   },
   deleteHoliday: async (req, res) => {
     try{
-      const holidayToDelete  = await Holiday.findById(req.params.id)
+      const holidayToDelete = await Holiday.findById(req.params.id)
       if(!holidayToDelete){
         console.log("Holiday not found")
         return res.redirect("/parking/home")
+      }
+      //Delete linked openShift Ids
+      for (const openShiftId of holidayToDelete.openShiftArr) {
+      await OpenShift.findByIdAndDelete(openShiftId);
       }
 
       await Holiday.findByIdAndDelete(req.params.id)

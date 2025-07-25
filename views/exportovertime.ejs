@@ -1,0 +1,90 @@
+<%- include('partials/header') -%>
+<!-- Export Overtime Sheet + Audit Table -->
+<main class="container">
+    <% const days = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"] %>
+    <% let otShiftCount = 1 %>
+
+    <!-- Part 1: Overtime Shifts up for Bid -->
+    <section id="overtimeBids "class="overtime mb-5">
+          <!-- OT Rankings -->
+          <table class="table table-bordered table-sm overtimeBids-table-print">
+            <thead>
+              <tr>
+                <th scope="col">Overtime Shift</th>
+                <th>Ranking</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Removed 'required' from the input becos it was blocking submission -->
+              <% nextNextWeekOpenShifts.forEach((shift) => { %>
+                <tr>
+                  <td><%= shift.name %></td>
+                  <td></td>
+                </tr>
+              <% }) %>
+                <tr><td colspan="2"></td></tr>
+                <tr>
+                    <td>Interested in working more than one shift this week? </td>
+                    <td>Yes/No</td>
+                </tr>
+                <tr>
+                    <td>Will work any shift this week? Yes/No</td>
+                    <td>Yes/No</td>
+                </tr>
+            </tbody>
+          </table>
+    </section>
+
+    <div class="page-break"></div><!-- Page break. -->
+
+    <!-- Part 2: Audit Log + winners -->
+    <section class="auditLog">
+        <table class="table table-striped">
+            <tbody>
+            <% overtimeFlattened.forEach((shift, idx) => { %>
+                <tr>
+                    <td><%=idx+1%>) <%= shift.shiftName %> <%= shift.monitorName %></td>
+                    <% otShiftCount++ %> 
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+
+      <h2>Audit Log/Monitors Charged</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Monitor</th>
+            <th>Start</th>
+            <!-- Count OT shifts  -->
+            <% for(let i = 1; i < otShiftCount; i++){ %>
+              <th><%= i %>)</th>
+            <% } %>
+            <th>Total Hours</th>
+          </tr>
+        </thead>
+        <tbody>    
+          <!-- Loop over each row of {monitor: [hrs]} -->
+          <% Object.keys(overtimeAudit).forEach(monitor => { %>
+            <% const startingHrs = overtimeAudit[monitor].startEndHours[0] %>
+            <% let total = startingHrs %>
+            <tr>
+              <td><%= monitor %></td>
+              <td><%= startingHrs %></td> <!-- Hours monitor starts with -->
+              <!-- Loop over just [hrs] -->
+              <% overtimeAudit[monitor].hoursCharged.forEach(hr => { %>
+                <% total += hr %>
+                <td><%=total %>(+<%= hr %>) </td>
+              <% }) %>
+              <td><%= overtimeAudit[monitor].startEndHours[1] %></td> <!-- Monitor's final total -->
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+
+</main>
+
+<%- include('partials/footer') -%>
+
+

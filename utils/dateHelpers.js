@@ -31,6 +31,11 @@ function convertDateToMDYY(input) {
 
   throw new Error(`convertDateToMDYY: invalid input ${input}`);
 }
+//Helper: Return correct date if 3rd shift
+function findClosestHoliday([mm, dd], regularShift){
+  //shift type ? 1st/2nd => return [mm, dd], 3rd => return [mm, day+1]
+  return regularShift?.type === 'thirdShift' ? [mm, dd + 1] : [mm, dd];
+}
 // Helper function to format dates in MM/DD/YY format
 function formatDate(date){
   const d = new Date(date);
@@ -105,6 +110,16 @@ function getNextThursDateObj(date){
 
   return [wkStart, wkEnd] //Return as Date Object
 }
+//Helper: Get start  of next next Thurs as string
+function getNextNextThurs(date){
+  const [wkStart, wkEnd] = getNextThursDateObj(date)
+  // console.log(wkStart, wkEnd)
+  const secondWk = getNextThurs(wkEnd)
+  // console.log(secondWk)
+
+  return secondWk
+
+}
 //Helper function to get previous day
 function getPreviousDay(dateStr) {
   // Parse the input date (M/D/YY)
@@ -126,6 +141,7 @@ function holidayNextWeek([wkStart, wkEnd], holidays){
   //need to call before function: const { holidays } = await fetchCommonData()
   const wkStartMonth = wkStart.getMonth() + 1, wkStartDay = wkStart.getDate()
   const wkEndDay = wkEnd.getDate(), year = String(wkEnd.getFullYear()).slice(-2)
+  const holidayArr = []
   // console.log(wkStartMonth, wkStartDay, wkEndDay, year) //7 3 9 25
 
   for(let holiday of holidays){
@@ -133,11 +149,14 @@ function holidayNextWeek([wkStart, wkEnd], holidays){
     //holiday found = exit early
     if(holiday.month === wkStartMonth){
       if(wkStartDay <= day && day <= wkEndDay){
-        return `${holiday.month}/${day}/${year}`
+        // return `${holiday.month}/${day}/${year}`
+        holidayArr.push(`${holiday.month}/${day}/${year}`)
       }
     }
   }
-  return false
+
+  return holidayArr ? holidayArr : false
+  // return false
 }
 //Helper to convert 'HH:MM' to total minutes
 function toMinutes(timeStr) {
@@ -149,45 +168,77 @@ function qualifyingRegularShifts(dateHoliday, monitors, DAYSARRAY){
   //Qualifying shifts = 3rd shift day before + 1st and 2nd day of. 
   //need to call before function: const{ monitors } = await fetchCommonData() 
   // Finding the day of holiday + day before holiday
-  const dateBefore = getPreviousDay(dateHoliday)
-  const dayNumberized = (new Date(dateHoliday).getDay() + 3) % 7
-  const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
-  
+  // const dateBefore = getPreviousDay(dateHoliday)
+  // const dayNumberized = (new Date(dateHoliday).getDay() + 3) % 7
+  // const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
+  const vacationShiftsByDay = {} 
+
+  dateHoliday.forEach(date => {
+    const dateBefore = getPreviousDay(date)
+    const dayNumberized = (new Date(date).getDay() + 3) % 7
+    const holidayBefore = DAYSARRAY[dayNumberized-1], holidayToday = DAYSARRAY[dayNumberized]
+    
+    monitors.forEach(mon => {
+      const shift = mon.regularShift
+      //1) populating day before holiday
+      if(shift.days.includes(holidayBefore) && shift.type.includes("thirdShift")){ 
+        if(!vacationShiftsByDay[holidayBefore]) vacationShiftsByDay[holidayBefore] = []
+        vacationShiftsByDay[holidayBefore].push({
+          id: shift._id,
+          day: holidayBefore,
+          date: dateBefore,
+          location: mon.location,
+        }) 
+      } 
+      //2) populating holiday
+      if(shift.days.includes(holidayToday) && 
+          (shift.type.includes("firstShift") || shift.type.includes("secondShift")) ){ 
+        if(!vacationShiftsByDay[holidayToday]) vacationShiftsByDay[holidayToday] = []
+        vacationShiftsByDay[holidayToday].push({
+          id: shift._id,
+          day: holidayToday,
+          date: date,
+          location: mon.location,
+        })
+      }     
+    })
+  })
+  return vacationShiftsByDay
   //Loop over Monitor's regular shifts to populate { thursday: [ { id: objectId, date: date, day: day, location: location } ] } 
-  return monitors.reduce((obj, mon) => {
-    const shift = mon.regularShift
+  // return monitors.reduce((obj, mon) => {
+  //   const shift = mon.regularShift
 
-    //populating day before holiday
-    if(shift.days.includes(holidayBefore) && shift.type.includes("thirdShift")){ 
-      if(!obj[holidayBefore]) obj[holidayBefore] = []
-      obj[holidayBefore].push({
-        id: shift._id,
-        day: holidayBefore,
-        date: dateBefore,
-        location: mon.location,
-      }) 
-    } 
-    //populating holiday
-    if(shift.days.includes(holidayToday) && 
-        (shift.type.includes("firstShift") || shift.type.includes("secondShift")) ){ 
-      if(!obj[holidayToday]) obj[holidayToday] = []
-      obj[holidayToday].push({
-        id: shift._id,
-        day: holidayToday,
-        date: dateHoliday,
-        location: mon.location,
-      })
-    }     
+  //   //populating day before holiday
+  //   if(shift.days.includes(holidayBefore) && shift.type.includes("thirdShift")){ 
+  //     if(!obj[holidayBefore]) obj[holidayBefore] = []
+  //     obj[holidayBefore].push({
+  //       id: shift._id,
+  //       day: holidayBefore,
+  //       date: dateBefore,
+  //       location: mon.location,
+  //     }) 
+  //   } 
+  //   //populating holiday
+  //   if(shift.days.includes(holidayToday) && 
+  //       (shift.type.includes("firstShift") || shift.type.includes("secondShift")) ){ 
+  //     if(!obj[holidayToday]) obj[holidayToday] = []
+  //     obj[holidayToday].push({
+  //       id: shift._id,
+  //       day: holidayToday,
+  //       date: dateHoliday,
+  //       location: mon.location,
+  //     })
+  //   }     
 
-    return obj
-  }, {})
+  //   return obj
+  // }, {})
 }
 
 
 module.exports = { 
   calculateShiftHours, convertDateToMDYY, 
-  formatDate, formatTime, 
-  getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getPreviousDay, 
+  findClosestHoliday, formatDate, formatTime, 
+  getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPreviousDay, 
   holidayNextWeek,
   toMinutes,
   qualifyingRegularShifts,
