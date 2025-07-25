@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/multer");
+const authController = require("../controllers/auth");
+const homeController = require("../controllers/home");
 const parkingController = require("../controllers/parking");
 const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
@@ -14,6 +16,16 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 // router.put("/likePost/:id", postsController.likePost);
 // //Enables uesr to delete post. In controller uses POSt model to delete post from mongoDB collection.
 // router.delete("/deletePost/:id", ensureAuth, postsController.deletePost);
+
+//Main Routes - simplified for now
+router.get("/", homeController.getIndex);
+
+//Routes for user login/signup
+router.get("/login", authController.getLogin);
+router.post("/login", authController.postLogin);
+router.get("/logout", authController.logout);
+router.get("/signup", authController.getSignup);
+router.post("/signup", authController.postSignup);
 
 ///////////////// Routes for Shift Sage
 // Displaying dashboard page

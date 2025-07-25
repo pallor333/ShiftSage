@@ -67,10 +67,12 @@ app.use(flash());
 //app.use("/post", postRoutes);
 app.use("/parking", parkingRoutes)
 
-//Redirect / to /parking
+//Redirects
 app.get("/", (req, res) => {
-  // res.redirect("/parking/home");
-  res.redirect("/index");
+  res.redirect("/parking");
+});
+app.get("/login", (req, res) => {
+  res.redirect("/parking/login");
 });
 
 //Server Running
