@@ -70,7 +70,7 @@ app.use("/parking", parkingRoutes)
 //Redirect / to /parking
 app.get("/", (req, res) => {
   // res.redirect("/parking/home");
-  res.redirect("/login");
+  res.redirect("/index");
 });
 
 //Server Running
