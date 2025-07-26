@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
 const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
@@ -86,23 +87,19 @@ function convertMapToPlainObject(overtimeCalcsMap) {
 }
 //Helper: takes monitorId and deletes all vaca associated w/ that id
 async function clearMonitorVacationShiftsAndOvertimeBids(monitorId) {
-  // Update the monitor's vaca field to an empty array
-  await Monitor.findByIdAndUpdate(monitorId, { vaca: [] })
+  const vacationDocs = await VacationLookup.find({ 'monitorAndOpenShift.monitorId': monitorId }).lean();
 
-  //Remove all objects in arr where monitorId matches, regardless of openShiftId
-  await VacationLookup.updateMany(
-    {},
-    { $pull: { monitorAndOpenShift: { monitorId: monitorId } } }
-  )
+  // 1) Update the monitor's vaca field to an empty array
+  await Monitor.findByIdAndUpdate(monitorId, { vaca: [] }) //works
 
-  // Delete all VacationLookup documents where monitorAndOpenShift is now empty
-  await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } })
-  
-  //Delete all openShifts associated with monitorId
-  const matchingOpenShifts = await getOpenShiftsBy(monitorId)
-  for (const id of matchingOpenShifts) {
-    await deleteOpenShift(id);
+  for (const doc of vacationDocs) {
+    // 2) Delete from OpenShift collection
+    await deleteOpenShift(doc.monitorAndOpenShift[0].openShiftId)
+    
+    //3) Delete entire document from Vacation Schema
+    await VacationLookup.deleteOne( { _id: doc._id } )
   }
+
   console.log(`All vacation + overtime shifts cleared for monitor ID: ${monitorId}`)
 }
 //Helper function to delete all documents from both overtime (audit+schedule) schemas
@@ -296,6 +293,29 @@ async function rankingsBidGenerator(monitorObj, openShiftTable, rankings){
   //4) Sort and return
   return eligibleShifts.sort((a, b) => a.rank - b.rank)
 }
+async function monitorsOnVacationNextWeek(monitors){
+  const [start, end] = getNextThursDateObj(THISWEEK)
+  const nxtWkMonitorVaca = {}
+  
+  for(m of monitors){
+    if(m.vaca.length!==0){
+      const qualifyingDates = []
+
+      m.vaca.forEach(day => {
+        const d = new Date(day)
+        if(d >= start && d <= end){
+          const mmdd = `${String(d.getUTCMonth() + 1).padStart(2, '0')}/${String(d.getUTCDate()).padStart(2, '0')}`
+          qualifyingDates.push(mmdd)
+        }
+      })
+
+      //found, push
+      if (qualifyingDates.length > 0) { nxtWkMonitorVaca[m.name] = qualifyingDates }
+    }
+  }
+
+  return nxtWkMonitorVaca
+}
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
 module.exports = {
@@ -306,17 +326,16 @@ module.exports = {
   getHomePage: async (req, res) => {
     try {
       const { monitors, regularShifts, openShifts, locations } = await fetchCommonData()
-      // const bids = await OvertimeBid.find()
-      //                 .populate("rankings.position")
-      //                 .lean
-      // console.log(bids)
       // Render the home.ejs template and pass the data
+      const [start, end] = getNextThursDateObj(THISWEEK)
+      const nxtWkMonitorVaca = await monitorsOnVacationNextWeek(monitors)
       res.render("home.ejs", {
         user: req.user,
         monitors: monitors,
         regularShifts: regularShifts,
         openShifts: openShifts,
         locations: locations,
+        monitorsOnVacaNextWeek: nxtWkMonitorVaca,
       });
     } catch (err) {
       console.log(err);
@@ -327,6 +346,7 @@ module.exports = {
   getEditPage: async (req, res) => {
     try {
       const { monitors, regularShifts, openShifts, locations, vacaLookup} = await fetchCommonData()
+      const nxtWkMonitorVaca = await monitorsOnVacationNextWeek(monitors)
 
       let formattedMon = monitors.map((monitor) => {
         return {
@@ -357,6 +377,7 @@ module.exports = {
         locations: locations,
         formattedMon: formattedMon,
         vacaByDate: vacaByFormattedDate,
+        monitorsOnVacaNextWeek: nxtWkMonitorVaca,
       });
     } catch (err) {
       console.error(err);
@@ -1084,8 +1105,8 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
   deleteOneVacation: async (req, res) => {
     try {
       const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
-      console.log(vacaId, monitorId, date, dayRaw, openShiftId)
-      console.log(monitorId, openShiftId)
+      // console.log(vacaId, monitorId, date, dayRaw, openShiftId)
+      // console.log(monitorId, openShiftId)
       // console.log(req.body)
       const dateObj = new Date(dayRaw) //Processing into a date for comparison
 

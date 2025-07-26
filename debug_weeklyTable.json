@@ -159,6 +159,29 @@
   ],
   "openShifts": [
     {
+      "_id": "68842a1fc367a51500174317",
+      "name": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
       "_id": "687ae572fb700a9f97019849",
       "name": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
       "location": {
@@ -247,6 +270,29 @@
       "startTime": "2025-05-02T03:00:00.000Z",
       "endTime": "2025-05-02T11:00:00.000Z",
       "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a1fc367a5150017431a",
+      "name": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "friday",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
       "recurring": false,
       "__v": 0
     },
@@ -667,6 +713,29 @@
       "__v": 0
     },
     {
+      "_id": "68842a1fc367a5150017431d",
+      "name": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
       "_id": "687adff2a88bee7e03067768",
       "name": "MON 5/5/25 ROVING 12:00 AM - 07:00 AM (7.0)",
       "location": {
@@ -740,6 +809,29 @@
       "__v": 0
     },
     {
+      "_id": "68842a1fc367a51500174320",
+      "name": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
       "_id": "687ae130a88bee7e030677ea",
       "name": "TUE 5/6/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
       "location": {
@@ -784,6 +876,29 @@
       "startTime": "2025-05-06T19:30:00.000Z",
       "endTime": "2025-05-07T03:00:00.000Z",
       "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a20c367a51500174323",
+      "name": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": {
+        "_id": "6850e46b841052db64eb41d7",
+        "name": "SFPG BOOTH",
+        "scheduleType": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday"
+        ],
+        "__v": 0
+      },
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
       "recurring": false,
       "__v": 0
     },
@@ -1280,7 +1395,7 @@
                 },
                 "seniority": "2015-01-07T00:00:00.000Z",
                 "__v": 0,
-                "lastUpdated": "2025-07-25T02:50:28.530Z"
+                "lastUpdated": "2025-07-26T01:19:33.841Z"
               },
               "monitorName": "JEFFERSON",
               "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",

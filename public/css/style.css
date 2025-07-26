@@ -1,3 +1,15 @@
+@media print {
+  .page-break {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+
 .comment-item {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
@@ -22,6 +34,10 @@
   border: 1px solid #0dcaf0;
   background-color: #0dcaf0;
 } */
+.navbar-custom{
+  width: fit-content; /* or use fixed px/rem or percentage */
+  margin: 0 auto; /* center it */
+}
 
 .howTo span {
   display: block;

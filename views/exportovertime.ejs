@@ -5,9 +5,9 @@
     <% let otShiftCount = 1 %>
 
     <!-- Part 1: Overtime Shifts up for Bid -->
-    <section id="overtimeBids "class="overtime mb-5">
+    <section id="overtimeBids "class="overtime mb-5 avoid-break">
           <!-- OT Rankings -->
-          <table class="table table-bordered table-sm overtimeBids-table-print">
+          <table class="table table-bordered table-sm text-nowrap fw-normal small overtimeBids-table-print">
             <thead>
               <tr>
                 <th scope="col">Overtime Shift</th>
@@ -28,30 +28,49 @@
                     <td>Yes/No</td>
                 </tr>
                 <tr>
-                    <td>Will work any shift this week? Yes/No</td>
+                    <td>Will work any shift this week?</td>
                     <td>Yes/No</td>
                 </tr>
             </tbody>
           </table>
     </section>
 
+    <!-- FORCE PAGE BREAK -->
     <div class="page-break"></div><!-- Page break. -->
 
     <!-- Part 2: Audit Log + winners -->
-    <section class="auditLog">
-        <table class="table table-striped">
-            <tbody>
-            <% overtimeFlattened.forEach((shift, idx) => { %>
-                <tr>
-                    <td><%=idx+1%>) <%= shift.shiftName %> <%= shift.monitorName %></td>
-                    <% otShiftCount++ %> 
-                </tr>
-            <% }) %>
-            </tbody>
-        </table>
+    <section class="auditLog avoid-break" >
+      <!-- <table class="table table-striped table-sm text-nowrap fw-normal small">
+          <tbody>
+          <% overtimeFlattened.forEach((shift, idx) => { %>
+              <tr>
+                  <td><%=idx+1%>) <%= shift.shiftName %> <%= shift.monitorName %></td>
+                  <% otShiftCount++ %> 
+              </tr>
+          <% }) %>
+          </tbody>
+      </table> -->
+      <table class="table table-striped table-sm text-nowrap fw-normal small">
+        <tbody>
+          <% for(let i = 0; i < overtimeFlattened.length; i += 2) { %>
+            <tr>
+              <td>
+                <% if (overtimeFlattened[i]) { %>
+                  <%= i+1 %>) <%= overtimeFlattened[i].shiftName %> <%= overtimeFlattened[i].monitorName %>
+                <% } %>
+              </td>
+              <td>
+                <% if (overtimeFlattened[i+1]) { %>
+                  <%= i+2 %>) <%= overtimeFlattened[i+1].shiftName %> <%= overtimeFlattened[i+1].monitorName %>
+                <% } %>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
 
-      <h2>Audit Log/Monitors Charged</h2>
-      <table class="table table-striped">
+      <!-- <h2>Audit Log/Monitors Charged</h2> -->
+      <table class="table table-striped table-sm text-nowrap fw-normal small">
         <thead>
           <tr>
             <th>Monitor</th>
@@ -70,7 +89,7 @@
             <% let total = startingHrs %>
             <tr>
               <td><%= monitor %></td>
-              <td><%= startingHrs %></td> <!-- Hours monitor starts with -->
+              <td class="border-end"><%= startingHrs %></td> <!-- Hours monitor starts with -->
               <!-- Loop over just [hrs] -->
               <% overtimeAudit[monitor].hoursCharged.forEach(hr => { %>
                 <% total += hr %>

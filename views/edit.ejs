@@ -89,7 +89,7 @@
                             <th>Name</th>
                             <th>Regular Shift</th>
                             <th>Location</th>
-                            <th>On Vacation This Week?</th>
+                            <th>On Vacation Next Week?</th>
                             <th>Hours</th>
                             <th>Seniority</th>
                             <th>Actions</th>
@@ -122,7 +122,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <!-- TODO: On Vacation This Week -->
+                                    <%= monitorsOnVacaNextWeek[monitor?.name]?.length > 0 ? "Yes" : "No" %>
                                 </td>
                                 <td><input type="number" name="hours" value="<%= monitor.hours %>" class="form-control" step="0.1" required></td>
                                 <td><input type="date" name="seniority" value="<%= monitor.seniority.toISOString().split('T')[0] %>" class="form-control" required></td>
@@ -464,9 +464,10 @@
                     </thead>
                     <tbody>
                         <% locations.forEach((location) => { %>
+                            <% const locSchedule = location.scheduleType.map(day => day.charAt(0).toUpperCase() + day.slice(1)).join(', ') %>
                             <tr>
                                 <td><%= location.name %></td>
-                                <td><%= location.scheduleType %></td>
+                                <td><%= locSchedule %> </td>
                                 <td>
                                     <form action="/parking/location/delete/<%= location._id %>" method="POST" style="display:inline;">
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>

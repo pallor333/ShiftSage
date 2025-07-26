@@ -1,5 +1,5 @@
 <%- include('partials/header') -%>
-<a href="/parking/logout" class="col-3 btn btn-primary">Logout</a>
+<!-- <a href="/parking/logout" class="col-3 btn btn-primary position-absolute top-0 end-0">Logout</a> -->
 <!-- Page 0: Display Monitors / Open Shifts -->
 <!-- <a href="/logout" class="col-3 btn btn-primary">Logout</a> -->
 <main class="container">
@@ -20,7 +20,7 @@
         <th>Name</th>
         <th>Normal Shift</th>
         <th>Location</th>
-        <th>On Vacation?</th>
+        <th>Off Nxt Wk?</th>
         <th>Hours</th>
         <th>Seniority</th>
       </tr>
@@ -34,7 +34,7 @@
             (<%= monitor.regularShift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %> -
             <%= monitor.regularShift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %>)</td>
           <td><%= monitor.location.name %></td>
-          <td><%= monitor.vaca.length > 0 ? "Yes" : "No" %></td>
+          <td><%= monitorsOnVacaNextWeek[monitor.name]?.length > 0 ? "Yes" : "No" %></td>
           <td><%= monitor.hours %></td>
           <td><%= monitor.seniority.toDateString() %></td>
         </tr>

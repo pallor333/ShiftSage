@@ -25,52 +25,33 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <!-- Navigation to edit, overtime and schedule pages -->
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary-subtle rounded mb-5">
-
-      <!-- Logo -->
-      <a class="navbar-brand" href="#">ShiftSage</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Links -->
-      <!-- "navbar-nav navbar-list"  -->
-      <div class="collapse navbar-collapse" id="navbarNav"> 
-        <section class="nav ">
-          <a class="nav-link" href="/parking/Home">Home</a>
-          <a class="nav-link" href="/parking/edit">Manage Monitors/Shifts/Locations/Vacation</a>
-          <a class="nav-link" href="/parking/overtime">Overtime Sheets</a>
-          <a class="nav-link" href="/parking/schedule">Weekly Schedule</a>
-          <a class="nav-link" href="/parking/holiday">Holiday</a>
-          <a class="nav-link" href="/parking/exportovertime">Export Overtime</a>
-        </section>
-      </div>
-      
-      <!-- <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active" href="/parking/edit">manage</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/parking/overtime">edit</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#">Disabled</a>
-        </li>
-      </ul> -->
-
-    </nav>
-
     
-    <!-- <header class="container">
-      <div class="text-center">
-        <h1 class=""><a href="/parking/home">ShiftSage</a></h1>
-        <span>Scheduling made easy</span>
-      </div>
-    </header> -->
+    <div class="container d-print-none"><!-- Resizes navbar to content width -->
+      <!-- Navigation to edit, overtime and schedule pages -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-primary-subtle rounded mb-5">
+
+        <!-- Logo -->
+        <a class="navbar-brand" href="#">ShiftSage</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Links -->
+        <!-- "navbar-nav navbar-list"  -->
+        <div class="collapse navbar-collapse" id="navbarNav"> 
+          <section class="nav w-100 d-flex">
+            <a class="nav-link" href="/parking/Home">Home</a>
+            <a class="nav-link" href="/parking/edit">Monitors, Shifts & Time Off</a>
+            <a class="nav-link" href="/parking/holiday">Holidays</a>
+            <a class="nav-link" href="/parking/overtime">Overtime Sheets</a>
+            <a class="nav-link ms-auto" href="/parking/schedule">Weekly Schedule</a>
+            <a class="nav-link" href="/parking/exportovertime">Export Overtime</a>
+            <span class="mx-2 border-start border-2" style="height: 24px;"></span>
+            <a class="nav-link" href="/parking/logout" class="col-3 btn btn-primary">Logout</a>
+          </section>
+        </div>
+      </nav>
+    </div>
+
   </body>
 </html>
