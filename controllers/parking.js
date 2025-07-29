@@ -132,7 +132,16 @@ async function createAuditTable(monitors, overtimeAudit){
       }
     })
   })
-  return auditTable 
+
+  // Sort by starting hours (least to greatest)
+  const sortedAudit = Object.entries(auditTable)
+    .sort((a, b) => a[1].startEndHours[0] - b[1].startEndHours[0]) 
+    .reduce((acc, [name, data]) => {
+      acc[name] = data
+      return acc
+  }, {})
+
+  return sortedAudit
 }
 //Helper function: Adds open shift to open shift Schema
 async function createOpenShift(data) {
@@ -395,7 +404,6 @@ module.exports = {
       const openShifts = await OpenShift.find({ // Dates >= 5/1/25 // Dates <= 5/7/25
           date: { $gte: startDateObj, $lte: endDateObj } //grab shifts bound by start/end of next week
       }).populate("location").sort({ date: 1, startTime: 1})
-      // console.log(overtimeAudit)
 
       //Automatically generate overtime shifts if NEXTWEEK is holiday
       // if(holiday){regular shift => overtime shift}
@@ -403,30 +411,8 @@ module.exports = {
 
       //Monitor being charged hours, hrs sorted by order ot shifts were assigned
       const auditTable = await createAuditTable(monitors, overtimeAudit)
-      
-      // const auditTable = {}
-      // monitors.forEach(mon => { //loop over every monitor
-      //   // overtimeWins.forEach(shift => { //loop over every OTshift
-      //   overtimeAudit.forEach(shift => { //loop over every OTshift
-      //     let name = mon.name, startingHrs = +mon.hours, endingHrs = startingHrs
-      //     let hrs = shift.monitorsToCharge[name]
-      //     if(!auditTable[name]){
-      //       auditTable[name] = {
-      //         hoursCharged: [],
-      //         startEndHours: [startingHrs, endingHrs]
-      //       }
-      //     }
 
-      //     if(hrs){
-      //       auditTable[name].hoursCharged.push(hrs)
-      //       auditTable[name].startEndHours[1] += hrs
-      //     }else{
-      //       auditTable[name].hoursCharged.push(0)
-      //     }
-      //   })
-      // })
-
-      console.log(auditTable)
+      // console.log(auditTable)
       // Render the edit.ejs template and pass the data
       res.render("overtime.ejs", {
         monitors: monitors,

@@ -64,6 +64,7 @@ const MonitorSchema = new Schema({
     ref: 'Location'
   },
   vaca: { type: [Date], default: []}, // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
+  sick : { type: [Date], default: []}, // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
   hours: { type: Schema.Types.Decimal128, required: true, },
   seniority: { type: Date, required: true, },
   //overtimeRankings: { type: Map, of: Number }, // Optional
@@ -129,6 +130,16 @@ const vacationByDaySchema = new Schema({
   ]
 })
 
+const sickByDaySchema = new Schema({
+  day: { type: Date, required: true},
+  monitorAndOpenShift: [
+    {
+      monitorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Monitor' },
+      openShiftId: { type: mongoose.Schema.Types.ObjectId, ref: 'OpenShift' }
+    }
+  ]
+})
+
 const holidaySchema = new Schema({
   name: { type: String, required: true},
   month: { type: Number, required: true},
@@ -149,6 +160,7 @@ module.exports = {
   OvertimeAudit: mongoose.model("OvertimeWinnersForAudit", OvertimeWinnersForAuditSchema),
   VacationLookup: mongoose.model("VacationByDay", vacationByDaySchema),
   Holiday: mongoose.model("Holiday", holidaySchema),
+  SickTime: mongoose.model("SickTime", sickByDaySchema),
 };
 
 

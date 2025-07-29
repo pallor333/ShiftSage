@@ -953,7 +953,7 @@
   ],
   "overtimeSchedule": [
     {
-      "_id": "687bdc8adf74979e054467cb",
+      "_id": "6887bda3269ee25ce7b8224f",
       "days": {
         "thursday": {
           "locIds": [
@@ -965,6 +965,23 @@
             }
           ],
           "shifts": {
+            "68842a1fc367a51500174317": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
             "687ae572fb700a9f97019849": {
               "monitorId": {
                 "_id": "68433752b08726f40bada443",
@@ -1077,6 +1094,23 @@
         "friday": {
           "locIds": [],
           "shifts": {
+            "68842a1fc367a5150017431a": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
             "687ad6a8a88bee7e030675f4": {
               "monitorId": {
                 "_id": "687acf903518052efd64d490",
@@ -1395,7 +1429,7 @@
                 },
                 "seniority": "2015-01-07T00:00:00.000Z",
                 "__v": 0,
-                "lastUpdated": "2025-07-26T01:19:33.841Z"
+                "lastUpdated": "2025-07-28T18:25:13.453Z"
               },
               "monitorName": "JEFFERSON",
               "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
@@ -1471,6 +1505,23 @@
         "monday": {
           "locIds": [],
           "shifts": {
+            "68842a1fc367a5150017431d": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
             "687adff2a88bee7e03067768": {
               "monitorId": null,
               "monitorName": "OPEN",
@@ -1531,6 +1582,23 @@
         "tuesday": {
           "locIds": [],
           "shifts": {
+            "68842a1fc367a51500174320": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
             "687ae130a88bee7e030677ea": {
               "monitorId": null,
               "monitorName": "OPEN",
@@ -1572,6 +1640,23 @@
         "wednesday": {
           "locIds": [],
           "shifts": {
+            "68842a20c367a51500174323": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": {
+                "_id": "6850e46b841052db64eb41d7",
+                "name": "SFPG BOOTH",
+                "scheduleType": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday"
+                ],
+                "__v": 0
+              }
+            },
             "687ae1a3a88bee7e0306781d": {
               "monitorId": null,
               "monitorName": "OPEN",
@@ -1611,8 +1696,8 @@
           }
         }
       },
-      "createdAt": "2025-07-19T17:57:30.235Z",
-      "updatedAt": "2025-07-19T17:57:30.235Z",
+      "createdAt": "2025-07-28T18:12:51.219Z",
+      "updatedAt": "2025-07-28T18:12:51.219Z",
       "__v": 0
     }
   ],
@@ -1687,8 +1772,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -2492,8 +2577,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -3799,8 +3884,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -4427,8 +4512,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
@@ -5055,8 +5140,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK",
-                false
+                "VACACHECK, OPEN",
+                true
               ],
               [
                 "SFPG ROVER",
