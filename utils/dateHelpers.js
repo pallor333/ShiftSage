@@ -9,7 +9,7 @@ function calculateShiftHours(startTime, endTime){
   }
 
   const diffInHours = diffInMilliseconds / (1000 * 60 * 60) // Convert to hours
-  return diffInHours.toFixed(1) // Round to 1 decimal place
+  return diffInHours.toFixed(2) // Round to 1 decimal place
 }
 //Helper converts Date Objects or Strings to M/D/YY
 function convertDateToMDYY(input) {
@@ -45,6 +45,11 @@ function formatDate(date){
 function formatTime(date) {
   // return date.toISOString().substring(11, 16) // "HH:MM"
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: "America/New_York"}); //HH:MM
+}
+//Formats time in HHam:MMpm 
+function formatTimeAMPM(date) {
+  //HHam:MMpm e.g. 3:00pm or 11:00pm, explicitly 12 hrs
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(/^0/, '')
 }
 //Helper buildWeeklyTable(): Get exact date for day
 function getCurrentDay(wkStart, daysElapsedSinceThursday){
@@ -237,7 +242,7 @@ function qualifyingRegularShifts(dateHoliday, monitors, DAYSARRAY){
 
 module.exports = { 
   calculateShiftHours, convertDateToMDYY, 
-  findClosestHoliday, formatDate, formatTime, 
+  findClosestHoliday, formatDate, formatTime, formatTimeAMPM,
   getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPreviousDay, 
   holidayNextWeek,
   toMinutes,

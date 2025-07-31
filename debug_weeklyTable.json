@@ -953,7 +953,7 @@
   ],
   "overtimeSchedule": [
     {
-      "_id": "6887bda3269ee25ce7b8224f",
+      "_id": "688aaa3e8e985698a549eda9",
       "days": {
         "thursday": {
           "locIds": [
@@ -966,8 +966,22 @@
           ],
           "shifts": {
             "68842a1fc367a51500174317": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": {
+                "sick": [],
+                "_id": "6830d73bb73f6f94f7fab410",
+                "id": 129,
+                "name": "QUINCY",
+                "regularShift": "6811550a26093510a53bf439",
+                "location": "6850e2d9841052db64eb4128",
+                "vaca": [],
+                "hours": {
+                  "$numberDecimal": "225"
+                },
+                "seniority": "2010-12-12T00:00:00.000Z",
+                "lastUpdated": "2025-05-23T20:14:51.509Z",
+                "__v": 0
+              },
+              "monitorName": "QUINCY",
               "shiftName": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
               "locationId": {
                 "_id": "6850e46b841052db64eb41d7",
@@ -984,6 +998,7 @@
             },
             "687ae572fb700a9f97019849": {
               "monitorId": {
+                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
@@ -1015,7 +1030,19 @@
               }
             },
             "687ad636a88bee7e030675c1": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
+              "locationId": {
+                "_id": "6850e6c11c9aa50730b201fe",
+                "name": "RECYCLE",
+                "scheduleType": [],
+                "__v": 0
+              }
+            },
+            "687ad680a88bee7e030675e3": {
               "monitorId": {
+                "sick": [],
                 "_id": "68433739b08726f40bada434",
                 "id": 98,
                 "name": "TESTERONE",
@@ -1030,17 +1057,6 @@
                 "__v": 0
               },
               "monitorName": "TESTERONE",
-              "shiftName": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
-              "locationId": {
-                "_id": "6850e6c11c9aa50730b201fe",
-                "name": "RECYCLE",
-                "scheduleType": [],
-                "__v": 0
-              }
-            },
-            "687ad680a88bee7e030675e3": {
-              "monitorId": null,
-              "monitorName": "OPEN",
               "shiftName": "THU 5/1/25 HBS 02:00 PM - 11:00 PM (9.0)",
               "locationId": {
                 "_id": "6850e2e6841052db64eb415a",
@@ -1059,6 +1075,7 @@
             },
             "687ad5dfa88bee7e0306759f": {
               "monitorId": {
+                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
@@ -1113,20 +1130,31 @@
             },
             "687ad6a8a88bee7e030675f4": {
               "monitorId": {
-                "_id": "687acf903518052efd64d490",
-                "id": 100,
-                "name": "VACACHECK2",
-                "regularShift": "6811532326093510a53bf3cb",
-                "location": "6850e2c9841052db64eb410f",
-                "vaca": [],
+                "sick": [],
+                "_id": "6826563dd3f7526aff07d080",
+                "id": 99,
+                "name": "VACACHECK",
+                "regularShift": "681152bd26093510a53bf3b5",
+                "location": "6850e46b841052db64eb41d7",
+                "vaca": [
+                  "2025-05-13T04:00:00.000Z",
+                  "2025-05-01T04:00:00.000Z",
+                  "2025-05-02T04:00:00.000Z",
+                  "2025-05-03T04:00:00.000Z",
+                  "2025-05-04T04:00:00.000Z",
+                  "2025-05-05T04:00:00.000Z",
+                  "2025-05-06T04:00:00.000Z",
+                  "2025-05-07T04:00:00.000Z",
+                  "2025-05-08T04:00:00.000Z"
+                ],
                 "hours": {
                   "$numberDecimal": "50"
                 },
-                "seniority": "2025-06-28T00:00:00.000Z",
-                "lastUpdated": "2025-07-18T22:49:52.354Z",
+                "seniority": "2022-06-14T00:00:00.000Z",
+                "lastUpdated": "2025-05-15T21:01:49.590Z",
                 "__v": 0
               },
-              "monitorName": "VACACHECK2",
+              "monitorName": "VACACHECK",
               "shiftName": "FRI 5/2/25 HBS 12:00 AM - 07:00 AM (7.0)",
               "locationId": {
                 "_id": "6850e2e6841052db64eb415a",
@@ -1145,6 +1173,7 @@
             },
             "687addbba88bee7e03067616": {
               "monitorId": {
+                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
@@ -1176,8 +1205,32 @@
               }
             },
             "687add9ca88bee7e03067605": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": {
+                "sick": [],
+                "_id": "6826563dd3f7526aff07d080",
+                "id": 99,
+                "name": "VACACHECK",
+                "regularShift": "681152bd26093510a53bf3b5",
+                "location": "6850e46b841052db64eb41d7",
+                "vaca": [
+                  "2025-05-13T04:00:00.000Z",
+                  "2025-05-01T04:00:00.000Z",
+                  "2025-05-02T04:00:00.000Z",
+                  "2025-05-03T04:00:00.000Z",
+                  "2025-05-04T04:00:00.000Z",
+                  "2025-05-05T04:00:00.000Z",
+                  "2025-05-06T04:00:00.000Z",
+                  "2025-05-07T04:00:00.000Z",
+                  "2025-05-08T04:00:00.000Z"
+                ],
+                "hours": {
+                  "$numberDecimal": "50"
+                },
+                "seniority": "2022-06-14T00:00:00.000Z",
+                "lastUpdated": "2025-05-15T21:01:49.590Z",
+                "__v": 0
+              },
+              "monitorName": "VACACHECK",
               "shiftName": "FRI 5/2/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
               "locationId": {
                 "_id": "6850e524841052db64eb423b",
@@ -1212,6 +1265,7 @@
           "shifts": {
             "687ade91a88bee7e0306768b": {
               "monitorId": {
+                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
@@ -1418,6 +1472,7 @@
             },
             "687adf91a88bee7e0306771d": {
               "monitorId": {
+                "sick": [],
                 "_id": "680bf5d07162e106742ea838",
                 "id": 130,
                 "name": "JEFFERSON",
@@ -1429,7 +1484,7 @@
                 },
                 "seniority": "2015-01-07T00:00:00.000Z",
                 "__v": 0,
-                "lastUpdated": "2025-07-28T18:25:13.453Z"
+                "lastUpdated": "2025-07-30T23:28:35.370Z"
               },
               "monitorName": "JEFFERSON",
               "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
@@ -1696,8 +1751,8 @@
           }
         }
       },
-      "createdAt": "2025-07-28T18:12:51.219Z",
-      "updatedAt": "2025-07-28T18:12:51.219Z",
+      "createdAt": "2025-07-30T23:26:54.164Z",
+      "updatedAt": "2025-07-30T23:26:54.164Z",
       "__v": 0
     }
   ],
@@ -1772,7 +1827,7 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK, OPEN",
+                "VACACHECK, QUINCY",
                 true
               ],
               [
@@ -2244,7 +2299,7 @@
               ],
               [
                 "SFPG/1WES",
-                "WASHINGTON",
+                "OVERNIGHTTEST, WASHINGTON",
                 false
               ]
             ]
@@ -2346,7 +2401,7 @@
               ],
               [
                 "RECYCLE",
-                "TESTERONE",
+                "OPEN",
                 true
               ],
               [
@@ -2402,7 +2457,7 @@
               ],
               [
                 "HBS",
-                "OPEN",
+                "TESTERONE",
                 true
               ],
               [
@@ -3014,7 +3069,7 @@
               ],
               [
                 "SFPG/1WES",
-                "WASHINGTON",
+                "OVERNIGHTTEST, WASHINGTON",
                 false
               ]
             ]
@@ -3040,7 +3095,7 @@
               ],
               [
                 "HBS",
-                "VACACHECK2",
+                "VACACHECK",
                 true
               ],
               [
@@ -3111,7 +3166,7 @@
               ],
               [
                 "RIVER ROVER",
-                "OPEN",
+                "VACACHECK",
                 true
               ],
               [
@@ -4321,7 +4376,7 @@
               ],
               [
                 "SFPG/1WES",
-                "WASHINGTON",
+                "OVERNIGHTTEST, WASHINGTON",
                 false
               ]
             ]
@@ -4949,7 +5004,7 @@
               ],
               [
                 "SFPG/1WES",
-                "WASHINGTON",
+                "OVERNIGHTTEST, WASHINGTON",
                 false
               ]
             ]
@@ -5577,7 +5632,7 @@
               ],
               [
                 "SFPG/1WES",
-                "WASHINGTON",
+                "OVERNIGHTTEST, WASHINGTON",
                 false
               ]
             ]
