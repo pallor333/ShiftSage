@@ -24,12 +24,12 @@ router.get("/", homeController.getIndex);
 router.get("/login", authController.getLogin);
 router.post("/login", authController.postLogin);
 router.get("/logout", authController.logout);
-router.get("/signup", authController.getSignup);
-router.post("/signup", authController.postSignup);
+// router.get("/signup", authController.getSignup);
+// router.post("/signup", authController.postSignup);
 
 ///////////////// Routes for Shift Sage
 // Displaying dashboard page
-router.get("/home", parkingController.getHomePage);
+router.get("/home", ensureAuth, parkingController.getHomePage);
 // Routes for edit, overtime, schedule, holiday
 router.get("/edit", ensureAuth, parkingController.getEditPage);
 router.get("/overtime", ensureAuth, parkingController.getOvertimePage);

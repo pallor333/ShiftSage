@@ -86,9 +86,9 @@ app.use("/parking", parkingRoutes)
 app.get("/", (req, res) => {
   res.redirect("/parking");
 });
-app.get("/login", (req, res) => {
-  res.redirect("/parking/login");
-});
+// app.get("/login", (req, res) => {
+//   res.redirect("/parking/login");
+// });
 
 //Server Running
 app.listen(process.env.PORT, () => {
