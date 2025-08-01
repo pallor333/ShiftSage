@@ -12,8 +12,8 @@
       ],
       "startTime": "1970-01-01T10:00:00.000Z",
       "endTime": "1970-01-01T18:30:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "681152e926093510a53bf3c0",
@@ -27,8 +27,8 @@
       ],
       "startTime": "1970-01-01T10:30:00.000Z",
       "endTime": "1970-01-01T19:00:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811532326093510a53bf3cb",
@@ -42,8 +42,8 @@
       ],
       "startTime": "1970-01-01T10:30:00.000Z",
       "endTime": "1970-01-01T14:00:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811518eb6f51dc6bfdcb20e",
@@ -57,8 +57,8 @@
       ],
       "startTime": "1970-01-01T12:00:00.000Z",
       "endTime": "1970-01-01T20:30:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811521626093510a53bf39f",
@@ -72,8 +72,8 @@
       ],
       "startTime": "1970-01-01T13:00:00.000Z",
       "endTime": "1970-01-01T21:30:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811513cb6f51dc6bfdcb1ed",
@@ -87,8 +87,8 @@
       ],
       "startTime": "1970-01-01T20:00:00.000Z",
       "endTime": "1970-01-02T04:30:00.000Z",
-      "__v": 1,
-      "type": "secondShift"
+      "type": "secondShift",
+      "__v": 0
     },
     {
       "_id": "6811538026093510a53bf3d6",
@@ -102,8 +102,8 @@
       ],
       "startTime": "1970-01-01T20:30:00.000Z",
       "endTime": "1970-01-01T05:00:00.000Z",
-      "__v": 1,
-      "type": "secondShift"
+      "type": "secondShift",
+      "__v": 0
     },
     {
       "_id": "681153b626093510a53bf3e1",
@@ -117,8 +117,8 @@
       ],
       "startTime": "1970-01-02T04:00:00.000Z",
       "endTime": "1970-01-01T12:30:00.000Z",
-      "__v": 1,
-      "type": "thirdShift"
+      "type": "thirdShift",
+      "__v": 0
     },
     {
       "_id": "6811550a26093510a53bf439",
@@ -129,8 +129,8 @@
       ],
       "startTime": "1970-01-01T11:45:00.000Z",
       "endTime": "1970-01-01T21:00:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "680c069e0c35e34c1fd0991f",
@@ -141,8 +141,8 @@
       ],
       "startTime": "1970-01-01T19:45:00.000Z",
       "endTime": "1970-01-01T05:00:00.000Z",
-      "__v": 1,
-      "type": "secondShift"
+      "type": "secondShift",
+      "__v": 0
     },
     {
       "_id": "6811551b26093510a53bf444",
@@ -153,8 +153,8 @@
       ],
       "startTime": "1970-01-02T04:00:00.000Z",
       "endTime": "1970-01-01T12:30:00.000Z",
-      "__v": 1,
-      "type": "thirdShift"
+      "type": "thirdShift",
+      "__v": 0
     }
   ],
   "openShifts": [
@@ -953,7 +953,7 @@
   ],
   "overtimeSchedule": [
     {
-      "_id": "688aaa3e8e985698a549eda9",
+      "_id": "688ba8d5c001f3bf41f1ccc1",
       "days": {
         "thursday": {
           "locIds": [
@@ -967,13 +967,13 @@
           "shifts": {
             "68842a1fc367a51500174317": {
               "monitorId": {
-                "sick": [],
                 "_id": "6830d73bb73f6f94f7fab410",
                 "id": 129,
                 "name": "QUINCY",
                 "regularShift": "6811550a26093510a53bf439",
                 "location": "6850e2d9841052db64eb4128",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "225"
                 },
@@ -998,13 +998,13 @@
             },
             "687ae572fb700a9f97019849": {
               "monitorId": {
-                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e46b841052db64eb41d7",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -1042,13 +1042,13 @@
             },
             "687ad680a88bee7e030675e3": {
               "monitorId": {
-                "sick": [],
                 "_id": "68433739b08726f40bada434",
                 "id": 98,
                 "name": "TESTERONE",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e2c9841052db64eb410f",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "300"
                 },
@@ -1075,13 +1075,13 @@
             },
             "687ad5dfa88bee7e0306759f": {
               "monitorId": {
-                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e46b841052db64eb41d7",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -1130,7 +1130,6 @@
             },
             "687ad6a8a88bee7e030675f4": {
               "monitorId": {
-                "sick": [],
                 "_id": "6826563dd3f7526aff07d080",
                 "id": 99,
                 "name": "VACACHECK",
@@ -1147,6 +1146,7 @@
                   "2025-05-07T04:00:00.000Z",
                   "2025-05-08T04:00:00.000Z"
                 ],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1173,13 +1173,13 @@
             },
             "687addbba88bee7e03067616": {
               "monitorId": {
-                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1206,7 +1206,6 @@
             },
             "687add9ca88bee7e03067605": {
               "monitorId": {
-                "sick": [],
                 "_id": "6826563dd3f7526aff07d080",
                 "id": 99,
                 "name": "VACACHECK",
@@ -1223,6 +1222,7 @@
                   "2025-05-07T04:00:00.000Z",
                   "2025-05-08T04:00:00.000Z"
                 ],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1265,13 +1265,13 @@
           "shifts": {
             "687ade91a88bee7e0306768b": {
               "monitorId": {
-                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1472,19 +1472,19 @@
             },
             "687adf91a88bee7e0306771d": {
               "monitorId": {
-                "sick": [],
                 "_id": "680bf5d07162e106742ea838",
                 "id": 130,
                 "name": "JEFFERSON",
                 "regularShift": "680c069e0c35e34c1fd0991f",
                 "location": "6850e2e6841052db64eb415a",
                 "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
                 "seniority": "2015-01-07T00:00:00.000Z",
                 "__v": 0,
-                "lastUpdated": "2025-07-30T23:28:35.370Z"
+                "lastUpdated": "2025-07-31T18:37:10.850Z"
               },
               "monitorName": "JEFFERSON",
               "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
@@ -1751,8 +1751,8 @@
           }
         }
       },
-      "createdAt": "2025-07-30T23:26:54.164Z",
-      "updatedAt": "2025-07-30T23:26:54.164Z",
+      "createdAt": "2025-07-31T17:33:09.096Z",
+      "updatedAt": "2025-07-31T17:33:09.096Z",
       "__v": 0
     }
   ],

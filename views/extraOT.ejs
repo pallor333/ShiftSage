@@ -1,0 +1,110 @@
+<%- include('partials/header') -%>
+
+<!-- Page 8:'Extra OT'/ Short Notice  -->
+<main class="container">
+    <h1>Extra OT / Short Notice</h1>
+    <p>On this page record any extra overtime that happens between schedules. Be careful as there is no undo button.</p>
+
+    <!-- Flash SUCCESS or FAILURE -->
+    <section class="flashmsg">
+        <% if (success_msg && !error_msg) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= success_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <% if (error_msg && !success_msg) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= error_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+    </section>
+
+    <!-- 1: ADD HOURS -->
+    <section class="mt-5">
+        <h2>Add Hours</h2>
+        <form id="rankingForm" action="" method="POST" class="row g-3">
+            
+          <!-- Monitor ID Dropdown -->
+          <section class="col-md-5">
+            <label for="extraOTMonitorId" class="form-label">Monitor ID</label>
+            <select name="monId" class="form-select" id="extraOTMonitorId" required>
+              <option value="" disabled selected>Select Monitor</option>
+              <% monitors.forEach((monitor) => { %> 
+                <option value="<%= monitor._id %>">
+                  <%= monitor.id %> (<%= monitor.name %>)
+                </option>
+              <% }) %>
+            </select>
+          </section>
+
+            <!-- Hours -->
+            <section class="col-md-3">
+                <label for="hoursAdded" class="form-label">Hours</label>
+                <input type="number" step="0.1" min="0.1" name="hoursAdded" id="hoursAdded" class="form-control" required>
+            </section>
+
+            <!-- Comment -->
+            <section class="col-md-6">
+                <label for="comment" class="form-label">Comment (optional)</label>
+                <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Reason for extra OT..."></textarea>
+            </section>
+
+            <!-- Submit Button -->
+            <section class="col-12">
+                <button type="submit" class="btn btn-success">Submit Extra OT</button>
+            </section>
+
+        </form>
+    </section>
+
+    <!-- 2: DISPLAY/DELETE EXTRA OT  -->
+    <section class="mt-5">
+        <h2>Monitor & Extra Hrs List</h2>
+        <p>Comments are for personal tracking; they do not display anywhere else but here.</p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Monitor ID/Name</th>
+                    <th>Hours</th>
+                    <th>Comment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% extraOT.forEach(entry => { %>
+                <% entry.extraShift.forEach( (ot, idx) => { %>
+                    <tr>
+                        <% if(idx===0) { %>
+                            <td rowspan="<%= entry.extraShift.length %>"> 
+                                <%= entry.mon.id %> (<%= entry.mon.name %>)
+                            </td>
+                        <% } %>
+                        <td><%= parseFloat(ot.hours.toString()) %></td>
+                        <td><%= ot.comment || "-" %></td>
+                        <td>
+                            <form action="/parking/extraOT/delete/<%= entry._id %>?index=<%= idx %>" method="POST" style="display:inline;">
+                                <!-- <input type="hidden" name="_method" value="DELETE"> -->
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% }) %>
+            </tbody>
+        </table>
+    </section> 
+
+    <!-- 3: UPDATE MONITORS WITH EXTRA OT -->
+    <section class="mt-5">
+        <h2>Update Monitors</h2>
+        <span>This button updates monitor hours with the table from above while also deleting all extra overtime. There is no undo button so make sure everything is correct first.</span>
+    </section>
+
+</main>
+
+<%- include('partials/footer') -%>
+
+<script src="/js/alerts.js"></script>

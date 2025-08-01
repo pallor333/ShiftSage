@@ -37,6 +37,16 @@ app.use(logger("dev"));
 //Use forms for put / delete
 app.use(methodOverride("_method"));
 
+//DEBUGGING
+// app.use(methodOverride("_method", {
+//   methods: ["POST", "GET"] // Allow POST to be converted to DELETE
+// }));
+// // Add this debug middleware right after methodOverride
+// app.use((req, res, next) => {
+//   console.log(`Incoming method: ${req.method} (original: ${req.originalMethod})`);
+//   next();
+// });
+
 // Setup Sessions - stored in MongoDB
 app.use(
   session({
@@ -55,6 +65,11 @@ app.use(passport.session());
 
 //Use flash messages for errors, info, ect...
 app.use(flash());
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  next();
+});
 
 //Debugging
 // app.use((req, res, next) => {

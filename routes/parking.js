@@ -39,6 +39,16 @@ router.get("/quickstart", ensureAuth, parkingController.getQuickstartPage);
 router.get("/exportovertime", ensureAuth, parkingController.getExportOvertimePage);
 // Button to calculate overtime bids
 router.get("/overtime/calculate", ensureAuth, parkingController.calculateOvertimeBid);
+router.get("/extraOT", ensureAuth, parkingController.getExtraOTPage);
+router.get("/finalize", ensureAuth, parkingController.getFinalizePage);
+router.get("/mongo", ensureAuth, parkingController.getMongoPage);
+//Export/Import Mongo Data
+router.get("/mongo/export", parkingController.exportMongoData);
+router.post("/mongo/import", parkingController.importMongoData);
+// TODO: Button to update monitor schema with overtimeAudit Schema
+// TODO: Button to update shortNotice Schema
+// TODO: Button to update monitor schema with shortNotice Schema
+
 
 // GET routes to gather monitor/location/shifts from DB
 // /home/monitor/:id = /home/monitor/12345
@@ -53,6 +63,7 @@ router.post("/regularShift", ensureAuth, parkingController.addRegularShift)
 router.post("/openShift", ensureAuth, parkingController.addOpenShift)
 router.post("/vacation", ensureAuth, parkingController.addVacation)
 router.post("/holiday", ensureAuth, parkingController.addHoliday)
+router.post("/extraOT", ensureAuth, parkingController.addExtraOT)
 
 // POST routes to edit entries
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
@@ -73,6 +84,7 @@ router.post('/monitor/deleteOneVacation', ensureAuth, parkingController.deleteOn
 router.post("/overtime/deleteBid/:id", ensureAuth, parkingController.deleteOvertimeBid);
 router.get("/overtime/deleteOvertimeAuditWinners", ensureAuth, parkingController.deleteOvertimeAuditWinners);
 router.post("/holiday/deleteHoliday/:id", ensureAuth, parkingController.deleteHoliday)
-
+router.post("/extraOT/delete/:id", ensureAuth, parkingController.deleteExtraOT)
+// router.delete("/extraOT/:id", ensureAuth, parkingController.deleteExtraOT)
 
 module.exports = router;

@@ -1,6 +1,11 @@
+//Required for import/export from mongoDB
+const fs = require("fs")
+const path = require("path")
+const multer = require("multer")
+const upload = multer({ dest: "uploads/" })
 const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday} = require("../models/Parking")
+const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice} = require("../models/Parking")
 const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
@@ -17,6 +22,8 @@ const THISWEEK = new Date("4/30/25") //new Date("6/29/25")
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
 const DAYSARRAY = ["thursday", "friday", "saturday", "sunday", "monday", "tuesday", "wednesday"]
+const COLLECTIONS = { Monitor, RegularShift, OpenShift, Location, OvertimeBid, OvertimeSchedule, OvertimeAudit, VacationLookup, Holiday, SickTime, ShortNotice }
+
 
 /*********** HELPER FUNCTIONS */
 //Helper function: Create overtime shifts based on monitor vacation
@@ -176,8 +183,9 @@ const fetchCommonData = async () => {
     const overtimeAudit = await OvertimeAudit.find()
     const vacaLookup = await VacationLookup.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
     const holidays = await Holiday.find()
+    const extraOT = await ShortNotice.find().populate("mon").lean()
 
-    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup, holidays };
+    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup, holidays, extraOT };
   } catch (err) {
     console.error("Error fetching common data:", err);
     throw err; // Rethrow the error to handle it in the calling function
@@ -532,6 +540,88 @@ module.exports = {
       res.redirect("/parking/home")
     }
   },
+  //Extra OT/Short Notice page
+  getExtraOTPage: async(req, res) => {
+    try{
+      const { monitors, extraOT } = await fetchCommonData()
+
+      res.render("extraOT.ejs",{
+        monitors: monitors,
+        extraOT: extraOT,
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Finalize/Extra OT/Short Notice page
+  getFinalizePage: async(req, res) => {
+    try{
+      res.render("finalize.ejs",{
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Mongo page
+  getMongoPage: async(req, res) => {
+    try{
+      res.render("mongo.ejs",{
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+
+  //EXPORT and IMPORT from Mongo
+  //
+  //
+  exportMongoData: async (req, res) => {
+    try {
+      const exportData = {};
+      for (const [name, Model] of Object.entries(COLLECTIONS)) {
+        const docs = await Model.find().lean();
+        exportData[name] = docs;
+      }
+
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      const filePath = path.join(__dirname, "../exports/mongo-backup.json");
+
+      fs.writeFileSync(filePath, jsonStr);
+
+      res.download(filePath, "mongo-backup.json");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Export failed");
+    }
+  },
+  importMongoData: [
+    upload.single("importFile"),
+    async (req, res) => {
+      try {
+        const filePath = req.file.path;
+        const rawData = fs.readFileSync(filePath, "utf-8");
+        const jsonData = JSON.parse(rawData);
+
+        for (const [name, data] of Object.entries(jsonData)) {
+          const Model = COLLECTIONS[name];
+          if (!Model || !Array.isArray(data)) continue;
+
+          await Model.deleteMany({});
+          await Model.insertMany(data);
+        }
+
+        fs.unlinkSync(filePath); // Clean up
+        res.send("Import successful");
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Import failed");
+      }
+    }
+  ],
+  
 
   //Getting data from the Database.
   //
@@ -803,6 +893,53 @@ module.exports = {
       res.redirect("/parking/holiday");
     }catch(err){
       console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  addExtraOT: async(req, res) => {
+    try{
+      const { monId, hoursAdded, comment } = req.body
+      const monitorObject = await Monitor.findById(monId)
+      if(!monitorObject){
+        console.error("Monitor not found")
+      return res.redirect("/parking/home")
+      }
+      console.log(monId, hoursAdded, comment )
+      console.log(monitorObject)
+
+      // Try to find existing ShortNotice doc for this monitor
+      let shortNotice = await ShortNotice.findOne({ mon: monId })
+
+      if(!shortNotice){
+      // Create new if not found
+      shortNotice = await ShortNotice.create({
+        mon: monId,
+        extraShift: [{
+          hours: parseFloat(hoursAdded),
+          comment: comment || null
+        }]
+      })
+      } else {
+        // Push new entry into existing doc
+        shortNotice.extraShift.push({
+          hours: parseFloat(hoursAdded),
+          comment: comment || null
+        })
+        await shortNotice.save();
+      }
+
+      // await ShortNotice.create({
+      //   mon: monitorObject,
+      //   hoursAdded: hours,
+      //   comment: comment
+      // })
+
+      console.log("Extra OT has been added!");
+      req.flash('success_msg', 'Extra OT entry successfully added.');
+      res.redirect("/parking/extraOT");
+    }catch(err){
+      console.error(err);
+      req.flash('error_msg', 'Something went wrong while adding the entry.');
       res.redirect("/parking/home");
     }
   },
@@ -1204,7 +1341,37 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       console.error(err);
       res.redirect("/parking/home")
     }
-  }
+  },
+  deleteExtraOT: async (req, res) => {
+    try{
+      console.log("DELETE route hit:", req.method, req.params.id, req.query.index);
+      const { id } = req.params //extract from URL
+      const index = parseInt(req.query.index) //grab index of entry
+
+      const doc = await ShortNotice.findById(id)
+      // If document not found, or index is invalid, exit early and return to page
+      if (!doc || !doc.extraShift || index < 0 || index >= doc.extraShift.length) {
+        return res.redirect("/parking/home");
+      }
+
+      // Remove the specific entry from the entries array using splice
+      doc.extraShift.splice(index, 1); // Remove that entry
+
+      if (doc.extraShift.length === 0) {
+        await ShortNotice.findByIdAndDelete(id); // Remove whole document if no entries left
+      } else {
+        await doc.save(); // Save the modified document
+      }
+
+      console.log("Extra OT has been deleted!");
+      req.flash('success_msg', 'Extra OT entry successfully deleted.');
+      res.redirect("/parking/extraOT");
+    }catch(err){
+      console.error(err);
+      req.flash('error_msg', 'Something went wrong while deleting the entry.');
+      res.redirect("/parking/home")
+    }
+  },
   
   // SERVICES
   //

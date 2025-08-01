@@ -4,7 +4,7 @@ const User = require("../models/User");
 
 exports.getLogin = (req, res) => {
   if (req.user) {
-    return res.redirect("/home");
+    return res.redirect("/parking/home");
   }
   res.render("login", {
     title: "Login",

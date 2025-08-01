@@ -149,6 +149,15 @@ const holidaySchema = new Schema({
   // date: { type: Date, required: true}
 })
 
+const extraOTSchema = new Schema({
+  mon: { type: mongoose.Schema.Types.ObjectId, ref: 'Monitor' },
+  extraShift: [{
+    hours: { type: Schema.Types.Decimal128, required: true },
+    comment: { type: String }
+  }],
+})
+
+
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
   Monitor: mongoose.model("Monitor", MonitorSchema),
@@ -161,6 +170,7 @@ module.exports = {
   VacationLookup: mongoose.model("VacationByDay", vacationByDaySchema),
   Holiday: mongoose.model("Holiday", holidaySchema),
   SickTime: mongoose.model("SickTime", sickByDaySchema),
+  ShortNotice: mongoose.model("ShortNotice", extraOTSchema),
 };
 
 

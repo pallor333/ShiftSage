@@ -165,6 +165,7 @@ function findEligibleMonitorsAndCharge(openShiftObject, eligibleMonitorsByDay, c
     eligibleMonitorsByDay //True -> charge monitor
         .filter(monitor => {    
             // if(monitor.name === "VACACHECK2") console.log(monitor._id.toString() === currentMonitorId.toString())
+            // return !checkShiftConflict(monitor, openShiftObject)
             return monitor._id.toString() === currentMonitorId.toString() ? true 
              //1) charge those without conflict 
             : !checkShiftConflict(monitor, openShiftObject)
@@ -175,6 +176,7 @@ function findEligibleMonitorsAndCharge(openShiftObject, eligibleMonitorsByDay, c
             // monitorsChargedHours[monitor.name] = openShiftObject.totalHours
             // monitor won shift -> charged total hours of this shift (up to 1 hour overlap)
 	        // monitor lost shift -> charged LOWEST hours of all eligible overtime shifts (minHourShift)
+            // monitorsChargedHours[monitor.name] = openShiftObject.totalHours
             monitorsChargedHours[monitor.name] = monitor._id.toString() === currentMonitorId.toString() 
                 ? shiftOverlap(monitor, openShiftObject)
                 : shortestEligibleShift(monitor, minHourShift)

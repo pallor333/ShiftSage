@@ -1,0 +1,26 @@
+<%- include('partials/header') -%>
+
+<!-- Page 7: Mongo Export/Import  -->
+<!-- <a href="/logout" class="col-3 btn btn-primary">Logout</a> -->
+<main class="container">
+
+    <section>
+        <h1>MongoDB</h1>
+
+        <section class="mt-5">
+            <h2>Export</h2>
+            <a href="/parking/mongo/export" class="btn btn-primary">Download Backup</a>
+        </section>
+        
+        <section class="mt-5">
+            <h2>Import</h2>
+            <form action="/parking/mongo/import" method="POST" enctype="multipart/form-data">
+            <input type="file" name="importFile" required />
+            <button type="submit" class="btn btn-success">Upload & Import</button>
+        </form>
+        </section>
+    </section>
+
+</main>
+
+<%- include('partials/footer') -%>

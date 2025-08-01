@@ -1,0 +1,1877 @@
+{
+  "Monitor": [
+    {
+      "_id": "680bf5d07162e106742ea838",
+      "id": 130,
+      "name": "JEFFERSON",
+      "regularShift": "680c069e0c35e34c1fd0991f",
+      "location": "6850e2e6841052db64eb415a",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "200"
+      },
+      "seniority": "2015-01-07T00:00:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "681157ab081709b62e8b7e0b",
+      "id": 101,
+      "name": "WASHINGTON",
+      "regularShift": "681153b626093510a53bf3e1",
+      "location": "6850e48a841052db64eb4209",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "210"
+      },
+      "seniority": "2001-03-15T00:00:00.000Z",
+      "lastUpdated": "2025-04-29T22:50:19.286Z",
+      "__v": 0
+    },
+    {
+      "_id": "681157df081709b62e8b7e16",
+      "id": 102,
+      "name": "ADAMS",
+      "regularShift": "6811518eb6f51dc6bfdcb20e",
+      "location": "6850e2e6841052db64eb415a",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "210"
+      },
+      "seniority": "2002-10-13T00:00:00.000Z",
+      "lastUpdated": "2025-04-29T22:51:11.133Z",
+      "__v": 0
+    },
+    {
+      "_id": "681158b65d9b9c05b4c6f2bb",
+      "id": 103,
+      "name": "COOLIDGE",
+      "regularShift": "6811518eb6f51dc6bfdcb20e",
+      "location": "6850e2e6841052db64eb415a",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "240"
+      },
+      "seniority": "2018-01-09T00:00:00.000Z",
+      "lastUpdated": "2025-04-29T22:54:46.615Z",
+      "__v": 0
+    },
+    {
+      "_id": "681159025d9b9c05b4c6f2fb",
+      "id": 104,
+      "name": "GARFIELD",
+      "regularShift": "6811521626093510a53bf39f",
+      "location": "6850e46b841052db64eb41d7",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "300"
+      },
+      "seniority": "1999-10-24T00:00:00.000Z",
+      "lastUpdated": "2025-04-29T22:56:02.849Z",
+      "__v": 0
+    },
+    {
+      "_id": "681159a8502e7c08e4ae737c",
+      "id": 105,
+      "name": "KENNEDY",
+      "regularShift": "6811513cb6f51dc6bfdcb1ed",
+      "location": "6850e48a841052db64eb4209",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "200"
+      },
+      "seniority": "2020-09-09T00:00:00.000Z",
+      "lastUpdated": "2025-04-29T22:58:48.479Z",
+      "__v": 0
+    },
+    {
+      "_id": "6826563dd3f7526aff07d080",
+      "id": 99,
+      "name": "VACACHECK",
+      "regularShift": "681152bd26093510a53bf3b5",
+      "location": "6850e46b841052db64eb41d7",
+      "vaca": [
+        "2025-05-13T04:00:00.000Z",
+        "2025-05-01T04:00:00.000Z",
+        "2025-05-02T04:00:00.000Z",
+        "2025-05-03T04:00:00.000Z",
+        "2025-05-04T04:00:00.000Z",
+        "2025-05-05T04:00:00.000Z",
+        "2025-05-06T04:00:00.000Z",
+        "2025-05-07T04:00:00.000Z",
+        "2025-05-08T04:00:00.000Z"
+      ],
+      "hours": {
+        "$numberDecimal": "50"
+      },
+      "seniority": "2022-06-14T00:00:00.000Z",
+      "lastUpdated": "2025-05-15T21:01:49.590Z",
+      "__v": 0
+    },
+    {
+      "_id": "6830d73bb73f6f94f7fab410",
+      "id": 129,
+      "name": "QUINCY",
+      "regularShift": "6811550a26093510a53bf439",
+      "location": "6850e2d9841052db64eb4128",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "225"
+      },
+      "seniority": "2010-12-12T00:00:00.000Z",
+      "lastUpdated": "2025-05-23T20:14:51.509Z",
+      "__v": 0
+    },
+    {
+      "_id": "6830eb53e64b5c4e4d74be78",
+      "id": 107,
+      "name": "MADISON",
+      "regularShift": "6811538026093510a53bf3d6",
+      "location": "6850e465841052db64eb41be",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "200"
+      },
+      "seniority": "2001-05-29T00:00:00.000Z",
+      "lastUpdated": "2025-05-23T21:40:35.885Z",
+      "__v": 0
+    },
+    {
+      "_id": "6830ec35e64b5c4e4d74bf22",
+      "id": 106,
+      "name": "VAN BUREN",
+      "regularShift": "6811551b26093510a53bf444",
+      "location": "6850e465841052db64eb41be",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "210"
+      },
+      "seniority": "2007-09-18T00:00:00.000Z",
+      "lastUpdated": "2025-05-23T21:44:21.756Z",
+      "__v": 0
+    },
+    {
+      "_id": "6830ecf8e64b5c4e4d74bf46",
+      "id": 108,
+      "name": "HARRISON",
+      "regularShift": "681152e926093510a53bf3c0",
+      "location": "6850e46b841052db64eb41d7",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "215"
+      },
+      "seniority": "2018-08-24T00:00:00.000Z",
+      "lastUpdated": "2025-05-23T21:47:36.946Z",
+      "__v": 0
+    },
+    {
+      "_id": "68433739b08726f40bada434",
+      "id": 98,
+      "name": "TESTERONE",
+      "regularShift": "6811518eb6f51dc6bfdcb20e",
+      "location": "6850e2c9841052db64eb410f",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "300"
+      },
+      "seniority": "2022-02-06T00:00:00.000Z",
+      "lastUpdated": "2025-06-06T18:45:13.697Z",
+      "__v": 0
+    },
+    {
+      "_id": "68433752b08726f40bada443",
+      "id": 97,
+      "name": "TESTERTWO",
+      "regularShift": "6811518eb6f51dc6bfdcb20e",
+      "location": "6850e46b841052db64eb41d7",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "200"
+      },
+      "seniority": "2020-02-06T00:00:00.000Z",
+      "lastUpdated": "2025-06-06T18:45:38.074Z",
+      "__v": 0
+    },
+    {
+      "_id": "687acf903518052efd64d490",
+      "id": 100,
+      "name": "VACACHECK2",
+      "regularShift": "6811532326093510a53bf3cb",
+      "location": "6850e2c9841052db64eb410f",
+      "vaca": [],
+      "hours": {
+        "$numberDecimal": "50"
+      },
+      "seniority": "2025-06-28T00:00:00.000Z",
+      "lastUpdated": "2025-07-18T22:49:52.354Z",
+      "__v": 0
+    },
+    {
+      "_id": "688a7dc7fdcd9810e41edf66",
+      "id": 96,
+      "name": "OVERNIGHTTEST",
+      "regularShift": "681153b626093510a53bf3e1",
+      "location": "6850e48a841052db64eb4209",
+      "vaca": [],
+      "sick": [],
+      "hours": {
+        "$numberDecimal": "10"
+      },
+      "seniority": "2023-02-07T00:00:00.000Z",
+      "lastUpdated": "2025-07-30T20:17:11.631Z",
+      "__v": 0
+    }
+  ],
+  "RegularShift": [
+    {
+      "_id": "680c069e0c35e34c1fd0991f",
+      "name": "Weekend Second Shift",
+      "days": [
+        "saturday",
+        "sunday"
+      ],
+      "startTime": "1970-01-01T19:45:00.000Z",
+      "endTime": "1970-01-01T05:00:00.000Z",
+      "__v": 1,
+      "type": "secondShift"
+    },
+    {
+      "_id": "6811513cb6f51dc6bfdcb1ed",
+      "name": "Weekday Second Shift A",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:30:00.000Z",
+      "__v": 1,
+      "type": "secondShift"
+    },
+    {
+      "_id": "6811518eb6f51dc6bfdcb20e",
+      "name": "Weekday First Shift A",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "__v": 1,
+      "type": "firstShift"
+    },
+    {
+      "_id": "6811521626093510a53bf39f",
+      "name": "Weekday First Shift B",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T13:00:00.000Z",
+      "endTime": "1970-01-01T21:30:00.000Z",
+      "__v": 1,
+      "type": "firstShift"
+    },
+    {
+      "_id": "681152bd26093510a53bf3b5",
+      "name": "Weekday Early First Shift A",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "__v": 1,
+      "type": "firstShift"
+    },
+    {
+      "_id": "681152e926093510a53bf3c0",
+      "name": "Weekday Early First Shift B",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T19:00:00.000Z",
+      "__v": 1,
+      "type": "firstShift"
+    },
+    {
+      "_id": "6811532326093510a53bf3cb",
+      "name": "Weekday Early First Shift C",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "__v": 1,
+      "type": "firstShift"
+    },
+    {
+      "_id": "6811538026093510a53bf3d6",
+      "name": "Weekday Second Shift B",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-01T20:30:00.000Z",
+      "endTime": "1970-01-01T05:00:00.000Z",
+      "__v": 1,
+      "type": "secondShift"
+    },
+    {
+      "_id": "681153b626093510a53bf3e1",
+      "name": "Weekday Third Shift A",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "__v": 1,
+      "type": "thirdShift"
+    },
+    {
+      "_id": "6811550a26093510a53bf439",
+      "name": "Weekend First Shift ",
+      "days": [
+        "saturday",
+        "sunday"
+      ],
+      "startTime": "1970-01-01T11:45:00.000Z",
+      "endTime": "1970-01-01T21:00:00.000Z",
+      "__v": 1,
+      "type": "firstShift"
+    },
+    {
+      "_id": "6811551b26093510a53bf444",
+      "name": "Weekend Third Shift",
+      "days": [
+        "saturday",
+        "sunday"
+      ],
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "__v": 1,
+      "type": "thirdShift"
+    }
+  ],
+  "OpenShift": [
+    {
+      "_id": "687ad5dfa88bee7e0306759f",
+      "name": "THU 5/1/25 52OX 11:00 PM - 07:00 AM (8.0)",
+      "location": "6850e2d9841052db64eb4128",
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "2025-05-02T03:00:00.000Z",
+      "endTime": "2025-05-02T11:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ad636a88bee7e030675c1",
+      "name": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e6c11c9aa50730b201fe",
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "2025-05-01T11:00:00.000Z",
+      "endTime": "2025-05-01T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ad680a88bee7e030675e3",
+      "name": "THU 5/1/25 HBS 02:00 PM - 11:00 PM (9.0)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "2025-05-01T18:00:00.000Z",
+      "endTime": "2025-05-02T03:00:00.000Z",
+      "totalHours": 9,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ad6a8a88bee7e030675f4",
+      "name": "FRI 5/2/25 HBS 12:00 AM - 07:00 AM (7.0)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "friday",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "2025-05-02T04:00:00.000Z",
+      "endTime": "2025-05-02T11:00:00.000Z",
+      "totalHours": 7,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687add9ca88bee7e03067605",
+      "name": "FRI 5/2/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e524841052db64eb423b",
+      "day": "friday",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "2025-05-02T19:30:00.000Z",
+      "endTime": "2025-05-03T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687addbba88bee7e03067616",
+      "name": "FRI 5/2/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "friday",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "2025-05-02T19:30:00.000Z",
+      "endTime": "2025-05-03T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adde8a88bee7e03067627",
+      "name": "SAT 5/3/25 HBS 11:00 PM - 07:00 AM (8.0)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-04T03:00:00.000Z",
+      "endTime": "2025-05-04T11:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ade17a88bee7e03067638",
+      "name": "SAT 5/3/25 NORTH 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e2f0841052db64eb4173",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T11:00:00.000Z",
+      "endTime": "2025-05-03T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ade62a88bee7e0306765a",
+      "name": "SAT 5/3/25 SFPG/1WES 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T11:00:00.000Z",
+      "endTime": "2025-05-03T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ade91a88bee7e0306768b",
+      "name": "SAT 5/3/25 BWYG 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e2e1841052db64eb4141",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T11:00:00.000Z",
+      "endTime": "2025-05-03T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adeaaa88bee7e0306769c",
+      "name": "SAT 5/3/25 HBS 03:00 PM - 11:00 PM (8.0)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T19:00:00.000Z",
+      "endTime": "2025-05-04T03:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adec8a88bee7e030676ad",
+      "name": "SAT 5/3/25 ROVING 03:00 PM - 11:00 PM (8.0)",
+      "location": "6850e465841052db64eb41be",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T19:00:00.000Z",
+      "endTime": "2025-05-04T03:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adedfa88bee7e030676be",
+      "name": "SAT 5/3/25 BWYG 04:00 PM - 12:00 AM (8.0)",
+      "location": "6850e2e1841052db64eb4141",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T20:00:00.000Z",
+      "endTime": "2025-05-04T04:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adef9a88bee7e030676cf",
+      "name": "SUN 5/4/25 ROVING 11:00 PM - 07:00 AM (8.0)",
+      "location": "6850e465841052db64eb41be",
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "2025-05-05T03:00:00.000Z",
+      "endTime": "2025-05-05T11:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adf5aa88bee7e030676fb",
+      "name": "SUN 5/4/25 BWYG 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e2e1841052db64eb4141",
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "2025-05-04T11:00:00.000Z",
+      "endTime": "2025-05-04T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adf76a88bee7e0306770c",
+      "name": "SUN 5/4/25 NORTH 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e2f0841052db64eb4173",
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "2025-05-04T11:00:00.000Z",
+      "endTime": "2025-05-04T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adf91a88bee7e0306771d",
+      "name": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
+      "location": "6850e6951c9aa50730b201b3",
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "2025-05-04T11:30:00.000Z",
+      "endTime": "2025-05-04T19:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adfc0a88bee7e03067746",
+      "name": "SUN 5/4/25 ROVING 03:00 PM - 11:00 PM (8.0)",
+      "location": "6850e465841052db64eb41be",
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "2025-05-04T19:00:00.000Z",
+      "endTime": "2025-05-05T03:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adfd2a88bee7e03067757",
+      "name": "SUN 5/4/25 BWYG 03:00 PM - 12:00 AM (9.0)",
+      "location": "6850e2e1841052db64eb4141",
+      "day": "sunday",
+      "date": "2025-05-04T04:00:00.000Z",
+      "startTime": "2025-05-04T19:00:00.000Z",
+      "endTime": "2025-05-05T04:00:00.000Z",
+      "totalHours": 9,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687adff2a88bee7e03067768",
+      "name": "MON 5/5/25 ROVING 12:00 AM - 07:00 AM (7.0)",
+      "location": "6850e465841052db64eb41be",
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "2025-05-05T04:00:00.000Z",
+      "endTime": "2025-05-05T11:00:00.000Z",
+      "totalHours": 7,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae0f4a88bee7e030677c8",
+      "name": "MON 5/5/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "2025-05-05T19:30:00.000Z",
+      "endTime": "2025-05-06T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae10ca88bee7e030677d9",
+      "name": "MON 5/5/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e524841052db64eb423b",
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "2025-05-05T19:30:00.000Z",
+      "endTime": "2025-05-06T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae130a88bee7e030677ea",
+      "name": "TUE 5/6/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
+      "location": "6850e524841052db64eb423b",
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "2025-05-06T18:00:00.000Z",
+      "endTime": "2025-05-07T03:00:00.000Z",
+      "totalHours": 9,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae148a88bee7e030677fb",
+      "name": "TUE 5/6/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "2025-05-06T19:30:00.000Z",
+      "endTime": "2025-05-07T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae190a88bee7e0306780c",
+      "name": "WED 5/7/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e524841052db64eb423b",
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "2025-05-07T19:30:00.000Z",
+      "endTime": "2025-05-08T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae1a3a88bee7e0306781d",
+      "name": "WED 5/7/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "2025-05-07T19:30:00.000Z",
+      "endTime": "2025-05-08T03:00:00.000Z",
+      "totalHours": 7.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae572fb700a9f97019849",
+      "name": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
+      "location": "6850e465841052db64eb41be",
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "2025-05-01T04:00:00.000Z",
+      "endTime": "2025-05-01T11:00:00.000Z",
+      "totalHours": 7,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "687ae5adfb700a9f9701986d",
+      "name": "SAT 5/3/25 RIVER ROVER 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e524841052db64eb423b",
+      "day": "saturday",
+      "date": "2025-05-03T04:00:00.000Z",
+      "startTime": "2025-05-03T11:00:00.000Z",
+      "endTime": "2025-05-03T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a17",
+      "name": "FRI 7/4/25 SFPG BOOTH 07:00 AM - 03:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a1b",
+      "name": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.5)",
+      "location": "6850e2c9841052db64eb410f",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a1f",
+      "name": "FRI 7/4/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a23",
+      "name": "FRI 7/4/25 10EV 05:30 AM - 09:00 AM (3.5)",
+      "location": "6850e2c9841052db64eb410f",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "totalHours": 3.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a27",
+      "name": "FRI 7/4/25 HBS 07:00 AM - 03:30 PM (8.5)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a2d",
+      "name": "FRI 7/4/25 SFPG BOOTH 08:00 AM - 04:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T13:00:00.000Z",
+      "endTime": "1970-01-01T21:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a31",
+      "name": "FRI 7/4/25 SFPG/1WES 03:00 PM - 11:30 PM (8.5)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a35",
+      "name": "FRI 7/4/25 ROVING 03:30 PM - 12:00 AM (8.5)",
+      "location": "6850e465841052db64eb41be",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T20:30:00.000Z",
+      "endTime": "1970-01-01T05:00:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a39",
+      "name": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 02:00 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T19:00:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6881a72bffc6a25024c15a3d",
+      "name": "THU 7/3/25 SFPG/1WES 11:00 PM - 07:30 AM (8.5)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "thursday",
+      "date": "2025-07-03T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6882e4fbd973b1a907119ed3",
+      "name": "THU 5/8/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
+      "location": "6850e6c11c9aa50730b201fe",
+      "day": "thursday",
+      "date": "2025-05-08T04:00:00.000Z",
+      "startTime": "2025-05-08T11:00:00.000Z",
+      "endTime": "2025-05-08T19:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6882e514d973b1a907119ef7",
+      "name": "FRI 5/9/25 RIVER ROVER 03:00 PM - 11:00 PM (8.0)",
+      "location": "6850e524841052db64eb423b",
+      "day": "friday",
+      "date": "2025-05-09T04:00:00.000Z",
+      "startTime": "2025-05-09T19:00:00.000Z",
+      "endTime": "2025-05-10T03:00:00.000Z",
+      "totalHours": 8,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6882e91719ac810ce4d08674",
+      "name": "THU 7/17/125 10EV 07:00 AM - 03:30 PM (8.5)",
+      "location": "6850e2c9841052db64eb410f",
+      "day": "thursday",
+      "date": "0125-07-17T04:56:02.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6882e967ade9f69e453b360b",
+      "name": "THU 7/24/125 SFPG BOOTH 07:00 AM - 03:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "thursday",
+      "date": "0125-07-24T04:56:02.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "6882eaafafa5fe51ca0bd9bf",
+      "name": "TUE 5/13/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "tuesday",
+      "date": "2025-05-13T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a1fc367a51500174317",
+      "name": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "thursday",
+      "date": "2025-05-01T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a1fc367a5150017431a",
+      "name": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-05-02T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a1fc367a5150017431d",
+      "name": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "monday",
+      "date": "2025-05-05T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a1fc367a51500174320",
+      "name": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "tuesday",
+      "date": "2025-05-06T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a20c367a51500174323",
+      "name": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "wednesday",
+      "date": "2025-05-07T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    },
+    {
+      "_id": "68842a20c367a51500174326",
+      "name": "THU 5/8/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "thursday",
+      "date": "2025-05-08T04:00:00.000Z",
+      "startTime": "1970-01-01T10:00:00.000Z",
+      "endTime": "1970-01-01T18:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "__v": 0
+    }
+  ],
+  "Location": [
+    {
+      "_id": "6850e2c9841052db64eb410f",
+      "name": "10EV",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e2d9841052db64eb4128",
+      "name": "52OX",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e2e1841052db64eb4141",
+      "name": "BWYG",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e2e6841052db64eb415a",
+      "name": "HBS",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e2f0841052db64eb4173",
+      "name": "NORTH",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e45d841052db64eb41a5",
+      "name": "RIVER/MAKL",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e465841052db64eb41be",
+      "name": "ROVING",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e46b841052db64eb41d7",
+      "name": "SFPG BOOTH",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e481841052db64eb41f0",
+      "name": "SFPG ROVER",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e48a841052db64eb4209",
+      "name": "SFPG/1WES",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e524841052db64eb423b",
+      "name": "RIVER ROVER",
+      "scheduleType": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e6951c9aa50730b201b3",
+      "name": "RIVER",
+      "scheduleType": [
+        "saturday",
+        "sunday"
+      ],
+      "__v": 0
+    },
+    {
+      "_id": "6850e6c11c9aa50730b201fe",
+      "name": "RECYCLE",
+      "scheduleType": [],
+      "__v": 0
+    }
+  ],
+  "OvertimeBid": [
+    {
+      "_id": "687ae220fc6c0f90758c3eaa",
+      "monitor": "687acf903518052efd64d490",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "687ad6a8a88bee7e030675f4",
+          "rank": 1,
+          "_id": "687ae220a88bee7e030678f5"
+        },
+        {
+          "position": "687addbba88bee7e03067616",
+          "rank": 2,
+          "_id": "687ae220a88bee7e030678f6"
+        },
+        {
+          "position": "687add9ca88bee7e03067605",
+          "rank": 3,
+          "_id": "687ae220a88bee7e030678f7"
+        },
+        {
+          "position": "687ade91a88bee7e0306768b",
+          "rank": 4,
+          "_id": "687ae220a88bee7e030678f8"
+        }
+      ],
+      "workAnyShift": false,
+      "workMoreThanOne": true
+    },
+    {
+      "_id": "687ae240fc6c0f90758c3eb0",
+      "monitor": "680bf5d07162e106742ea838",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "687adf91a88bee7e0306771d",
+          "rank": 1,
+          "_id": "687ae23fa88bee7e03067950"
+        },
+        {
+          "position": "687adfd2a88bee7e03067757",
+          "rank": 2,
+          "_id": "687ae23fa88bee7e03067951"
+        },
+        {
+          "position": "687adef9a88bee7e030676cf",
+          "rank": 3,
+          "_id": "687ae23fa88bee7e03067952"
+        }
+      ],
+      "workAnyShift": false,
+      "workMoreThanOne": false
+    },
+    {
+      "_id": "687ae63bfc6c0f90758c3f98",
+      "monitor": "68433752b08726f40bada443",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "687ae572fb700a9f97019849",
+          "rank": 1,
+          "_id": "687ae63bfb700a9f97019b65"
+        },
+        {
+          "position": "687ad636a88bee7e030675c1",
+          "rank": 2,
+          "_id": "687ae63bfb700a9f97019b66"
+        },
+        {
+          "position": "687ad680a88bee7e030675e3",
+          "rank": 3,
+          "_id": "687ae63bfb700a9f97019b67"
+        },
+        {
+          "position": "687ad5dfa88bee7e0306759f",
+          "rank": 4,
+          "_id": "687ae63bfb700a9f97019b68"
+        },
+        {
+          "position": "687ad6a8a88bee7e030675f4",
+          "rank": 5,
+          "_id": "687ae63bfb700a9f97019b69"
+        }
+      ],
+      "workAnyShift": false,
+      "workMoreThanOne": true
+    },
+    {
+      "_id": "687ae642fc6c0f90758c3f99",
+      "monitor": "68433739b08726f40bada434",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "687ae572fb700a9f97019849",
+          "rank": 1,
+          "_id": "687ae642fb700a9f97019bbb"
+        },
+        {
+          "position": "687ad636a88bee7e030675c1",
+          "rank": 2,
+          "_id": "687ae642fb700a9f97019bbc"
+        },
+        {
+          "position": "687ad680a88bee7e030675e3",
+          "rank": 3,
+          "_id": "687ae642fb700a9f97019bbd"
+        },
+        {
+          "position": "687ad5dfa88bee7e0306759f",
+          "rank": 4,
+          "_id": "687ae642fb700a9f97019bbe"
+        },
+        {
+          "position": "687ad6a8a88bee7e030675f4",
+          "rank": 5,
+          "_id": "687ae642fb700a9f97019bbf"
+        }
+      ],
+      "workAnyShift": false,
+      "workMoreThanOne": true
+    },
+    {
+      "_id": "6887c9d31a6a5d4aa078e563",
+      "monitor": "6830d73bb73f6f94f7fab410",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "68842a1fc367a51500174317",
+          "rank": 1,
+          "_id": "68882dbaff109bbe3d78e143"
+        },
+        {
+          "position": "687ae572fb700a9f97019849",
+          "rank": 2,
+          "_id": "68882dbaff109bbe3d78e144"
+        },
+        {
+          "position": "687ad636a88bee7e030675c1",
+          "rank": 3,
+          "_id": "68882dbaff109bbe3d78e145"
+        },
+        {
+          "position": "687ad680a88bee7e030675e3",
+          "rank": 4,
+          "_id": "68882dbaff109bbe3d78e146"
+        },
+        {
+          "position": "687ad5dfa88bee7e0306759f",
+          "rank": 5,
+          "_id": "68882dbaff109bbe3d78e147"
+        }
+      ],
+      "workAnyShift": false,
+      "workMoreThanOne": false
+    },
+    {
+      "_id": "688a6e8c1a6a5d4aa07a1488",
+      "monitor": "6826563dd3f7526aff07d080",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "687ad6a8a88bee7e030675f4",
+          "rank": 1,
+          "_id": "688a6e8d7fae0d321f889090"
+        },
+        {
+          "position": "687addbba88bee7e03067616",
+          "rank": 2,
+          "_id": "688a6e8d7fae0d321f889091"
+        },
+        {
+          "position": "687add9ca88bee7e03067605",
+          "rank": 3,
+          "_id": "688a6e8d7fae0d321f889092"
+        },
+        {
+          "position": "687ade91a88bee7e0306768b",
+          "rank": 4,
+          "_id": "688a6e8d7fae0d321f889093"
+        }
+      ],
+      "workAnyShift": false,
+      "workMoreThanOne": true
+    }
+  ],
+  "OvertimeSchedule": [
+    {
+      "_id": "688ba8d5c001f3bf41f1ccc1",
+      "days": {
+        "thursday": {
+          "locIds": [
+            "6850e6c11c9aa50730b201fe"
+          ],
+          "shifts": {
+            "68842a1fc367a51500174317": {
+              "monitorId": "6830d73bb73f6f94f7fab410",
+              "monitorName": "QUINCY",
+              "shiftName": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": "6850e46b841052db64eb41d7"
+            },
+            "687ae572fb700a9f97019849": {
+              "monitorId": "68433752b08726f40bada443",
+              "monitorName": "TESTERTWO",
+              "shiftName": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
+              "locationId": "6850e465841052db64eb41be"
+            },
+            "687ad636a88bee7e030675c1": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "THU 5/1/25 RECYCLE 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e6c11c9aa50730b201fe"
+            },
+            "687ad680a88bee7e030675e3": {
+              "monitorId": "68433739b08726f40bada434",
+              "monitorName": "TESTERONE",
+              "shiftName": "THU 5/1/25 HBS 02:00 PM - 11:00 PM (9.0)",
+              "locationId": "6850e2e6841052db64eb415a"
+            },
+            "687ad5dfa88bee7e0306759f": {
+              "monitorId": "68433752b08726f40bada443",
+              "monitorName": "TESTERTWO",
+              "shiftName": "THU 5/1/25 52OX 11:00 PM - 07:00 AM (8.0)",
+              "locationId": "6850e2d9841052db64eb4128"
+            }
+          }
+        },
+        "friday": {
+          "locIds": [],
+          "shifts": {
+            "68842a1fc367a5150017431a": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": "6850e46b841052db64eb41d7"
+            },
+            "687ad6a8a88bee7e030675f4": {
+              "monitorId": "6826563dd3f7526aff07d080",
+              "monitorName": "VACACHECK",
+              "shiftName": "FRI 5/2/25 HBS 12:00 AM - 07:00 AM (7.0)",
+              "locationId": "6850e2e6841052db64eb415a"
+            },
+            "687addbba88bee7e03067616": {
+              "monitorId": "687acf903518052efd64d490",
+              "monitorName": "VACACHECK2",
+              "shiftName": "FRI 5/2/25 HBS 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e2e6841052db64eb415a"
+            },
+            "687add9ca88bee7e03067605": {
+              "monitorId": "6826563dd3f7526aff07d080",
+              "monitorName": "VACACHECK",
+              "shiftName": "FRI 5/2/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e524841052db64eb423b"
+            }
+          }
+        },
+        "saturday": {
+          "locIds": [
+            "6850e524841052db64eb423b"
+          ],
+          "shifts": {
+            "687ade91a88bee7e0306768b": {
+              "monitorId": "687acf903518052efd64d490",
+              "monitorName": "VACACHECK2",
+              "shiftName": "SAT 5/3/25 BWYG 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e2e1841052db64eb4141"
+            },
+            "687ade17a88bee7e03067638": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 NORTH 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e2f0841052db64eb4173"
+            },
+            "687ade62a88bee7e0306765a": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 SFPG/1WES 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e48a841052db64eb4209"
+            },
+            "687ae5adfb700a9f9701986d": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 RIVER ROVER 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e524841052db64eb423b"
+            },
+            "687adeaaa88bee7e0306769c": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 HBS 03:00 PM - 11:00 PM (8.0)",
+              "locationId": "6850e2e6841052db64eb415a"
+            },
+            "687adec8a88bee7e030676ad": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 ROVING 03:00 PM - 11:00 PM (8.0)",
+              "locationId": "6850e465841052db64eb41be"
+            },
+            "687adedfa88bee7e030676be": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 BWYG 04:00 PM - 12:00 AM (8.0)",
+              "locationId": "6850e2e1841052db64eb4141"
+            },
+            "687adde8a88bee7e03067627": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SAT 5/3/25 HBS 11:00 PM - 07:00 AM (8.0)",
+              "locationId": "6850e2e6841052db64eb415a"
+            }
+          }
+        },
+        "sunday": {
+          "locIds": [],
+          "shifts": {
+            "687adf5aa88bee7e030676fb": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SUN 5/4/25 BWYG 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e2e1841052db64eb4141"
+            },
+            "687adf76a88bee7e0306770c": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SUN 5/4/25 NORTH 07:00 AM - 03:00 PM (8.0)",
+              "locationId": "6850e2f0841052db64eb4173"
+            },
+            "687adf91a88bee7e0306771d": {
+              "monitorId": "680bf5d07162e106742ea838",
+              "monitorName": "JEFFERSON",
+              "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
+              "locationId": "6850e6951c9aa50730b201b3"
+            },
+            "687adfd2a88bee7e03067757": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SUN 5/4/25 BWYG 03:00 PM - 12:00 AM (9.0)",
+              "locationId": "6850e2e1841052db64eb4141"
+            },
+            "687adfc0a88bee7e03067746": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SUN 5/4/25 ROVING 03:00 PM - 11:00 PM (8.0)",
+              "locationId": "6850e465841052db64eb41be"
+            },
+            "687adef9a88bee7e030676cf": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "SUN 5/4/25 ROVING 11:00 PM - 07:00 AM (8.0)",
+              "locationId": "6850e465841052db64eb41be"
+            }
+          }
+        },
+        "monday": {
+          "locIds": [],
+          "shifts": {
+            "68842a1fc367a5150017431d": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": "6850e46b841052db64eb41d7"
+            },
+            "687adff2a88bee7e03067768": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5/25 ROVING 12:00 AM - 07:00 AM (7.0)",
+              "locationId": "6850e465841052db64eb41be"
+            },
+            "687ae0f4a88bee7e030677c8": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5/25 HBS 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e2e6841052db64eb415a"
+            },
+            "687ae10ca88bee7e030677d9": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "MON 5/5/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e524841052db64eb423b"
+            }
+          }
+        },
+        "tuesday": {
+          "locIds": [],
+          "shifts": {
+            "68842a1fc367a51500174320": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": "6850e46b841052db64eb41d7"
+            },
+            "687ae130a88bee7e030677ea": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
+              "locationId": "6850e524841052db64eb423b"
+            },
+            "687ae148a88bee7e030677fb": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "TUE 5/6/25 HBS 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e2e6841052db64eb415a"
+            }
+          }
+        },
+        "wednesday": {
+          "locIds": [],
+          "shifts": {
+            "68842a20c367a51500174323": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+              "locationId": "6850e46b841052db64eb41d7"
+            },
+            "687ae1a3a88bee7e0306781d": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7/25 HBS 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e2e6841052db64eb415a"
+            },
+            "687ae190a88bee7e0306780c": {
+              "monitorId": null,
+              "monitorName": "OPEN",
+              "shiftName": "WED 5/7/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+              "locationId": "6850e524841052db64eb423b"
+            }
+          }
+        }
+      },
+      "createdAt": "2025-07-31T17:33:09.096Z",
+      "updatedAt": "2025-07-31T17:33:09.096Z",
+      "__v": 0
+    }
+  ],
+  "OvertimeAudit": [
+    {
+      "_id": "688ba8d5c001f3bf41f1ccb7",
+      "shiftName": "FRI 5/2/25 HBS 12:00 AM - 07:00 AM (7.0)",
+      "monitorName": "VACACHECK",
+      "hours": 7,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "JEFFERSON": 7,
+        "KENNEDY": 7,
+        "MADISON": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "QUINCY": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.049Z",
+      "updatedAt": "2025-07-31T17:33:09.049Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccb8",
+      "shiftName": "FRI 5/2/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "monitorName": "VACACHECK2",
+      "hours": 7.5,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "VACACHECK2": 7.5,
+        "JEFFERSON": 7,
+        "TESTERTWO": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "QUINCY": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7,
+        "TESTERONE": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccb9",
+      "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
+      "monitorName": "JEFFERSON",
+      "hours": 7.5,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "VACACHECK2": 7,
+        "JEFFERSON": 7.25,
+        "KENNEDY": 7,
+        "MADISON": 7,
+        "TESTERTWO": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7,
+        "TESTERONE": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccba",
+      "shiftName": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
+      "monitorName": "TESTERTWO",
+      "hours": 7,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "VACACHECK2": 7,
+        "JEFFERSON": 7,
+        "KENNEDY": 7,
+        "MADISON": 7,
+        "TESTERTWO": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccbb",
+      "shiftName": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "monitorName": "QUINCY",
+      "hours": 8.5,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "JEFFERSON": 7,
+        "KENNEDY": 7,
+        "MADISON": 7,
+        "WASHINGTON": 7,
+        "VAN BUREN": 7,
+        "QUINCY": 8.5,
+        "GARFIELD": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccbc",
+      "shiftName": "THU 5/1/25 HBS 02:00 PM - 11:00 PM (9.0)",
+      "monitorName": "TESTERONE",
+      "hours": 9,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "VACACHECK2": 7,
+        "JEFFERSON": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7,
+        "TESTERONE": 8
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccbd",
+      "shiftName": "FRI 5/2/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
+      "monitorName": "VACACHECK",
+      "hours": 7.5,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "JEFFERSON": 7,
+        "TESTERTWO": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "QUINCY": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7,
+        "TESTERONE": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccbe",
+      "shiftName": "SAT 5/3/25 BWYG 07:00 AM - 03:00 PM (8.0)",
+      "monitorName": "VACACHECK2",
+      "hours": 8,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7,
+        "VACACHECK2": 8,
+        "JEFFERSON": 7,
+        "KENNEDY": 7,
+        "MADISON": 7,
+        "TESTERTWO": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7,
+        "TESTERONE": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    },
+    {
+      "_id": "688ba8d5c001f3bf41f1ccbf",
+      "shiftName": "THU 5/1/25 52OX 11:00 PM - 07:00 AM (8.0)",
+      "monitorName": "TESTERTWO",
+      "hours": 8,
+      "monitorsToCharge": {
+        "VACACHECK2": 7,
+        "JEFFERSON": 7,
+        "KENNEDY": 7,
+        "MADISON": 7,
+        "TESTERTWO": 8,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-07-31T17:33:09.052Z",
+      "updatedAt": "2025-07-31T17:33:09.052Z"
+    }
+  ],
+  "VacationLookup": [
+    {
+      "_id": "6882eaae1a6a5d4aa077e383",
+      "day": "2025-05-13T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "6882eaafafa5fe51ca0bd9bf",
+          "_id": "6882eaafafa5fe51ca0bd9c1"
+        }
+      ]
+    },
+    {
+      "_id": "68842a1f1a6a5d4aa07836a2",
+      "day": "2025-05-01T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "68842a1fc367a51500174317",
+          "_id": "68842a20c367a51500174328"
+        }
+      ]
+    },
+    {
+      "_id": "68842a1f1a6a5d4aa07836a3",
+      "day": "2025-05-02T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "68842a1fc367a5150017431a",
+          "_id": "68842a20c367a5150017432b"
+        }
+      ]
+    },
+    {
+      "_id": "68842a1f1a6a5d4aa07836a5",
+      "day": "2025-05-05T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "68842a1fc367a5150017431d",
+          "_id": "68842a20c367a5150017432e"
+        }
+      ]
+    },
+    {
+      "_id": "68842a1f1a6a5d4aa07836a6",
+      "day": "2025-05-06T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "68842a1fc367a51500174320",
+          "_id": "68842a20c367a51500174331"
+        }
+      ]
+    },
+    {
+      "_id": "68842a1f1a6a5d4aa07836a7",
+      "day": "2025-05-07T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "68842a20c367a51500174323",
+          "_id": "68842a20c367a51500174334"
+        }
+      ]
+    },
+    {
+      "_id": "68842a1f1a6a5d4aa07836a8",
+      "day": "2025-05-08T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "6826563dd3f7526aff07d080",
+          "openShiftId": "68842a20c367a51500174326",
+          "_id": "68842a20c367a51500174337"
+        }
+      ]
+    }
+  ],
+  "Holiday": [
+    {
+      "_id": "6881a5a16a037b1b51ef4d75",
+      "name": "ind",
+      "month": 7,
+      "day": 4,
+      "year": 2025,
+      "openShiftArr": [
+        "6881a72bffc6a25024c15a17",
+        "6881a72bffc6a25024c15a1b",
+        "6881a72bffc6a25024c15a1f",
+        "6881a72bffc6a25024c15a23",
+        "6881a72bffc6a25024c15a27",
+        "6881a72bffc6a25024c15a2d",
+        "6881a72bffc6a25024c15a31",
+        "6881a72bffc6a25024c15a35",
+        "6881a72bffc6a25024c15a39",
+        "6881a72bffc6a25024c15a3d"
+      ],
+      "__v": 0
+    }
+  ],
+  "SickTime": [],
+  "ShortNotice": []
+}
