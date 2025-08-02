@@ -7,11 +7,13 @@
       "regularShift": "680c069e0c35e34c1fd0991f",
       "location": "6850e2e6841052db64eb415a",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "200"
       },
       "seniority": "2015-01-07T00:00:00.000Z",
-      "__v": 0
+      "__v": 0,
+      "lastUpdated": "2025-08-01T21:42:06.309Z"
     },
     {
       "_id": "681157ab081709b62e8b7e0b",
@@ -20,6 +22,7 @@
       "regularShift": "681153b626093510a53bf3e1",
       "location": "6850e48a841052db64eb4209",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "210"
       },
@@ -34,6 +37,7 @@
       "regularShift": "6811518eb6f51dc6bfdcb20e",
       "location": "6850e2e6841052db64eb415a",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "210"
       },
@@ -48,6 +52,7 @@
       "regularShift": "6811518eb6f51dc6bfdcb20e",
       "location": "6850e2e6841052db64eb415a",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "240"
       },
@@ -62,6 +67,7 @@
       "regularShift": "6811521626093510a53bf39f",
       "location": "6850e46b841052db64eb41d7",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "300"
       },
@@ -76,6 +82,7 @@
       "regularShift": "6811513cb6f51dc6bfdcb1ed",
       "location": "6850e48a841052db64eb4209",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "200"
       },
@@ -100,6 +107,7 @@
         "2025-05-07T04:00:00.000Z",
         "2025-05-08T04:00:00.000Z"
       ],
+      "sick": [],
       "hours": {
         "$numberDecimal": "50"
       },
@@ -114,6 +122,7 @@
       "regularShift": "6811550a26093510a53bf439",
       "location": "6850e2d9841052db64eb4128",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "225"
       },
@@ -128,6 +137,7 @@
       "regularShift": "6811538026093510a53bf3d6",
       "location": "6850e465841052db64eb41be",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "200"
       },
@@ -142,6 +152,7 @@
       "regularShift": "6811551b26093510a53bf444",
       "location": "6850e465841052db64eb41be",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "210"
       },
@@ -156,6 +167,7 @@
       "regularShift": "681152e926093510a53bf3c0",
       "location": "6850e46b841052db64eb41d7",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "215"
       },
@@ -170,6 +182,7 @@
       "regularShift": "6811518eb6f51dc6bfdcb20e",
       "location": "6850e2c9841052db64eb410f",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "300"
       },
@@ -184,6 +197,7 @@
       "regularShift": "6811518eb6f51dc6bfdcb20e",
       "location": "6850e46b841052db64eb41d7",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "200"
       },
@@ -198,6 +212,7 @@
       "regularShift": "6811532326093510a53bf3cb",
       "location": "6850e2c9841052db64eb410f",
       "vaca": [],
+      "sick": [],
       "hours": {
         "$numberDecimal": "50"
       },
@@ -231,8 +246,8 @@
       ],
       "startTime": "1970-01-01T19:45:00.000Z",
       "endTime": "1970-01-01T05:00:00.000Z",
-      "__v": 1,
-      "type": "secondShift"
+      "type": "secondShift",
+      "__v": 0
     },
     {
       "_id": "6811513cb6f51dc6bfdcb1ed",
@@ -246,8 +261,8 @@
       ],
       "startTime": "1970-01-01T20:00:00.000Z",
       "endTime": "1970-01-02T04:30:00.000Z",
-      "__v": 1,
-      "type": "secondShift"
+      "type": "secondShift",
+      "__v": 0
     },
     {
       "_id": "6811518eb6f51dc6bfdcb20e",
@@ -261,8 +276,8 @@
       ],
       "startTime": "1970-01-01T12:00:00.000Z",
       "endTime": "1970-01-01T20:30:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811521626093510a53bf39f",
@@ -276,8 +291,8 @@
       ],
       "startTime": "1970-01-01T13:00:00.000Z",
       "endTime": "1970-01-01T21:30:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "681152bd26093510a53bf3b5",
@@ -291,8 +306,8 @@
       ],
       "startTime": "1970-01-01T10:00:00.000Z",
       "endTime": "1970-01-01T18:30:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "681152e926093510a53bf3c0",
@@ -306,8 +321,8 @@
       ],
       "startTime": "1970-01-01T10:30:00.000Z",
       "endTime": "1970-01-01T19:00:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811532326093510a53bf3cb",
@@ -321,8 +336,8 @@
       ],
       "startTime": "1970-01-01T10:30:00.000Z",
       "endTime": "1970-01-01T14:00:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811538026093510a53bf3d6",
@@ -336,8 +351,8 @@
       ],
       "startTime": "1970-01-01T20:30:00.000Z",
       "endTime": "1970-01-01T05:00:00.000Z",
-      "__v": 1,
-      "type": "secondShift"
+      "type": "secondShift",
+      "__v": 0
     },
     {
       "_id": "681153b626093510a53bf3e1",
@@ -351,8 +366,8 @@
       ],
       "startTime": "1970-01-02T04:00:00.000Z",
       "endTime": "1970-01-01T12:30:00.000Z",
-      "__v": 1,
-      "type": "thirdShift"
+      "type": "thirdShift",
+      "__v": 0
     },
     {
       "_id": "6811550a26093510a53bf439",
@@ -363,8 +378,8 @@
       ],
       "startTime": "1970-01-01T11:45:00.000Z",
       "endTime": "1970-01-01T21:00:00.000Z",
-      "__v": 1,
-      "type": "firstShift"
+      "type": "firstShift",
+      "__v": 0
     },
     {
       "_id": "6811551b26093510a53bf444",
@@ -375,8 +390,8 @@
       ],
       "startTime": "1970-01-02T04:00:00.000Z",
       "endTime": "1970-01-01T12:30:00.000Z",
-      "__v": 1,
-      "type": "thirdShift"
+      "type": "thirdShift",
+      "__v": 0
     }
   ],
   "OpenShift": [
@@ -1134,7 +1149,6 @@
     {
       "_id": "687ae220fc6c0f90758c3eaa",
       "monitor": "687acf903518052efd64d490",
-      "__v": 0,
       "rankings": [
         {
           "position": "687ad6a8a88bee7e030675f4",
@@ -1157,13 +1171,13 @@
           "_id": "687ae220a88bee7e030678f8"
         }
       ],
+      "workMoreThanOne": true,
       "workAnyShift": false,
-      "workMoreThanOne": true
+      "__v": 0
     },
     {
       "_id": "687ae240fc6c0f90758c3eb0",
       "monitor": "680bf5d07162e106742ea838",
-      "__v": 0,
       "rankings": [
         {
           "position": "687adf91a88bee7e0306771d",
@@ -1181,13 +1195,13 @@
           "_id": "687ae23fa88bee7e03067952"
         }
       ],
+      "workMoreThanOne": false,
       "workAnyShift": false,
-      "workMoreThanOne": false
+      "__v": 0
     },
     {
       "_id": "687ae63bfc6c0f90758c3f98",
       "monitor": "68433752b08726f40bada443",
-      "__v": 0,
       "rankings": [
         {
           "position": "687ae572fb700a9f97019849",
@@ -1215,13 +1229,13 @@
           "_id": "687ae63bfb700a9f97019b69"
         }
       ],
+      "workMoreThanOne": true,
       "workAnyShift": false,
-      "workMoreThanOne": true
+      "__v": 0
     },
     {
       "_id": "687ae642fc6c0f90758c3f99",
       "monitor": "68433739b08726f40bada434",
-      "__v": 0,
       "rankings": [
         {
           "position": "687ae572fb700a9f97019849",
@@ -1249,13 +1263,13 @@
           "_id": "687ae642fb700a9f97019bbf"
         }
       ],
+      "workMoreThanOne": true,
       "workAnyShift": false,
-      "workMoreThanOne": true
+      "__v": 0
     },
     {
       "_id": "6887c9d31a6a5d4aa078e563",
       "monitor": "6830d73bb73f6f94f7fab410",
-      "__v": 0,
       "rankings": [
         {
           "position": "68842a1fc367a51500174317",
@@ -1283,13 +1297,13 @@
           "_id": "68882dbaff109bbe3d78e147"
         }
       ],
+      "workMoreThanOne": false,
       "workAnyShift": false,
-      "workMoreThanOne": false
+      "__v": 0
     },
     {
       "_id": "688a6e8c1a6a5d4aa07a1488",
       "monitor": "6826563dd3f7526aff07d080",
-      "__v": 0,
       "rankings": [
         {
           "position": "687ad6a8a88bee7e030675f4",
@@ -1312,8 +1326,9 @@
           "_id": "688a6e8d7fae0d321f889093"
         }
       ],
+      "workMoreThanOne": true,
       "workAnyShift": false,
-      "workMoreThanOne": true
+      "__v": 0
     }
   ],
   "OvertimeSchedule": [
@@ -1582,9 +1597,9 @@
         "COOLIDGE": 7,
         "GARFIELD": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.049Z",
-      "updatedAt": "2025-07-31T17:33:09.049Z"
+      "updatedAt": "2025-07-31T17:33:09.049Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccb8",
@@ -1605,9 +1620,9 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccb9",
@@ -1629,9 +1644,9 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccba",
@@ -1652,9 +1667,9 @@
         "COOLIDGE": 7,
         "GARFIELD": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccbb",
@@ -1671,9 +1686,9 @@
         "QUINCY": 8.5,
         "GARFIELD": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccbc",
@@ -1692,9 +1707,9 @@
         "GARFIELD": 7,
         "TESTERONE": 8
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccbd",
@@ -1714,9 +1729,9 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccbe",
@@ -1738,9 +1753,9 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     },
     {
       "_id": "688ba8d5c001f3bf41f1ccbf",
@@ -1759,95 +1774,95 @@
         "COOLIDGE": 7,
         "GARFIELD": 7
       },
-      "__v": 0,
       "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z"
+      "updatedAt": "2025-07-31T17:33:09.052Z",
+      "__v": 0
     }
   ],
   "VacationLookup": [
     {
       "_id": "6882eaae1a6a5d4aa077e383",
       "day": "2025-05-13T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "6882eaafafa5fe51ca0bd9bf",
           "_id": "6882eaafafa5fe51ca0bd9c1"
         }
-      ]
+      ],
+      "__v": 0
     },
     {
       "_id": "68842a1f1a6a5d4aa07836a2",
       "day": "2025-05-01T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "68842a1fc367a51500174317",
           "_id": "68842a20c367a51500174328"
         }
-      ]
+      ],
+      "__v": 0
     },
     {
       "_id": "68842a1f1a6a5d4aa07836a3",
       "day": "2025-05-02T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "68842a1fc367a5150017431a",
           "_id": "68842a20c367a5150017432b"
         }
-      ]
+      ],
+      "__v": 0
     },
     {
       "_id": "68842a1f1a6a5d4aa07836a5",
       "day": "2025-05-05T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "68842a1fc367a5150017431d",
           "_id": "68842a20c367a5150017432e"
         }
-      ]
+      ],
+      "__v": 0
     },
     {
       "_id": "68842a1f1a6a5d4aa07836a6",
       "day": "2025-05-06T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "68842a1fc367a51500174320",
           "_id": "68842a20c367a51500174331"
         }
-      ]
+      ],
+      "__v": 0
     },
     {
       "_id": "68842a1f1a6a5d4aa07836a7",
       "day": "2025-05-07T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "68842a20c367a51500174323",
           "_id": "68842a20c367a51500174334"
         }
-      ]
+      ],
+      "__v": 0
     },
     {
       "_id": "68842a1f1a6a5d4aa07836a8",
       "day": "2025-05-08T04:00:00.000Z",
-      "__v": 0,
       "monitorAndOpenShift": [
         {
           "monitorId": "6826563dd3f7526aff07d080",
           "openShiftId": "68842a20c367a51500174326",
           "_id": "68842a20c367a51500174337"
         }
-      ]
+      ],
+      "__v": 0
     }
   ],
   "Holiday": [

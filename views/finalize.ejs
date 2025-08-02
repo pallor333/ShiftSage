@@ -3,9 +3,42 @@
 <!-- Page 6: Finalize -->
 <!-- <a href="/logout" class="col-3 btn btn-primary">Logout</a> -->
 <main class="container">
-    <section>
-        <h2>Finalize</h2>
-        <span>Press this button to add hours calculated from overtime to monitor hour totals. Be careful as there is no undo button. </span>
+    <%- include('partials/flashMessages') -%>
+
+    <!-- Update Monitor Hours -->
+    <section class="mt-5">
+        <h2>Finalize Hours</h2>
+        <span>Be absolutely sure the information is correct from previous sections before proceeding. There's no undo button. </span>
+        <ul>
+            <li>Pressing this button will:</li>
+            <li>Add hours calculated from overtime to monitor hour totals.</li>
+            <li>Generate Overtime shifts if there's a holiday next week.</li>
+        </ul>
+        <form action="/parking/finalize/update" method="POST" style="display: inline;"
+        onsubmit="return confirm('Are you sure you want to update monitor hours and generate holiday overtime? This action is irreversible.')">
+            <button type="submit" class="btn btn-primary">Finalize</button>
+        </form>
+    </section>
+
+    <!-- Create backups / reset -->
+    <section class="mt-5">
+        <h2>MongoDB: Create a Backup / Reset Database</h2>
+        <span>Download a backup of all data in the form of JSON file. With this file you may import a previous week's data at the cost of 
+            rewriting all current data.</span>
+        <section class="mt-5">
+            <h2>Export</h2>
+            <a href="/parking/mongo/export" class="btn btn-primary">Download JSON Backup</a>
+        </section>
+        
+        <section class="mt-5">
+            <h2>Import</h2>
+            <span>This will overwrite all data in every DB. If the current Database is not backed up then all data will be lost.</span>
+            <!-- TODO: Add a class for spacing here. -->
+            <form action="/parking/mongo/import" method="POST" enctype="multipart/form-data">
+                <input type="file" name="importFile" required />
+                <button type="submit" class="btn btn-success">Upload & Import</button>
+            </form>
+        </section>
     </section>
 </main>
 

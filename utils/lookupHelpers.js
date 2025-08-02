@@ -29,6 +29,14 @@ function monitorLookupByMonitorIdTable(monitors){
   })
   return monitorByMonitorId
 }
+// Pre-index monitors by monitor_name for O(1) lookup
+function monitorLookupByMonitorNameTable(monitors){
+  const monitorByMonitorName = new Map()
+  monitors.forEach(monitor => { // monitor_id: {monitor object}
+      monitorByMonitorName.set(monitor.name, monitor) // monitorID is key
+  })
+  return monitorByMonitorName
+}
 // Pre-index overtimeshifts by openshift Id for O(1) lookup
 function openShiftLookupByOpenShiftIdTable(openShifts){
   const openShiftByopenShiftId = new Map()
@@ -56,4 +64,9 @@ function vacationLookupByDateTable(vacationSchema){
 
 
 //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) //table.get(id) 
-module.exports = { locationLookupByLocationIdTable, monitorLookupByShiftIdTable, monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, vacationLookupByDateTable}
+module.exports = { 
+  locationLookupByLocationIdTable, 
+  monitorLookupByShiftIdTable, monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable,
+  openShiftLookupByOpenShiftIdTable, 
+  regularShiftLookupByRegularShiftIdTable, 
+  vacationLookupByDateTable}

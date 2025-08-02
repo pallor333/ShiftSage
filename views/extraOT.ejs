@@ -2,25 +2,10 @@
 
 <!-- Page 8:'Extra OT'/ Short Notice  -->
 <main class="container">
+    <%- include('partials/flashMessages') -%>
+
     <h1>Extra OT / Short Notice</h1>
     <p>On this page record any extra overtime that happens between schedules. Be careful as there is no undo button.</p>
-
-    <!-- Flash SUCCESS or FAILURE -->
-    <section class="flashmsg">
-        <% if (success_msg && !error_msg) { %>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <%= success_msg %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <% } %>
-
-        <% if (error_msg && !success_msg) { %>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <%= error_msg %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <% } %>
-    </section>
 
     <!-- 1: ADD HOURS -->
     <section class="mt-5">
@@ -100,9 +85,17 @@
     <!-- 3: UPDATE MONITORS WITH EXTRA OT -->
     <section class="mt-5">
         <h2>Update Monitors</h2>
-        <span>This button updates monitor hours with the table from above while also deleting all extra overtime. There is no undo button so make sure everything is correct first.</span>
+        <p>Pressing updates monitor hours with the table from above while also clearing all extra overtime values. 
+            This is irreversible so make sure everything is correct before hitting submit.</p>
+        <!-- <form action="/parking/extraOT/update" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-primary">Update Monitor Hours with Extra Hours</button>
+        </form> -->
+        <form action="/parking/extraOT/update" method="POST" style="display: inline;" 
+            onsubmit="return confirm('Are you sure you want to update monitor hours and clear all extra overtime? This action is irreversible.')">
+            <button type="submit" class="btn btn-primary">Update Monitor Hours with Extra Hours</button>
+        </form>
     </section>
-
+    <hr>
 </main>
 
 <%- include('partials/footer') -%>

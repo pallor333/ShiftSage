@@ -7,7 +7,7 @@ const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice} = require("../models/Parking")
 const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
-const { monitorLookupByMonitorIdTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
+const { monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
 const { getWorksheetColumnWidths } = require("json-as-xlsx")
@@ -254,7 +254,7 @@ async function holidayOvertimeCreator(holidays){
         totalHours: totalHours,
         recurring: false // Convert truthy/falsy value to Boolean
       }
-      console.log(data.name)
+      // console.log(data.name) //debugging: day date location shiftTime shiftLength
       // if(data.day==='thursday') console.log(entry.date, date2, date3, parsedDate)
       const openShiftId = await createOpenShift(data); //Pass data to create new OT shift
       [mm,dd] = findClosestHoliday([mm, dd], shift);
@@ -405,6 +405,7 @@ module.exports = {
   getOvertimePage: async (req, res) => {
     try { 
       const { monitors, locations, overtimeBid, overtimeAudit, vacaLookup} = await fetchCommonData()
+      // console.log(overtimeAudit)
 
       //openShifts
       const [wkStart, wkEnd] = getNextThurs(THISWEEK)
@@ -496,7 +497,7 @@ module.exports = {
 
       //Automatically generate overtime shifts if NEXTWEEK is holiday
       // if(holiday){regular shift => overtime shift}
-      await holidayOvertimeCreator(holidays)
+      // await holidayOvertimeCreator(holidays)
 
       // console.log(frontEndHolidayArr)
       res.render("holiday.ejs", {
@@ -557,6 +558,16 @@ module.exports = {
   //Finalize/Extra OT/Short Notice page
   getFinalizePage: async(req, res) => {
     try{
+      // const { monitors, overtimeAudit } = await fetchCommonData()
+      // if(!monitors){
+      //   console.log("Monitors missing.")
+      //   res.redirect("/parking/home")
+      // }
+      // if(!overtimeAudit){
+      //   console.log("Overtime winners missing.")
+      //   res.redirect("/parking/home")
+      // }
+
       res.render("finalize.ejs",{
       })
     }catch(err){
@@ -586,6 +597,7 @@ module.exports = {
         exportData[name] = docs;
       }
 
+      //TODO: REname backup with week date
       const jsonStr = JSON.stringify(exportData, null, 2);
       const filePath = path.join(__dirname, "../exports/mongo-backup.json");
 
@@ -614,7 +626,9 @@ module.exports = {
         }
 
         fs.unlinkSync(filePath); // Clean up
-        res.send("Import successful");
+        // res.send("Import successful");
+        req.flash('success_msg', 'Database Import successful!');
+        res.redirect("/parking/finalize"); 
       } catch (err) {
         console.error(err);
         res.status(500).send("Import failed");
@@ -904,8 +918,8 @@ module.exports = {
         console.error("Monitor not found")
       return res.redirect("/parking/home")
       }
-      console.log(monId, hoursAdded, comment )
-      console.log(monitorObject)
+      // console.log(monId, hoursAdded, comment )
+      // console.log(monitorObject)
 
       // Try to find existing ShortNotice doc for this monitor
       let shortNotice = await ShortNotice.findOne({ mon: monId })
@@ -928,18 +942,12 @@ module.exports = {
         await shortNotice.save();
       }
 
-      // await ShortNotice.create({
-      //   mon: monitorObject,
-      //   hoursAdded: hours,
-      //   comment: comment
-      // })
-
       console.log("Extra OT has been added!");
       req.flash('success_msg', 'Extra OT entry successfully added.');
       res.redirect("/parking/extraOT");
     }catch(err){
       console.error(err);
-      req.flash('error_msg', 'Something went wrong while adding the entry.');
+      req.flash('error_msg', 'ERROR: Something went wrong while adding.');
       res.redirect("/parking/home");
     }
   },
@@ -947,6 +955,110 @@ module.exports = {
   // Update info in the database
   // 
   // 
+  updateExtraOT: async (req, res) => {
+    try {
+      const { extraOT } = await fetchCommonData()
+
+      if(!extraOT){
+        console.log("Extra OT not found")
+        return res.redirect("/parking/home")
+      }
+
+      //Build obj of monitor's final hours
+      const monitorHoursToAdd = {}
+      for(const monitor of extraOT){
+        const monId = monitor.mon._id
+        const extraShift = monitor.extraShift
+        const startingHrs = monitor.mon.hours
+        for(const shift of extraShift){
+          if(!monitorHoursToAdd[monId]){
+            monitorHoursToAdd[monId] = +startingHrs+ +shift.hours
+          }else{
+            monitorHoursToAdd[monId] += +shift.hours
+          }
+        }
+      }
+
+      //Loop over monitorHoursToAdd, updating monitor.hours
+      for (const [monitorIdStr, hours] of Object.entries(monitorHoursToAdd)) {
+        const monitorId = new mongoose.Types.ObjectId(monitorIdStr)
+        const monitor = await Monitor.findById(monitorId);
+        if (!monitor) {
+          console.warn(`Monitor not found for ID: ${monitorIdStr}`);
+          continue;
+        }
+
+        await Monitor.findByIdAndUpdate(
+          monitorId,
+          {
+            $set: {
+              hours: mongoose.Types.Decimal128.fromString(hours.toString()),
+              lastUpdated: new Date(),
+            }
+          },
+          { new: true }
+        )
+        console.log(`Updated ${monitor.name} (${monitorIdStr}) to ${hours} hours`);
+      }
+
+      //Delete ALL extra OT
+      await ShortNotice.deleteMany({})
+
+      req.flash('success_msg', 'Monitor hour update successful, all extra OT deleted.');
+      res.redirect("/parking/extraOT") 
+    } catch (err) {
+      console.error(err);
+      req.flash('error_msg', 'Something went wrong while updating monitor hours and/or deleting extra OT');
+      res.redirect("/parking/extraOT");
+    }
+  },
+  updateFinalizeHours: async (req, res) => {
+    try {
+      const { holidays, monitors, overtimeAudit } = await fetchCommonData()
+      if(!monitors){
+        console.log("Monitors not found")
+        return res.redirect("/parking/home")
+      }
+      if(!overtimeAudit){
+        console.log("Overtime winners not found")
+        return res.redirect("/parking/home")
+      }
+
+      //Tabulating hours for each monitor + creating monitor lookup table by name
+      const auditTable = await createAuditTable(monitors, overtimeAudit)
+      const monitorTable = monitorLookupByMonitorNameTable(monitors)
+
+      //Loop over audit table, updating each monitor.hours with auditTable.totalHours
+      for(const monitor of Object.keys(auditTable)){
+        const endHrs = auditTable[monitor].startEndHours[1]
+        const monitorId = monitorTable.get(monitor)._id
+        if (!monitorId) {
+          console.warn(`Monitor ${monitor} not found in lookup table.`);
+          continue;
+        }
+
+        await Monitor.findByIdAndUpdate(monitorId, { 
+          $set: {
+            //Coercing endHrs into Decimal128 explicitly
+            hours: mongoose.Types.Decimal128.fromString(endHrs.toString()), 
+            lastUpdated: new Date(),
+          }}, { new: true}
+        )
+      }
+      console.log("All Monitor Hours have been updated!");
+
+      //Automatically generate overtime shifts if NEXTWEEK is holiday
+      await holidayOvertimeCreator(holidays)
+      console.log("Overtime shifts for Holiday have been created!");
+
+      req.flash('success_msg', 'Monitor hour update successful, holiday overtime shifts generated.');
+      res.redirect("/parking/finalize") 
+    } catch (err) {
+      console.error(err);
+      req.flash('error_msg', 'Something went wrong while updating monitor hours and/or generating holiday overtime shifts');
+      res.redirect("/parking/finalize");
+    }
+  },
   updateMonitor: async (req, res) => {
   try {
     const monitor = await Monitor.findById(req.params.id).populate("regularShift location");
@@ -989,19 +1101,6 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
-/*
-const test = {
-  monitor: '6826563dd3f7526aff07d080',
-  rankings: [
-    { position: '6826495e9e8667f3047c5613', rank: 1 },
-    { position: '68264a8179f269ffb0f939f8', rank: 2 },
-    // Empty ranks should be excluded
-  ]
-}
-test['monitor'] or test.monitor // "6826563dd3f7526aff07d080"
-console.log(test.rankings[0].position) // "6826495e9e8667f3047c5613"
-console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", rank: 1 }
-*/
   updateOvertimeBid: async (req, res) => {
     try {
       const { monitors, openShifts, vacaLookup } = await fetchCommonData()
@@ -1265,29 +1364,6 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
   },
   deleteAllVacation: async (req, res) => {
     try {
-      //const monitorId = req.params.id;
-      // const matchingOpenShifts = await getOpenShiftsBy(monitorId) 
-      // // console.log(monitorId, matchingOpenShifts)
-      
-      // // Update the monitor's vaca field to an empty array
-      // await Monitor.findByIdAndUpdate(monitorId, { vaca: [] });
-
-      // //Remove all objects in arr where monitorId matches, regardless of openShiftId
-      // await VacationLookup.updateMany(
-      //   {}, //Query all documents
-      //   { $pull: { monitorAndOpenShift: { monitorId: monitorId } } } //$pull removes all documents w/ matching monitorId
-      // );
-
-      // // Delete all VacationLookup documents where monitorAndOpenShift is now empty
-      // await VacationLookup.deleteMany({ monitorAndOpenShift: { $size: 0 } });
-
-      // //Delete all openShifts associated with monitorId
-      // for (const id of matchingOpenShifts) {
-      //   await deleteOpenShift(id)
-      // }
-
-      // console.log(`All vacation cleared for monitor with ID: ${monitorId}`)
-      // console.log(`All matching overtime shifts associated with monitor ID: ${monitorId} deleted`)
       await clearMonitorVacationShiftsAndOvertimeBids(req.params.id)
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
     } catch (err) {
@@ -1364,7 +1440,7 @@ console.log(test.rankings[0]) //Object { position: "6826495e9e8667f3047c5613", r
       }
 
       console.log("Extra OT has been deleted!");
-      req.flash('success_msg', 'Extra OT entry successfully deleted.');
+      req.flash('success_msg', 'Entry successfully deleted.');
       res.redirect("/parking/extraOT");
     }catch(err){
       console.error(err);

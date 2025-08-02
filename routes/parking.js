@@ -45,9 +45,7 @@ router.get("/mongo", ensureAuth, parkingController.getMongoPage);
 //Export/Import Mongo Data
 router.get("/mongo/export", parkingController.exportMongoData);
 router.post("/mongo/import", parkingController.importMongoData);
-// TODO: Button to update monitor schema with overtimeAudit Schema
-// TODO: Button to update shortNotice Schema
-// TODO: Button to update monitor schema with shortNotice Schema
+
 
 
 // GET routes to gather monitor/location/shifts from DB
@@ -65,11 +63,17 @@ router.post("/vacation", ensureAuth, parkingController.addVacation)
 router.post("/holiday", ensureAuth, parkingController.addHoliday)
 router.post("/extraOT", ensureAuth, parkingController.addExtraOT)
 
-// POST routes to edit entries
+// POST routes to edit entries 
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
 router.post("/openShift/edit/:id", ensureAuth, parkingController.updateOpenShift);
 router.post("/overtime/rank/:id", ensureAuth, parkingController.updateOvertimeBid);
 router.post("/regularShift/edit/:id", ensureAuth, parkingController.updateRegularShift);
+router.post("/regularShift/edit/:id", ensureAuth, parkingController.updateRegularShift);
+// TODO: Button to update monitor schema with overtimeAudit Schema
+// TODO: Button to update monitor schema with shortNotice Schema
+//UPDATE entries
+router.post("/finalize/update", ensureAuth, parkingController.updateFinalizeHours);
+router.post("/extraOT/update", ensureAuth, parkingController.updateExtraOT);
 
 // router.get("/shift/edit/:id", ensureAuth, parkingController.editShift);
 // router.get("/location/edit/:id", ensureAuth, parkingController.editLocation);
