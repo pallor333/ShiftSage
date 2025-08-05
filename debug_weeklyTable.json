@@ -159,29 +159,6 @@
   ],
   "openShifts": [
     {
-      "_id": "68842a1fc367a51500174317",
-      "name": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
-        ],
-        "__v": 0
-      },
-      "day": "thursday",
-      "date": "2025-05-01T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
       "_id": "687ae572fb700a9f97019849",
       "name": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
       "location": {
@@ -204,7 +181,8 @@
       "endTime": "2025-05-01T11:00:00.000Z",
       "totalHours": 7,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ad636a88bee7e030675c1",
@@ -221,7 +199,8 @@
       "endTime": "2025-05-01T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ad680a88bee7e030675e3",
@@ -246,7 +225,8 @@
       "endTime": "2025-05-02T03:00:00.000Z",
       "totalHours": 9,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ad5dfa88bee7e0306759f",
@@ -271,30 +251,8 @@
       "endTime": "2025-05-02T11:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "68842a1fc367a5150017431a",
-      "name": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
-        ],
-        "__v": 0
-      },
-      "day": "friday",
-      "date": "2025-05-02T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ad6a8a88bee7e030675f4",
@@ -319,7 +277,8 @@
       "endTime": "2025-05-02T11:00:00.000Z",
       "totalHours": 7,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687addbba88bee7e03067616",
@@ -344,7 +303,8 @@
       "endTime": "2025-05-03T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687add9ca88bee7e03067605",
@@ -367,7 +327,8 @@
       "endTime": "2025-05-03T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ade91a88bee7e0306768b",
@@ -392,7 +353,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ade17a88bee7e03067638",
@@ -417,7 +379,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ade62a88bee7e0306765a",
@@ -442,7 +405,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ae5adfb700a9f9701986d",
@@ -465,7 +429,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adeaaa88bee7e0306769c",
@@ -490,7 +455,8 @@
       "endTime": "2025-05-04T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adec8a88bee7e030676ad",
@@ -515,7 +481,8 @@
       "endTime": "2025-05-04T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adedfa88bee7e030676be",
@@ -540,7 +507,8 @@
       "endTime": "2025-05-04T04:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adde8a88bee7e03067627",
@@ -565,7 +533,8 @@
       "endTime": "2025-05-04T11:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687adf5aa88bee7e030676fb",
@@ -590,7 +559,8 @@
       "endTime": "2025-05-04T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adf76a88bee7e0306770c",
@@ -615,7 +585,8 @@
       "endTime": "2025-05-04T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adf91a88bee7e0306771d",
@@ -635,7 +606,8 @@
       "endTime": "2025-05-04T19:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adfd2a88bee7e03067757",
@@ -660,7 +632,8 @@
       "endTime": "2025-05-05T04:00:00.000Z",
       "totalHours": 9,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adfc0a88bee7e03067746",
@@ -685,7 +658,8 @@
       "endTime": "2025-05-05T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adef9a88bee7e030676cf",
@@ -710,30 +684,8 @@
       "endTime": "2025-05-05T11:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "68842a1fc367a5150017431d",
-      "name": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
-        ],
-        "__v": 0
-      },
-      "day": "monday",
-      "date": "2025-05-05T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adff2a88bee7e03067768",
@@ -758,7 +710,8 @@
       "endTime": "2025-05-05T11:00:00.000Z",
       "totalHours": 7,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ae0f4a88bee7e030677c8",
@@ -783,7 +736,8 @@
       "endTime": "2025-05-06T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae10ca88bee7e030677d9",
@@ -806,30 +760,8 @@
       "endTime": "2025-05-06T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "68842a1fc367a51500174320",
-      "name": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
-        ],
-        "__v": 0
-      },
-      "day": "tuesday",
-      "date": "2025-05-06T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae130a88bee7e030677ea",
@@ -852,7 +784,8 @@
       "endTime": "2025-05-07T03:00:00.000Z",
       "totalHours": 9,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae148a88bee7e030677fb",
@@ -877,30 +810,8 @@
       "endTime": "2025-05-07T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "68842a20c367a51500174323",
-      "name": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": {
-        "_id": "6850e46b841052db64eb41d7",
-        "name": "SFPG BOOTH",
-        "scheduleType": [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday"
-        ],
-        "__v": 0
-      },
-      "day": "wednesday",
-      "date": "2025-05-07T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae1a3a88bee7e0306781d",
@@ -925,7 +836,8 @@
       "endTime": "2025-05-08T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae190a88bee7e0306780c",
@@ -948,7 +860,8 @@
       "endTime": "2025-05-08T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     }
   ],
   "overtimeSchedule": [
@@ -967,13 +880,13 @@
           "shifts": {
             "68842a1fc367a51500174317": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "6830d73bb73f6f94f7fab410",
                 "id": 129,
                 "name": "QUINCY",
                 "regularShift": "6811550a26093510a53bf439",
                 "location": "6850e2d9841052db64eb4128",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "225"
                 },
@@ -998,13 +911,13 @@
             },
             "687ae572fb700a9f97019849": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e46b841052db64eb41d7",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -1042,13 +955,13 @@
             },
             "687ad680a88bee7e030675e3": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "68433739b08726f40bada434",
                 "id": 98,
                 "name": "TESTERONE",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e2c9841052db64eb410f",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "300"
                 },
@@ -1075,13 +988,13 @@
             },
             "687ad5dfa88bee7e0306759f": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e46b841052db64eb41d7",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -1130,23 +1043,13 @@
             },
             "687ad6a8a88bee7e030675f4": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "6826563dd3f7526aff07d080",
                 "id": 99,
                 "name": "VACACHECK",
                 "regularShift": "681152bd26093510a53bf3b5",
                 "location": "6850e46b841052db64eb41d7",
-                "vaca": [
-                  "2025-05-13T04:00:00.000Z",
-                  "2025-05-01T04:00:00.000Z",
-                  "2025-05-02T04:00:00.000Z",
-                  "2025-05-03T04:00:00.000Z",
-                  "2025-05-04T04:00:00.000Z",
-                  "2025-05-05T04:00:00.000Z",
-                  "2025-05-06T04:00:00.000Z",
-                  "2025-05-07T04:00:00.000Z",
-                  "2025-05-08T04:00:00.000Z"
-                ],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1173,13 +1076,13 @@
             },
             "687addbba88bee7e03067616": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1206,23 +1109,13 @@
             },
             "687add9ca88bee7e03067605": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "6826563dd3f7526aff07d080",
                 "id": 99,
                 "name": "VACACHECK",
                 "regularShift": "681152bd26093510a53bf3b5",
                 "location": "6850e46b841052db64eb41d7",
-                "vaca": [
-                  "2025-05-13T04:00:00.000Z",
-                  "2025-05-01T04:00:00.000Z",
-                  "2025-05-02T04:00:00.000Z",
-                  "2025-05-03T04:00:00.000Z",
-                  "2025-05-04T04:00:00.000Z",
-                  "2025-05-05T04:00:00.000Z",
-                  "2025-05-06T04:00:00.000Z",
-                  "2025-05-07T04:00:00.000Z",
-                  "2025-05-08T04:00:00.000Z"
-                ],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1265,13 +1158,13 @@
           "shifts": {
             "687ade91a88bee7e0306768b": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1472,13 +1365,13 @@
             },
             "687adf91a88bee7e0306771d": {
               "monitorId": {
+                "vaca": [],
+                "sick": [],
                 "_id": "680bf5d07162e106742ea838",
                 "id": 130,
                 "name": "JEFFERSON",
                 "regularShift": "680c069e0c35e34c1fd0991f",
                 "location": "6850e2e6841052db64eb415a",
-                "vaca": [],
-                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -1827,8 +1720,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK, QUINCY",
-                true
+                "VACACHECK",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -2305,6 +2198,70 @@
             ]
           },
           "shift_8": {
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RECYCLE",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "QUINCY",
+                true
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_9": {
             "start": "2025-05-01T04:00:00.000Z",
             "end": "2025-05-01T11:00:00.000Z",
             "locationMonitors": [
@@ -2370,7 +2327,7 @@
               ]
             ]
           },
-          "shift_9": {
+          "shift_10": {
             "start": "2025-05-01T11:00:00.000Z",
             "end": "2025-05-01T19:00:00.000Z",
             "locationMonitors": [
@@ -2436,7 +2393,7 @@
               ]
             ]
           },
-          "shift_10": {
+          "shift_11": {
             "start": "2025-05-01T18:00:00.000Z",
             "end": "2025-05-02T03:00:00.000Z",
             "locationMonitors": [
@@ -2502,7 +2459,7 @@
               ]
             ]
           },
-          "shift_11": {
+          "shift_12": {
             "start": "2025-05-02T03:00:00.000Z",
             "end": "2025-05-02T11:00:00.000Z",
             "locationMonitors": [
@@ -2632,8 +2589,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK, OPEN",
-                true
+                "VACACHECK",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -3075,6 +3032,65 @@
             ]
           },
           "shift_8": {
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "OPEN",
+                true
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_9": {
             "start": "2025-05-02T04:00:00.000Z",
             "end": "2025-05-02T11:00:00.000Z",
             "locationMonitors": [
@@ -3135,7 +3151,7 @@
               ]
             ]
           },
-          "shift_9": {
+          "shift_10": {
             "start": "2025-05-02T19:30:00.000Z",
             "end": "2025-05-03T03:00:00.000Z",
             "locationMonitors": [
@@ -3939,8 +3955,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK, OPEN",
-                true
+                "VACACHECK",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -4382,6 +4398,65 @@
             ]
           },
           "shift_8": {
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "OPEN",
+                true
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_9": {
             "start": "2025-05-05T04:00:00.000Z",
             "end": "2025-05-05T11:00:00.000Z",
             "locationMonitors": [
@@ -4442,7 +4517,7 @@
               ]
             ]
           },
-          "shift_9": {
+          "shift_10": {
             "start": "2025-05-05T19:30:00.000Z",
             "end": "2025-05-06T03:00:00.000Z",
             "locationMonitors": [
@@ -4567,8 +4642,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK, OPEN",
-                true
+                "VACACHECK",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -5010,6 +5085,65 @@
             ]
           },
           "shift_8": {
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "OPEN",
+                true
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_9": {
             "start": "2025-05-06T18:00:00.000Z",
             "end": "2025-05-07T03:00:00.000Z",
             "locationMonitors": [
@@ -5070,7 +5204,7 @@
               ]
             ]
           },
-          "shift_9": {
+          "shift_10": {
             "start": "2025-05-06T19:30:00.000Z",
             "end": "2025-05-07T03:00:00.000Z",
             "locationMonitors": [
@@ -5195,8 +5329,8 @@
               ],
               [
                 "SFPG BOOTH",
-                "VACACHECK, OPEN",
-                true
+                "VACACHECK",
+                false
               ],
               [
                 "SFPG ROVER",
@@ -5638,6 +5772,65 @@
             ]
           },
           "shift_8": {
+            "locationMonitors": [
+              [
+                "10EV",
+                "",
+                false
+              ],
+              [
+                "52OX",
+                "",
+                false
+              ],
+              [
+                "BWYG",
+                "",
+                false
+              ],
+              [
+                "HBS",
+                "",
+                false
+              ],
+              [
+                "NORTH",
+                "",
+                false
+              ],
+              [
+                "RIVER ROVER",
+                "",
+                false
+              ],
+              [
+                "RIVER/MAKL",
+                "",
+                false
+              ],
+              [
+                "ROVING",
+                "",
+                false
+              ],
+              [
+                "SFPG BOOTH",
+                "OPEN",
+                true
+              ],
+              [
+                "SFPG ROVER",
+                "",
+                false
+              ],
+              [
+                "SFPG/1WES",
+                "",
+                false
+              ]
+            ]
+          },
+          "shift_9": {
             "start": "2025-05-07T19:30:00.000Z",
             "end": "2025-05-08T03:00:00.000Z",
             "locationMonitors": [

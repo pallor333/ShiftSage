@@ -45,6 +45,11 @@ const OpenShiftSchema = new Schema({
   endTime: { type: Date, required: true },
   totalHours: {type: Number},
   recurring: { type: Boolean, default: false },
+  type: { 
+    type: String,
+    enum: ["firstShift", "secondShift", "thirdShift", "none"],
+    default: "none"
+   },
 });
 // Add a compound unique index to prevent duplicates
 OpenShiftSchema.index( //MongoDB will block duplicate entries where date, startTime, and location are the same.
@@ -63,8 +68,16 @@ const MonitorSchema = new Schema({
     type: Schema.Types.ObjectId, 
     ref: 'Location'
   },
-  vaca: { type: [Date], default: []}, // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
-  sick : { type: [Date], default: []}, // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
+  vaca: { // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
+    date: { type: Date, required: true, default: [] },
+    startTime: { type: Date, required: false },
+    endTime: { type: Date, required: false }
+  }, 
+  sick : { // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
+    date: { type: Date, required: true, default: [] },
+    startTime: { type: Date, required: false },
+    endTime: { type: Date, required: false }
+  }, 
   hours: { type: Schema.Types.Decimal128, required: true, },
   seniority: { type: Date, required: true, },
   //overtimeRankings: { type: Map, of: Number }, // Optional
@@ -135,7 +148,9 @@ const sickByDaySchema = new Schema({
   monitorAndOpenShift: [
     {
       monitorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Monitor' },
-      openShiftId: { type: mongoose.Schema.Types.ObjectId, ref: 'OpenShift' }
+      openShiftId: { type: mongoose.Schema.Types.ObjectId, ref: 'OpenShift' },
+      startTime: { type: Date, required: false }, // optional if it's a full-day
+      endTime: { type: Date, required: false },
     }
   ]
 })

@@ -18,7 +18,7 @@
             <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location-tab-pane" type="button" role="tab" aria-controls="location-tab-pane" aria-selected="false">Location</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="vaca-tab" data-bs-toggle="tab" data-bs-target="#vaca-tab-pane" type="button" role="tab" aria-controls="vaca-tab-pane" aria-selected="false">Vacation</button>
+            <button class="nav-link" id="vaca-tab" data-bs-toggle="tab" data-bs-target="#vaca-tab-pane" type="button" role="tab" aria-controls="vaca-tab-pane" aria-selected="false">Time Off</button>
         </li>
     </ul>
 
@@ -189,6 +189,17 @@
                             <% }) %>
                         </select>
                     </section>
+                    <!-- Shift Type Section -->
+                    <section class="col-md-6">
+                        <label for="shiftType" class="form-label">Type</label>
+                        <select class="form-select" id="addRegularShiftType" name="type" required>
+                            <option value="" selected disabled>Select day</option>
+                            <option value="firstShift">1st Shift</option>
+                            <option value="secondShift">2nd Shift</option>
+                            <option value="thirdShift">3rd Shift</option>
+                            <option value="none">None</option>
+                        </select>
+                    </section>
                     <!-- Recurring Every Week Section (boolean) -->
                     <section class="col-md-6">
                         <label for="openEveryWeek" class="form-label">Repeat Weekly</label>
@@ -212,6 +223,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Day</th>
+                            <th>Shift Type</th>
                             <th>Start Time</th>
                             <th>End Time</th>
                             <th>Location</th>
@@ -224,6 +236,16 @@
                         <tr>
                             <td><%= shift.name %></td>
                             <td><%= shift.day.slice(0,1).toUpperCase() %><%= shift.day.slice(1) %></td>
+                            <!-- Shift Type -->
+                            <td>
+                                <form action="/parking/openShift/edit/<%= shift._id %>" method="POST" style="display:inline;">
+                                    <select name="type" class="form-select d-inline-block" required>
+                                        <option value="firstShift" <%= shift.type === "firstShift" ? "selected" : "" %>>1st Shift</option>
+                                        <option value="secondShift" <%= shift.type === "secondShift" ? "selected" : "" %>>2nd Shift</option>
+                                        <option value="thirdShift" <%= shift.type === "thirdShift" ? "selected" : "" %>>3rd Shift</option>
+                                        <option value="none" <%= shift.type === "none" ? "selected" : "" %>>None</option>
+                                    </select>
+                            </td>
                             <td><%= shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                             <td><%= shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) %></td>
                             <!-- Location Dropdown -->
@@ -480,109 +502,179 @@
             </section>
         </div>
 
-        <!-- Vacation Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
+        <!-- Time Off Tab --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> <!-- --> 
         <div class="tab-pane fade" id="vaca-tab-pane" role="tabpanel" aria-labelledby="vaca-tab" tabindex="0">
             
-            <!-- Add Vacation -->
-            <section id="vacation" class="mt-5 vacation">
-            <h2>Add Vacation</h2>
-            <form action= "/parking/vacation" method="POST" class="row g-3">
-                <!-- Monitor ID -->
-                <section class="col-md-6">
-                    <label for="monitorId" class="form-label">Monitor ID</label>
-                    <select name="vacationMonitorSelect" class="form-select" id="vacationMonitorId" required>
-                        <option value="" disabled>Select Monitor</option>
-                            <% monitors.forEach((monitor) => { %>
-                                <option value="<%= monitor._id %>" required>
-                            <%= monitor.id %> (<%= monitor.name %>)
-                        <% }) %>
-                      </select>
-                </section>
-                <!-- Vacation Dates -->
-                <section class="col-md-12">
-                    <label for="vacationDateRange" class="form-label">Vacation Date Range</label>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="startDate" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="startDate" name="startDate" required>
+            <!-- TOGGLE VISIBILITY BUTTONS -->
+            <div class="d-flex justify-content-center gap-2 my-3">
+                <!-- Container to align buttons in middle -->
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#vacationCollapse" aria-expanded="false" aria-controls="vacationCollapse">
+                        Toggle Vacation Visibility
+                    </button>
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sickCollapse" aria-expanded="false" aria-controls="sickCollapse">
+                        Toggle Sick Visibility
+                    </button>
+                </div>
+            </div>
+            <p>Partial days must be added individually.</p>
+            <!-- VACATION -->
+            <section class="collapse" id="vacationCollapse">
+                <!-- Add Vacation -->
+                <section id="vacation" class="mt-5 vacation">
+                <h2>Add Vacation</h2>
+                <form action= "/parking/vacation" method="POST" class="row g-3">
+                    <!-- Monitor ID -->
+                    <section class="col-md-6">
+                        <label for="monitorId" class="form-label">Monitor ID</label>
+                        <select name="vacationMonitorSelect" class="form-select" id="vacationMonitorId" required>
+                            <option value="" disabled>Select Monitor</option>
+                                <% monitors.forEach((monitor) => { %>
+                                    <option value="<%= monitor._id %>" required>
+                                <%= monitor.id %> (<%= monitor.name %>)
+                            <% }) %>
+                        </select>
+                    </section>
+                    <!-- Vacation Dates -->
+                    <section class="col-md-12">
+                        <label for="vacationDateRange" class="form-label">Vacation Date Range</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" required>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="endDate" name="endDate" required>
-                        </div>
-                    </div>
+                    </section>
+                    <!-- Submit Button -->
+                    <section class="col-12">
+                        <button type="submit" class="btn btn-primary">Add Vacation</button>
+                    </section>
+                </form>
                 </section>
-                <!-- Submit Button -->
-                <section class="col-12">
-                    <button type="submit" class="btn btn-primary">Add Vacation</button>
-                </section>
-            </form>
-            </section>
 
-            <!-- View Vacation Indexed by Monitor / Delete -->
-            <section id="displayVacationByMonitor" class="mt-5 displayVacationByMonitor">
-                <h2>View Vacation By Monitor + Delete All</h2>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Monitor Name</th>
-                            <th>Vacation</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% formattedMon.forEach((monitor) => { %>
-                            <% if (monitor.vaca.length > 0) { %>
+                <!-- View Vacation Indexed by Monitor / Delete -->
+                <section id="displayVacationByMonitor" class="mt-5 displayVacationByMonitor">
+                    <h2>View and Delete Vacation By Monitor</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Monitor Name</th>
+                                <th>Vacation</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% formattedMon.forEach((monitor) => { %>
+                                <% if (monitor.vaca.length > 0) { %>
+                                    <tr>
+                                        <td><%= monitor.id %></td>
+                                        <td><%= monitor.name %></td>
+                                        <td><%= monitor.vaca.join(', ') %></td>
+                                        <td> <!-- Delete Button-->
+                                            <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
+                                                <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation For This Monitor</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </section>    
+                
+                <!-- View Vacation Indexed by Date + Delete -->
+                <section id="displayVacationByDate" class="mt-5 displayVacationByDate">
+                    <h2>Remove Individual Vacation Dates</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Monitor(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% vacaByDate.forEach((date) => { %>
                                 <tr>
-                                    <td><%= monitor.id %></td>
-                                    <td><%= monitor.name %></td>
-                                    <td><%= monitor.vaca.join(', ') %></td>
-                                    <td> <!-- Delete Button-->
-                                        <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
-                                            <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation For This Monitor</button>
-                                        </form>
+                                    <td><%= date.day %></td>
+                                    <td>
+                                        <% date.monitors.forEach(m => { %>
+                                            <form action="/parking/monitor/deleteOneVacation" method="POST" style="display:inline;">
+                                                <input type="hidden" name="vacaId" value="<%= date.vacaId %>">
+                                                <input type="hidden" name="monitorId" value="<%= m._id %>">
+                                                <input type="hidden" name="date" value="<%= date.day %>">
+                                                <input type="hidden" name="dayRaw" value="<%= date.dayRaw %>">
+                                                <input type="hidden" name="openShiftId" value="<%= m.openShiftId %>">
+                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                    Remove <%= m.name %> (<%= m.id %>)
+                                                </button>
+                                            </form>
+                                        <% }) %>
                                     </td>
                                 </tr>
-                            <% } %>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </section>    
-            
-            <!-- View Vacation Indexed by Date + Delete -->
-            <section id="displayVacationByDate" class="mt-5 displayVacationByDate">
-                <h2>Remove Individual Vacation Dates</h2>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Day</th>
-                            <th>Monitor(s)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% vacaByDate.forEach((date) => { %>
-                            <tr>
-                                <td><%= date.day %></td>
-                                <td>
-                                    <% date.monitors.forEach(m => { %>
-                                        <form action="/parking/monitor/deleteOneVacation" method="POST" style="display:inline;">
-                                            <input type="hidden" name="vacaId" value="<%= date.vacaId %>">
-                                            <input type="hidden" name="monitorId" value="<%= m._id %>">
-                                            <input type="hidden" name="date" value="<%= date.day %>">
-                                            <input type="hidden" name="dayRaw" value="<%= date.dayRaw %>">
-                                            <input type="hidden" name="openShiftId" value="<%= m.openShiftId %>">
-                                            <button type="submit" class="btn btn-warning btn-sm">
-                                                Remove <%= m.name %> (<%= m.id %>)
-                                            </button>
-                                        </form>
-                                    <% }) %>
-                                </td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </section>  
             </section>  
+
+            <!-- SICK -->
+            <section class="collapse" id="sickCollapse">
+                <!-- Add Sick Time -->
+                <section id="sick" class="mt-5">
+                <h2>Add Sick Time</h2>
+                <form action= "/parking/sick" method="POST" class="row g-3">
+                    <!-- Monitor ID -->
+                    <section class="col-md-6">
+                        <label for="monitorId" class="form-label">Monitor ID</label>
+                        <select name="sickMonitorSelect" class="form-select" id="sickMonitorId" required>
+                            <option value="" disabled>Select Monitor</option>
+                                <% monitors.forEach((monitor) => { %>
+                                    <option value="<%= monitor._id %>" required>
+                                <%= monitor.id %> (<%= monitor.name %>)
+                            <% }) %>
+                        </select>
+                    </section>
+                    <!-- Sick Dates -->
+                    <section class="col-md-12">
+                        <label for="sickDateRange" class="form-label">Sick Date Range</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="sickStartDate" name="sickStartDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="sickEndDate" name="sickEndDate" required>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Start Time Section -->
+                    <section class="col-md-12">
+                        <label for="sickDateRange" class="form-label">For partial days specify the time, otherwise ignore.</label>
+                        <section class="col-md-6">
+                            <label for="sickTime" class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="sickStartTime" name="sickStartTime">
+                        </section>
+                        <!-- End Time Section -->
+                        <section class="col-md-6">
+                            <label for="sickTime" class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="sickEndTime" name="sickEndTime">
+                        </section>
+                    </section>
+
+                    <!-- Submit Button -->
+                    <section class="col-12">
+                        <button type="submit" class="btn btn-primary">Add Sick Time</button>
+                    </section>
+                </form>
+                </section>
+            </section>
+
 
         </div> <!--Div for vacation-tab -->
     </div> <!--Div for editPageTabContent -->

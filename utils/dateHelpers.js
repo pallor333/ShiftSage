@@ -141,6 +141,27 @@ function getPreviousDay(dateStr) {
 
   return `${prevMonth}/${prevDay}/${prevYear}`;
 }
+//Return overlap between vaca/sick and regular shift
+function getShiftOverlap(regStart, regEnd, partStart, partEnd){
+  const MS_IN_DAY = 24 * 60 * 60 * 1000 // add 24 hrs
+
+  // Handle overnight regular shifts
+  if (regEnd <= regStart) regEnd += MS_IN_DAY
+  // Handle overnight partial shifts
+  if (partEnd <= partStart) partEnd += MS_IN_DAY
+  
+  // Calculate intersection
+  const overlapStart = Math.max(regStart, partStart);
+  const overlapEnd = Math.min(regEnd, partEnd);
+
+  // Ensure valid overlap range
+  if (overlapStart < overlapEnd) {
+    //returns in UTC (looks wrong at first)
+    return [new Date(overlapStart), new Date(overlapEnd)]
+  }
+    
+  return null; // No overlap
+}
 //Helper holidayOvertimeCreator(): Given this week, return holiday if found or false
 function holidayNextWeek([wkStart, wkEnd], holidays){
   //need to call before function: const { holidays } = await fetchCommonData()
@@ -243,7 +264,7 @@ function qualifyingRegularShifts(dateHoliday, monitors, DAYSARRAY){
 module.exports = { 
   calculateShiftHours, convertDateToMDYY, 
   findClosestHoliday, formatDate, formatTime, formatTimeAMPM,
-  getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPreviousDay, 
+  getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPreviousDay, getShiftOverlap,
   holidayNextWeek,
   toMinutes,
   qualifyingRegularShifts,

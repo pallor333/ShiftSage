@@ -6,7 +6,7 @@ const upload = multer({ dest: "uploads/" })
 const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice} = require("../models/Parking")
-const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
+const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
@@ -27,42 +27,55 @@ const COLLECTIONS = { Monitor, RegularShift, OpenShift, Location, OvertimeBid, O
 
 /*********** HELPER FUNCTIONS */
 //Helper function: Create overtime shifts based on monitor vacation
-async function addOpenShiftFromVacation(monitorId, dateRange){
+async function addOpenShiftFromVacation(monitorObj, monitorId, dateRange, partialShift){
   const monitorAndOvertimeArray = [] //store date + monitorId + overtimeId
-  //Create lookup table and get monitor from monitor id
-  const { monitors } = await fetchCommonData()
-  const monitorObj= monitorLookupByMonitorIdTable(monitors).get(monitorId)
+
   //Grab monitor's shift data
   const shiftDays = monitorObj.regularShift.days
-  const monitorStartEnd = [monitorObj.regularShift.startTime, monitorObj.regularShift.endTime]
-  const formattedStart = monitorStartEnd[0].toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-  const formattedEnd = monitorStartEnd[1].toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+  //Change values if partial date
+  let monitorStartEnd = [monitorObj.regularShift.startTime, monitorObj.regularShift.endTime]
+  let formattedStart = monitorStartEnd[0].toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+  let formattedEnd = monitorStartEnd[1].toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
   const totalHours = calculateShiftHours(monitorStartEnd[0], monitorStartEnd[1])
   const locationId = monitorObj.location._id, locationName = monitorObj.location.name
+  const shiftType = monitorObj.regularShift.type
+  const partialDay = partialShift.length !== 0 //true = partial day
 
+  if(partialDay){ //partial day = 
+    dateRange = [ dateRange[0] ] //add only one day
+    //Get time in MS
+    let regu = getFixedTimeRangeISO(monitorStartEnd[0], monitorStartEnd[1], dateRange[0])
+    let part = getFixedTimeRangeISO(partialShift[0], partialShift[1], dateRange[0])
+    const overlap = getShiftOverlap(regu[0], regu[1], part[0], part[1])
+    //Redefine for partial day
+    monitorStartEnd = overlap
+    formattedStart = overlap[0].toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    formattedEnd = overlap[1].toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+  }
+
+  // console.log(monitorStartEnd,)
   //Loop over date arr
   for(const date of dateRange){
     //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
     const currentDay = DAYSARRAY[(date.getDay() + 3) % 7]
     const currentDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().slice(-2)}` //date 
-    console.log(currentDate)
+    // console.log(date, currentDate)
 
-    //If vacation day = day in monitor's regular shift
-    if(shiftDays.includes(currentDay)){ 
-      const data = {
-        //[date][location][time][number of hours] e.g.  THU 5/1/25 52OX 11:00PM-7:00AM (8.0) 
-        name: `${DAYMAPPING[currentDay]} ${currentDate} ${locationName} ${formattedStart} - ${formattedEnd} (${totalHours})`, 
-        location: locationId, // ObjectId of the location
-        day: currentDay,
-        date: currentDate, //req.body.date,
-        startTime: monitorStartEnd[0],
-        endTime: monitorStartEnd[1],
-        totalHours: totalHours,
-        recurring: false 
-      }
-      const openShiftId = await createOpenShift(data) //Add to open shift schema!
-      monitorAndOvertimeArray.push([date, monitorId, openShiftId])
+    const data = {
+      //[date][location][time][number of hours] e.g.  THU 5/1/25 52OX 11:00PM-7:00AM (8.0) 
+      name: `${DAYMAPPING[currentDay]} ${currentDate} ${locationName} ${formattedStart} - ${formattedEnd} (${totalHours})`, 
+      location: locationId, // ObjectId of the location
+      day: currentDay,
+      date: currentDate, //req.body.date,
+      startTime: monitorStartEnd[0],
+      endTime: monitorStartEnd[1],
+      totalHours: totalHours,
+      recurring: false, 
+      type: shiftType,
     }
+    console.log(data)
+    // const openShiftId = await createOpenShift(data) //Add to open shift schema!
+    // monitorAndOvertimeArray.push([date, monitorId, openShiftId])
   }
 
   return monitorAndOvertimeArray //[ [date, monitorId, openshift _id], [date, monitorId, openshift _id], etc] 
@@ -155,7 +168,8 @@ async function createOpenShift(data) {
     const existingShift = await OpenShift.findOne({
     date: data.date,
     startTime: data.startTime,
-    location: data.location
+    location: data.location,
+    type: data.type,
   });
 
   if (existingShift) { //if entry already in the schema
@@ -213,10 +227,10 @@ async function holidayOvertimeCreator(holidays){
   // const { holidays } = await fetchCommonData()
   //0)given this week's date start -> end => helper function returns true if there's vacation this week
   let currentHoliday = holidayNextWeek(getNextThursDateObj(THISWEEK), holidays)   
-  // if(currentHoliday.length === 0) {
-  //   console.log("No Holiday this week.")
-  //   return //exit early if holiday is not found
-  // }
+  if(currentHoliday.length === 0) {
+    console.log("No Holiday this week.")
+    return //exit early if holiday is not found
+  }
 
   //Grabs empty holiday to populate - only should ever be length === 1
   const emptyOpenShiftHolidays = holidays
@@ -242,6 +256,7 @@ async function holidayOvertimeCreator(holidays){
       let [mm, dd, _] = (entry.date.split('/')).map(Number)
       const formattedStartTime = shift.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
       const formattedEndTime = shift.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      const shiftType = shift.type
       // console.log(new Date(entry.date))
       const data = {
         //[date][location][time][number of hours] e.g.  THU 5/1/25 52OX 11:00PM-7:00AM (8.0) 
@@ -252,7 +267,8 @@ async function holidayOvertimeCreator(holidays){
         startTime: shift.startTime,
         endTime: shift.endTime,
         totalHours: totalHours,
-        recurring: false // Convert truthy/falsy value to Boolean
+        recurring: false, // Convert truthy/falsy value to Boolean
+        type: shiftType,
       }
       // console.log(data.name) //debugging: day date location shiftTime shiftLength
       // if(data.day==='thursday') console.log(entry.date, date2, date3, parsedDate)
@@ -266,6 +282,7 @@ async function holidayOvertimeCreator(holidays){
       )
     }
   }
+  console.log("Overtime shifts for Holiday have been created!")
 }
 //Helper: takes monitor and generates random rankings for all eligible bids
 async function rankingsBidGenerator(monitorObj, openShiftTable, rankings){
@@ -315,10 +332,10 @@ async function monitorsOnVacationNextWeek(monitors){
   const nxtWkMonitorVaca = {}
   
   for(m of monitors){
-    if(m.vaca.length!==0){
+    if(m.vaca.date.length!==0){
       const qualifyingDates = []
 
-      m.vaca.forEach(day => {
+      m.vaca.date.forEach(day => {
         const d = new Date(day)
         if(d >= start && d <= end){
           const mmdd = `${String(d.getUTCMonth() + 1).padStart(2, '0')}/${String(d.getUTCDate()).padStart(2, '0')}`
@@ -343,6 +360,7 @@ module.exports = {
   getHomePage: async (req, res) => {
     try {
       const { monitors, regularShifts, openShifts, locations } = await fetchCommonData()
+
       // Render the home.ejs template and pass the data
       const [start, end] = getNextThursDateObj(THISWEEK)
       const nxtWkMonitorVaca = await monitorsOnVacationNextWeek(monitors)
@@ -368,7 +386,7 @@ module.exports = {
       let formattedMon = monitors.map((monitor) => {
         return {
           ...monitor.toObject(), // Convert Mongoose document to plain object
-          vaca: monitor.vaca.map(formatDate), // Format each vacation date
+          vaca: monitor.vaca.date.map(formatDate), // Format each vacation date
         }
       })
 
@@ -775,12 +793,14 @@ module.exports = {
       const days = Array.isArray(req.body.days) ? req.body.days : [req.body.days]
       const startTime = new Date(`1970-01-01T${req.body.startTime}:00`);
       const endTime = new Date(`1970-01-01T${req.body.endTime}:00`);
+      const shiftType = req.body.type
 
       await RegularShift.create({
         name: req.body.regularShiftName,
         days: days, // array of days
         startTime: startTime,
         endTime: endTime,
+        type: shiftType,
       });
       console.log("Regular Shift has been added!");
       res.redirect("/parking/edit?tab=regularShift-tab#regularShifts");
@@ -824,7 +844,8 @@ module.exports = {
         startTime: startTime,
         endTime: endTime,
         totalHours: totalHours,
-        recurring: !!req.body.openEveryWeek // Convert truthy/falsy value to Boolean
+        recurring: !!req.body.openEveryWeek, // Convert truthy/falsy value to Boolean
+        type: req.body.type, //firstShift, secondShift, etc...
       }
 
       await createOpenShift(data) //Helper function adds to schema
@@ -839,7 +860,10 @@ module.exports = {
   try{
     const { vacationMonitorSelect, startDate, endDate } = req.body
     // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
-
+    //Create lookup table and get monitor from monitor id
+    const { monitors } = await fetchCommonData()
+    const monitorObj = monitorLookupByMonitorIdTable(monitors).get(vacationMonitorSelect)
+    const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
     //Parse local dates + split before declaring the date
     const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
     const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
@@ -849,12 +873,15 @@ module.exports = {
     if(isNaN(start) || isNaN(end) || start > end){
       return res.status(400).send("Invalid vacation date range provided.");
     }
-
-    //Generate all dates in range
+    
+    //Generate all dates in range & filter
     const dateRange = []
     let currentDate = new Date(start)
     while (currentDate <= end){
-      dateRange.push(new Date(currentDate))
+      //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
+      const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
+      //Only push if day in regular shift
+      if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
       currentDate.setDate(currentDate.getDate() + 1)
     }
 
@@ -867,7 +894,7 @@ module.exports = {
     if(!monitor) return res.status(404).send("Monitor not found.")
     
     //2) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
-    let openShiftIdArr = await addOpenShiftFromVacation(vacationMonitorSelect, dateRange)
+    let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, vacationMonitorSelect, dateRange)
     // console.log(openShiftIdArr) [date, monitorId, openShiftId]
 
     //3) Vacation Schema -> Loop over range, adding each date and ordered pair
@@ -951,6 +978,83 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
+  addSick: async (req, res) => {  
+  try{
+    console.log(req.body)
+    const { sickMonitorSelect, sickStartDate, sickEndDate, sickStartTime, sickEndTime } = req.body
+    // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
+    //Create lookup table and get monitor from monitor id
+    const { monitors } = await fetchCommonData()
+    const monitorObj = monitorLookupByMonitorIdTable(monitors).get(sickMonitorSelect)
+    const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
+    //Parse local dates + split before declaring the date
+    const [startYear, startMonth, startDay] = sickStartDate.split("-").map(Number);
+    const [endYear, endMonth, endDay] = sickEndDate.split("-").map(Number);
+    const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
+    const end = new Date(endYear, endMonth - 1, endDay);
+    //Ensure start/endDate are valid
+    if(isNaN(start) || isNaN(end) || start > end){
+      return res.status(400).send("Invalid sick date range provided.");
+    }
+    //Boolean to check for partial days
+    const isPartial = (sickStartTime && sickEndTime)
+    const parsedStartTime = isPartial ? new Date(`${sickStartDate}T${sickStartTime}`) : null;
+    const parsedEndTime = isPartial ? new Date(`${sickEndDate}T${sickEndTime}`) : null;
+    // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
+
+    //Generate all dates in range & filter
+    const dateRange = []
+    let currentDate = new Date(start)
+    while (currentDate <= end){
+      //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
+      const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
+      //Only push if day in regular shift
+      if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    // 1) Update monitor schema -> add to vaca array
+    // const monitor = await Monitor.findOneAndUpdate(
+    //   { _id: sickMonitorSelect}, 
+    //   { $addToSet: { vaca: { $each: dateRange} } }, //ensures dupes are not added to sick array
+    //   { new: true} // return updated document
+    // )
+    // if(!monitor) return res.status(404).send("Monitor not found.")
+    
+    // //2) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
+    let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, sickMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
+    // // console.log(openShiftIdArr) [date, monitorId, openShiftId]
+
+    // //3) Vacation Schema -> Loop over range, adding each date and ordered pair
+    // for (const entry of openShiftIdArr) {
+    //   // Use upsert to create the document if it doesn't exist
+    //   await VacationLookup.findOneAndUpdate(
+    //     { day: entry[0]},
+    //     // add monitor + openshiftId to array, no duplicates
+    //     { 
+    //       $addToSet: { 
+    //         monitorAndOpenShift: { 
+    //           monitorId: entry[1], 
+    //           openShiftId: entry[2], 
+    //           ...(isPartial && {
+    //             startTime: new Date(`${day.toISOString().split("T")[0]}T${sickStartTime}`),
+    //             endTime: new Date(`${day.toISOString().split("T")[0]}T${sickEndTime}`)
+    //           })
+    //         } 
+    //       } 
+    //     },
+    //     { upsert: true, new: true }
+    //   );
+    // }   
+
+    console.log("Vacation has been added!")
+    console.log("Monitor's shifts have been put up for bid!")
+    res.redirect("/parking/edit?tab=vaca-tab#vacation")
+    } catch(err){
+      console.error(err);
+      res.redirect("/parking/edit?tab=vaca-tab#vacation");
+    }
+  },
 
   // Update info in the database
   // 
@@ -1028,28 +1132,27 @@ module.exports = {
       const auditTable = await createAuditTable(monitors, overtimeAudit)
       const monitorTable = monitorLookupByMonitorNameTable(monitors)
 
-      //Loop over audit table, updating each monitor.hours with auditTable.totalHours
-      for(const monitor of Object.keys(auditTable)){
-        const endHrs = auditTable[monitor].startEndHours[1]
-        const monitorId = monitorTable.get(monitor)._id
-        if (!monitorId) {
-          console.warn(`Monitor ${monitor} not found in lookup table.`);
-          continue;
-        }
+      // Loop over audit table, updating each monitor.hours with auditTable.totalHours
+      // for(const monitor of Object.keys(auditTable)){
+      //   const endHrs = auditTable[monitor].startEndHours[1]
+      //   const monitorId = monitorTable.get(monitor)._id
+      //   if (!monitorId) {
+      //     console.warn(`Monitor ${monitor} not found in lookup table.`);
+      //     continue;
+      //   }
 
-        await Monitor.findByIdAndUpdate(monitorId, { 
-          $set: {
-            //Coercing endHrs into Decimal128 explicitly
-            hours: mongoose.Types.Decimal128.fromString(endHrs.toString()), 
-            lastUpdated: new Date(),
-          }}, { new: true}
-        )
-      }
-      console.log("All Monitor Hours have been updated!");
+      //   await Monitor.findByIdAndUpdate(monitorId, { 
+      //     $set: {
+      //       //Coercing endHrs into Decimal128 explicitly
+      //       hours: mongoose.Types.Decimal128.fromString(endHrs.toString()), 
+      //       lastUpdated: new Date(),
+      //     }}, { new: true}
+      //   )
+      // }
+      // console.log("All Monitor Hours have been updated!");
 
       //Automatically generate overtime shifts if NEXTWEEK is holiday
       await holidayOvertimeCreator(holidays)
-      console.log("Overtime shifts for Holiday have been created!");
 
       req.flash('success_msg', 'Monitor hour update successful, holiday overtime shifts generated.');
       res.redirect("/parking/finalize") 
@@ -1092,7 +1195,8 @@ module.exports = {
       // console.log("Request body:", req.body)
       await OpenShift.findByIdAndUpdate(req.params.id, {
         location: req.body.shiftLocation, //update location field
-        recurring: req.body.recurring === "true" //convert string to boolean
+        recurring: req.body.recurring === "true", //convert string to boolean
+        type: req.body.type, //firstShift, secondShift, thirdShift, none
       });
       console.log("OpenShift has been updated!");
       res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts") //displayOpenShifts"); 
