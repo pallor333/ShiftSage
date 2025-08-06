@@ -89,5 +89,7 @@ router.get("/overtime/deleteOvertimeAuditWinners", ensureAuth, parkingController
 router.post("/holiday/deleteHoliday/:id", ensureAuth, parkingController.deleteHoliday)
 router.post("/extraOT/delete/:id", ensureAuth, parkingController.deleteExtraOT)
 // router.delete("/extraOT/:id", ensureAuth, parkingController.deleteExtraOT)
+router.post('/monitor/deleteAllSick/:id', ensureAuth, parkingController.deleteAllSick);
+router.post('/monitor/deleteOneSick', ensureAuth, parkingController.deleteOneSick);
 
 module.exports = router;

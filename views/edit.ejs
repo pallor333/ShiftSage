@@ -517,7 +517,6 @@
                     </button>
                 </div>
             </div>
-            <p>Partial days must be added individually.</p>
             <!-- VACATION -->
             <section class="collapse" id="vacationCollapse">
                 <!-- Add Vacation -->
@@ -655,7 +654,8 @@
                     </section>
                     <!-- Start Time Section -->
                     <section class="col-md-12">
-                        <label for="sickDateRange" class="form-label">For partial days specify the time, otherwise ignore.</label>
+                        <label for="sickDateRange" class="form-label">Specify the time for partial days. Each partial day must be added individually. 
+                            Only the first day (i.e. start date) will be considered for a partial day. (E.G. Start 8/4/25, End 8/8/25, Time: 7:00am - 12:00am => Adds 8/4/25 7am-12am)</label>
                         <section class="col-md-6">
                             <label for="sickTime" class="form-label">Start Time</label>
                             <input type="time" class="form-control" id="sickStartTime" name="sickStartTime">
@@ -673,6 +673,91 @@
                     </section>
                 </form>
                 </section>
+                <!-- View & Delete Sick by Monitor -->
+                <section id="displaySicknByMonitor" class="mt-5">
+                    <h2>View and Delete Sick Time By Monitor</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Monitor Name</th>
+                                <th>Sick Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% formattedMon.forEach((monitor) => { %>
+                                <% if (monitor.sick.length > 0) { %>
+                                <% monitor.sick.forEach((entry, idx) => { %>
+                                    <tr>
+                                    <% if (idx === 0) { %>
+                                        <td rowspan="<%= monitor.sick.length %>"><%= monitor.id %></td>
+                                        <td rowspan="<%= monitor.sick.length %>"><%= monitor.name %></td>
+                                    <% } %>
+
+                                    <td>
+                                        <%= entry.date %>
+                                        <% if (entry.startTime && entry.endTime) { %>
+                                        <%= ` ${entry.startTime} - ${entry.endTime}` %>
+                                        <% } %>
+                                    </td>
+
+                                    <% if (idx === 0) { %>
+                                        <td rowspan="<%= monitor.sick.length %>">
+                                        <form action="/parking/monitor/deleteAllSick/<%= monitor._id %>" method="POST">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                            Delete All Sick Time For This Monitor
+                                            </button>
+                                        </form>
+                                        </td>
+                                    <% } %>
+                                    </tr>
+                                <% }) %>
+                                <% } %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </section>   
+
+                <!-- View Individual Sick Date/Times -->
+                <section id="displaySickByDate" class="mt-5">
+                    <h2>Remove Individual Sick Dates</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Monitor(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% sickByDate.forEach((date) => { %>
+                                <tr>
+                                    <td><%= date.day %></td>
+                                    <td>
+                                        <% date.monitors.forEach(m => { %>
+                                            <%# console.log(m) %>
+                                            <form action="/parking/monitor/deleteOneSick" method="POST" style="display:inline;">
+                                                <input type="hidden" name="timeoffId" value="<%= date.vacaId %>">
+                                                <input type="hidden" name="monitorId" value="<%= m._id %>">
+                                                <input type="hidden" name="date" value="<%= date.day %>">
+                                                <input type="hidden" name="dayRaw" value="<%= date.dayRaw %>">
+                                                <input type="hidden" name="openShiftId" value="<%= m.openShiftId %>">
+                                                <input type="hidden" name="startTime" value="<%= m.startTime %>">
+                                                <input type="hidden" name="endTime" value="<%= m.endTime %>">
+                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                    Remove <%= m.name %> (<%= m.id %>)
+                                                    <% if (m.startTime && m.endTime) { %>
+                                                        <%= ` (${m.startTime} - ${m.endTime})` %>
+                                                    <% } %>
+                                                </button>
+                                            </form>
+                                        <% }) %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </section>  
             </section>
 
 

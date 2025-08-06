@@ -43,8 +43,9 @@ function formatDate(date){
 }
 //Formats time in HH:MM
 function formatTime(date) {
+  if(!date) return null
   // return date.toISOString().substring(11, 16) // "HH:MM"
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: "America/New_York"}); //HH:MM
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: "America/New_York"}); //HH:MM
 }
 //Formats time in HHam:MMpm 
 function formatTimeAMPM(date) {
