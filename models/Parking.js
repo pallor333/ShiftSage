@@ -69,7 +69,7 @@ const MonitorSchema = new Schema({
     ref: 'Location'
   },
   vaca: [{ // Array of Dates, e.g. [new Date("2025-05-01"), new Date("2025-05-15")]
-    date: { type: Date, required: true, default: [] },
+    date: { type: Date, required: true },
     startTime: { type: Date, required: false },
     endTime: { type: Date, required: false }
   }], 

@@ -132,8 +132,7 @@ async function clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShift
   const TimeOffModel = isVacation ? VacationLookup : SickTime;
   const timeOffField = isVacation ? 'vaca' : 'sick';
 
-  // console.log(isVacation, TimeOffModel, timeOffField, dateObj)
-  // 2) Remove monitor from given date
+  //2) Remove monitor from given date
   await Monitor.findOneAndUpdate(
     { _id: monitorId },
     { $pull: { [timeOffField]: {date: date } } }
@@ -153,7 +152,6 @@ async function clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShift
     await deleteOpenShift(openShiftId)
     console.log(`Overtime shift deleted`)
   }
-
 
   // 5) If monitorAndOpenShift is now empty, delete the document
   if (timeOffLookup && timeOffLookup.monitorAndOpenShift.length === 0) {
@@ -450,8 +448,8 @@ async function monitorsOnVacationNextWeek(monitors){
     if(m.vaca.length!==0){
       const qualifyingDates = []
 
-      m.vaca.date.forEach(day => {
-        const d = new Date(day)
+      m.vaca.forEach(vac => {
+        const d = new Date(vac.date)
         if(d >= start && d <= end){
           const mmdd = `${String(d.getUTCMonth() + 1).padStart(2, '0')}/${String(d.getUTCDate()).padStart(2, '0')}`
           qualifyingDates.push(mmdd)
@@ -987,22 +985,27 @@ module.exports = {
   },
   addVacation: async (req, res) => {  
   try{
-    const { vacationMonitorSelect, startDate, endDate } = req.body
+    const { vacationMonitorSelect, vacaStartDate, vacaEndDate, vacaStartTime, vacaEndTime  } = req.body
     // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
     //Create lookup table and get monitor from monitor id
-    const { monitors } = await fetchCommonData()
+    const { monitors, vacaLookup } = await fetchCommonData()
     const monitorObj = monitorLookupByMonitorIdTable(monitors).get(vacationMonitorSelect)
     const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
     //Parse local dates + split before declaring the date
-    const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
-    const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
+    const [startYear, startMonth, startDay] = vacaStartDate.split("-").map(Number);
+    const [endYear, endMonth, endDay] = vacaEndDate.split("-").map(Number);
     const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
     const end = new Date(endYear, endMonth - 1, endDay);
     //Ensure start/endDate are valid
     if(isNaN(start) || isNaN(end) || start > end){
       return res.status(400).send("Invalid vacation date range provided.");
     }
-    
+    //Boolean to check for partial days
+    const isPartial = (vacaStartTime && vacaEndTime)
+    const parsedStartTime = isPartial ? new Date(`${vacaStartDate}T${vacaStartTime}`) : null;
+    const parsedEndTime = isPartial ? new Date(`${vacaEndDate}T${vacaEndTime}`) : null;
+    // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
+
     //Generate all dates in range & filter
     const dateRange = []
     let currentDate = new Date(start)
@@ -1014,27 +1017,62 @@ module.exports = {
       currentDate.setDate(currentDate.getDate() + 1)
     }
 
-    //1) Update monitor schema -> add to vaca array
+    // 1) Build vaca entries array, filtering away duplicates
+    const vacaEntries =  await filterTimeOffDuplicates(vacationMonitorSelect, dateRange, isPartial, parsedStartTime, parsedEndTime)
+
+    //2) Update monitor schema -> add to vaca array
     const monitor = await Monitor.findOneAndUpdate(
       { _id: vacationMonitorSelect}, 
-      { $addToSet: { vaca: { $each: dateRange} } }, //ensures dupes are not added to vaca array
+      { $addToSet: { vaca: { $each: vacaEntries} } }, //ensures dupes are not added to vaca array
       { new: true} // return updated document
     )
     if(!monitor) return res.status(404).send("Monitor not found.")
     
-    //2) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
-    let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, vacationMonitorSelect, dateRange)
-    // console.log(openShiftIdArr) [date, monitorId, openShiftId]
+    //3) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
+    let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, vacationMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
+    // console.log("osa:", openShiftIdArr) //[date, monitorId, openShiftId]
 
-    //3) Vacation Schema -> Loop over range, adding each date and ordered pair
+    //4) Vacation Schema -> Loop over range, adding each date and ordered pair
     for (const entry of openShiftIdArr) {
+      const [day, monitorId, openShiftId, timeRange] = entry
+      const [startTime, endTime] = Array.isArray(timeRange) ? timeRange : [null, null]
+
+      //Does this monitor already have a shift assigned for today?
+      const dayMatch = vacaLookup.find(doc => {
+        let day1 = new Date(doc.day).toDateString(), day2 = new Date(day).toDateString()
+        // console.log("days:", day1, day2, day1===day2)
+        return new Date(doc.day).toDateString() === new Date(day).toDateString()
+      })
+      const alreadyExists = dayMatch?.monitorAndOpenShift?.some(entry => {
+        let id1= entry.monitorId._id.toString(), id2 = monitorId
+        // console.log("id: ",id1, id2, id1===id2)
+        return entry.monitorId._id.equals(monitorId)
+      })
+
+      //Only add if monitor is not taking off this date already
+      if(!alreadyExists){
       // Use upsert to create the document if it doesn't exist
-      await VacationLookup.findOneAndUpdate(
-        { day: entry[0]},
-        // add monitor + openshiftId to array, no duplicates
-        { $addToSet: { monitorAndOpenShift: { monitorId: entry[1], openShiftId: entry[2] } } },
-        { upsert: true, new: true }
-      );
+        // Safe to insert
+        await VacationLookup.findOneAndUpdate(
+          { day: day },
+          {
+            $addToSet: {
+              monitorAndOpenShift: {
+                monitorId: monitorId,
+                openShiftId: openShiftId,
+                ...(startTime && endTime && {
+                  startTime: startTime,
+                  endTime: endTime
+                })
+              }
+            }
+          },
+          { upsert: true, new: true }
+        )
+      }else{
+        console.log(`Monitor ${monitorId} already has vacation time on ${day}. Skipping.`)
+      }
+
     }   
 
     console.log("Vacation has been added!")
@@ -1584,35 +1622,36 @@ module.exports = {
   deleteOneVacation: async (req, res) => {
     try {
       const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
+      await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId)
       // console.log(vacaId, monitorId, date, dayRaw, openShiftId)
       // console.log(monitorId, openShiftId)
       // console.log(req.body)
-      const dateObj = new Date(dayRaw) //Processing into a date for comparison
+      // const dateObj = new Date(dayRaw) //Processing into a date for comparison
 
-      // Remove this monitor from all vacation lookup days
-      await Monitor.findOneAndUpdate(
-        { _id: monitorId }, //find all documents where monitorId matches
-        { $pull: { vaca: date } } //$pull deletes each matched instance (5/1/25)
-      );
+      // // Remove this monitor from all vacation lookup days
+      // await Monitor.findOneAndUpdate(
+      //   { _id: monitorId }, //find all documents where monitorId matches
+      //   { $pull: { vaca: date } } //$pull deletes each matched instance (5/1/25)
+      // );
 
-      // Delete monitor from vacationLookup's monitorAndOpenShift field
-      const vacLookup = await VacationLookup.findOneAndUpdate(
-        { day: dateObj }, //2025-06-23T04:00:00.000+00:00
-        { $pull: { monitorAndOpenShift: { monitorId: monitorId, openShiftId: openShiftId} } }, 
-        { new: true } //return updated document
-      );
+      // // Delete monitor from vacationLookup's monitorAndOpenShift field
+      // const vacLookup = await VacationLookup.findOneAndUpdate(
+      //   { day: dateObj }, //2025-06-23T04:00:00.000+00:00
+      //   { $pull: { monitorAndOpenShift: { monitorId: monitorId, openShiftId: openShiftId} } }, 
+      //   { new: true } //return updated document
+      // );
       
-      // Delete corresponding overtime shift
-      await deleteOpenShift(openShiftId)
+      // // Delete corresponding overtime shift
+      // await deleteOpenShift(openShiftId)
 
-      // If monitorAndOpenShift is now empty, delete the VacationLookup document
-      if (vacLookup && vacLookup.monitorAndOpenShift.length === 0) {
-        await VacationLookup.deleteOne({ _id: vacLookup._id });
-        console.log("Deleted empty date!")
-      }
+      // // If monitorAndOpenShift is now empty, delete the VacationLookup document
+      // if (vacLookup && vacLookup.monitorAndOpenShift.length === 0) {
+      //   await VacationLookup.deleteOne({ _id: vacLookup._id });
+      //   console.log("Deleted empty date!")
+      // }
 
-      console.log(`Vacation cleared for date: ${date}`);
-      console.log(`Overtime shift deleted`)
+      // console.log(`Vacation cleared for date: ${date}`);
+      // console.log(`Overtime shift deleted`)
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for date: ${err}`);
@@ -1621,7 +1660,8 @@ module.exports = {
   },
   deleteAllVacation: async (req, res) => {
     try {
-      await clearMonitorVacationShiftsAndOvertimeBids(req.params.id)
+      //dont need param because vacation is default
+      await clearMonitorVacationShiftsAndOvertimeBids(req.params.id) 
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for monitor: ${err}`);
@@ -1642,38 +1682,7 @@ module.exports = {
   deleteOneSick: async (req, res) => {
     try {
       const { timeoffId, monitorId, date, dayRaw, openShiftId} = req.body
-      // console.log(vacaId, monitorId, date, dayRaw, openShiftId)
-      // console.log(monitorId, openShiftId)
-      // console.log(req.body)
-
       await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId, 'sick')
-      // const dateObj = new Date(dayRaw) //Processing into a date for comparison
-
-      // // Remove this monitor from all vacation lookup days
-      // await Monitor.findOneAndUpdate(
-      //   { _id: monitorId },
-      //   { $pull: { sick: { date: targetDate } } }
-      // );
-
-
-      // // Delete monitor from vacationLookup's monitorAndOpenShift field
-      // const vacLookup = await VacationLookup.findOneAndUpdate(
-      //   { day: dateObj }, //2025-06-23T04:00:00.000+00:00
-      //   { $pull: { monitorAndOpenShift: { monitorId: monitorId, openShiftId: openShiftId} } }, 
-      //   { new: true } //return updated document
-      // );
-      
-      // // Delete corresponding overtime shift
-      // await deleteOpenShift(openShiftId)
-
-      // // If monitorAndOpenShift is now empty, delete the VacationLookup document
-      // if (vacLookup && vacLookup.monitorAndOpenShift.length === 0) {
-      //   await VacationLookup.deleteOne({ _id: vacLookup._id });
-      //   console.log("Deleted empty date!")
-      // }
-
-      // console.log(`Vacation cleared for date: ${date}`);
-      // console.log(`Overtime shift deleted`)
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for date: ${err}`);

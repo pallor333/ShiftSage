@@ -539,15 +539,30 @@
                         <label for="vacationDateRange" class="form-label">Vacation Date Range</label>
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                <label for="vacaStartDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="vacaStartDate" name="vacaStartDate" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                <label for="vacaEndDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="vacaEndDate" name="vacaEndDate" required>
                             </div>
                         </div>
                     </section>
+                    <!-- Start Time Section -->
+                    <section class="col-md-12">
+                        <label for="vacaDateRange" class="form-label">Specify the time for partial days. Each partial day must be added individually. 
+                            Only the first day (i.e. start date) will be considered for a partial day. (E.G. Start 8/4/25, End 8/8/25, Time: 7:00am - 12:00am => Adds 8/4/25 7am-12am)</label>
+                        <section class="col-md-6">
+                            <label for="vacaTime" class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="vacaStartTime" name="vacaStartTime">
+                        </section>
+                        <!-- End Time Section -->
+                        <section class="col-md-6">
+                            <label for="vacaTime" class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="vacaEndTime" name="vacaEndTime">
+                        </section>
+                    </section>
+
                     <!-- Submit Button -->
                     <section class="col-12">
                         <button type="submit" class="btn btn-primary">Add Vacation</button>
@@ -570,16 +585,31 @@
                         <tbody>
                             <% formattedMon.forEach((monitor) => { %>
                                 <% if (monitor.vaca.length > 0) { %>
+                                <% monitor.vaca.forEach((entry, idx) => { %>
                                     <tr>
-                                        <td><%= monitor.id %></td>
-                                        <td><%= monitor.name %></td>
-                                        <td><%= monitor.vaca.join(', ') %></td>
-                                        <td> <!-- Delete Button-->
-                                            <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
-                                                <button type="submit" class="btn btn-warning btn-sm">Delete All Vacation For This Monitor</button>
-                                            </form>
+                                    <% if (idx === 0) { %>
+                                        <td rowspan="<%= monitor.vaca.length %>"><%= monitor.id %></td>
+                                        <td rowspan="<%= monitor.vaca.length %>"><%= monitor.name %></td>
+                                    <% } %>
+
+                                    <td>
+                                        <%= entry.date %>
+                                        <% if (entry.startTime && entry.endTime) { %>
+                                        <%= ` ${entry.startTime} - ${entry.endTime}` %>
+                                        <% } %>
+                                    </td>
+
+                                    <% if (idx === 0) { %>
+                                        <td rowspan="<%= monitor.vaca.length %>">
+                                        <form action="/parking/monitor/deleteAllVacation/<%= monitor._id %>" method="POST">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                            Delete All Vacation For This Monitor
+                                            </button>
+                                        </form>
                                         </td>
+                                    <% } %>
                                     </tr>
+                                <% }) %>
                                 <% } %>
                             <% }) %>
                         </tbody>
@@ -608,8 +638,13 @@
                                                 <input type="hidden" name="date" value="<%= date.day %>">
                                                 <input type="hidden" name="dayRaw" value="<%= date.dayRaw %>">
                                                 <input type="hidden" name="openShiftId" value="<%= m.openShiftId %>">
+                                                <input type="hidden" name="startTime" value="<%= m.startTime %>">
+                                                <input type="hidden" name="endTime" value="<%= m.endTime %>">
                                                 <button type="submit" class="btn btn-warning btn-sm">
                                                     Remove <%= m.name %> (<%= m.id %>)
+                                                    <% if (m.startTime && m.endTime) { %>
+                                                        <%= ` (${m.startTime} - ${m.endTime})` %>
+                                                    <% } %>
                                                 </button>
                                             </form>
                                         <% }) %>
@@ -673,8 +708,9 @@
                     </section>
                 </form>
                 </section>
+
                 <!-- View & Delete Sick by Monitor -->
-                <section id="displaySicknByMonitor" class="mt-5">
+                <section id="displaySickByMonitor" class="mt-5">
                     <h2>View and Delete Sick Time By Monitor</h2>
                     <table class="table table-striped">
                         <thead>
