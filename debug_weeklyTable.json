@@ -880,13 +880,13 @@
           "shifts": {
             "68842a1fc367a51500174317": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "6830d73bb73f6f94f7fab410",
                 "id": 129,
                 "name": "QUINCY",
                 "regularShift": "6811550a26093510a53bf439",
                 "location": "6850e2d9841052db64eb4128",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "225"
                 },
@@ -911,13 +911,13 @@
             },
             "687ae572fb700a9f97019849": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e46b841052db64eb41d7",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -955,13 +955,13 @@
             },
             "687ad680a88bee7e030675e3": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "68433739b08726f40bada434",
                 "id": 98,
                 "name": "TESTERONE",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e2c9841052db64eb410f",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "300"
                 },
@@ -988,13 +988,13 @@
             },
             "687ad5dfa88bee7e0306759f": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "68433752b08726f40bada443",
                 "id": 97,
                 "name": "TESTERTWO",
                 "regularShift": "6811518eb6f51dc6bfdcb20e",
                 "location": "6850e46b841052db64eb41d7",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },
@@ -1043,13 +1043,13 @@
             },
             "687ad6a8a88bee7e030675f4": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "6826563dd3f7526aff07d080",
                 "id": 99,
                 "name": "VACACHECK",
                 "regularShift": "681152bd26093510a53bf3b5",
                 "location": "6850e46b841052db64eb41d7",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1076,13 +1076,13 @@
             },
             "687addbba88bee7e03067616": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1109,13 +1109,13 @@
             },
             "687add9ca88bee7e03067605": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "6826563dd3f7526aff07d080",
                 "id": 99,
                 "name": "VACACHECK",
                 "regularShift": "681152bd26093510a53bf3b5",
                 "location": "6850e46b841052db64eb41d7",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1158,13 +1158,13 @@
           "shifts": {
             "687ade91a88bee7e0306768b": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "687acf903518052efd64d490",
                 "id": 100,
                 "name": "VACACHECK2",
                 "regularShift": "6811532326093510a53bf3cb",
                 "location": "6850e2c9841052db64eb410f",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "50"
                 },
@@ -1365,13 +1365,13 @@
             },
             "687adf91a88bee7e0306771d": {
               "monitorId": {
-                "vaca": [],
-                "sick": [],
                 "_id": "680bf5d07162e106742ea838",
                 "id": 130,
                 "name": "JEFFERSON",
                 "regularShift": "680c069e0c35e34c1fd0991f",
                 "location": "6850e2e6841052db64eb415a",
+                "vaca": [],
+                "sick": [],
                 "hours": {
                   "$numberDecimal": "200"
                 },

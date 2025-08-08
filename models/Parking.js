@@ -90,7 +90,6 @@ const OvertimeBidsSchema = new Schema({
     position: { type: Schema.Types.ObjectId, ref: "OpenShift", required: true },
     rank: { type: Number }, // Rank assigned to the position
   }],
-  workMoreThanOne: { type: Boolean, default: false }, //monitor works more than one overtime shift this week
   workAnyShift: { type: Boolean, default: false },    //monitor will work ANY shift this week
   //week: { type: Date, default: () => new Date() }, // Timestamp for the week
 });
@@ -174,6 +173,12 @@ const extraOTSchema = new Schema({
   }],
 })
 
+const blackoutSchema = new Schema({
+  name: { type: String, required: true},
+  start: { type: Date, required: true },
+  end: { type: Date, required: true },
+})
+
 
 //MongoDB Collection named here - will give lowercase plural of name 
 module.exports = {
@@ -188,6 +193,7 @@ module.exports = {
   Holiday: mongoose.model("Holiday", holidaySchema),
   SickTime: mongoose.model("SickTime", sickByDaySchema),
   ShortNotice: mongoose.model("ShortNotice", extraOTSchema),
+  BlackoutDate: mongoose.model("BlackoutDate", blackoutSchema),
 };
 
 

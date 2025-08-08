@@ -5,7 +5,8 @@
     <!-- View and Delete Holiday -->
     <section id="displayHoliday" class="mt-5">
         <h2>University Holidays</h2>
-        <table class="table table-sm table-bordered">
+        <span>Holidays must be re-added every year.</span>
+        <table class="table table-sm table-bordered text-nowrap fw-normal small">
             <tbody>
                 <% holidays.forEach((holiday) => { %>
                     <tr>
@@ -20,10 +21,30 @@
             </tbody>    
         </table>
     </section>
+    <!-- View/Delete Blackout Dates -->
+    <section id="displayBlackout" class="mt-5">
+        <h2>Blackout Dates</h2>
+        <span>Blackout Dates must be re-added every year.</span>
+        <table class="table table-sm table-bordered text-nowrap fw-normal small">
+            <tbody>
+                <% blackout.forEach((entry) => { %>
+                    <tr>
+                        <td><%= entry.name%>:  <%=entry.start%> - <%=entry.end%></td>
+                        <td> <!-- Delete Button-->
+                            <form action="/parking/holiday/deleteBlackoutDate/<%= entry._id %>" method="POST">
+                                <button type="submit" class="btn btn-warning btn-sm">Delete Blackout</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>    
+        </table>
+    </section>
 
     <!-- Add Holiday -->
     <section id="vacation" class="mt-5">
         <h2>Add University Holiday</h2>
+        <span>During a holiday, the 1st and 2nd shifts + 3rd shift previous day are automatically put up for overtime bids.</span>
         <form action="/parking/holiday" method="POST" class="row g-3">
             <!-- Holiday Name Section -->
             <section class="col-md-6">
@@ -43,6 +64,36 @@
         </form>
     </section>
 
+    <!-- Add Black Out Dates -->
+    <section id="blackoutDates" class="mt-5">
+        <h2>Add Blackout Date</h2>
+        <span>Dates in which monitors are not charged for overtime.</span>
+        <form action="/parking/blackoutDate" method="POST" class="row g-3">
+            <!-- blackout Name Section -->
+            <section class="col-md-6">
+                <label for="displayName" class="form-label">Name</label>
+                <!-- <input type="text" class="form-control" id="regularShiftName" name="regularShiftName" required> -->
+                <input type="text" class="form-control" id="blackoutName" name="name" required>
+            </section>
+            <!-- Add blackout Date -->
+            <section class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="blackoutStart" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="blackoutStart" name="blackoutStart" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="blackoutEnd" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="blackoutEnd" name="blackoutEnd" required>
+                    </div>
+                </div>
+            </section>
+            <!-- Submit Button -->
+            <section class="col-12">
+                <button type="submit" class="btn btn-primary">Add Blackout Date</button>
+            </section>
+        </form>
+    </section>
 </main>
 
 <%- include('partials/footer') -%>

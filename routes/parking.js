@@ -63,6 +63,7 @@ router.post("/vacation", ensureAuth, parkingController.addVacation)
 router.post("/holiday", ensureAuth, parkingController.addHoliday)
 router.post("/extraOT", ensureAuth, parkingController.addExtraOT)
 router.post("/sick", ensureAuth, parkingController.addSick)
+router.post("/blackoutDate", ensureAuth, parkingController.addBlackoutDate)
 
 // POST routes to edit entries 
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
@@ -91,5 +92,6 @@ router.post("/extraOT/delete/:id", ensureAuth, parkingController.deleteExtraOT)
 // router.delete("/extraOT/:id", ensureAuth, parkingController.deleteExtraOT)
 router.post('/monitor/deleteAllSick/:id', ensureAuth, parkingController.deleteAllSick);
 router.post('/monitor/deleteOneSick', ensureAuth, parkingController.deleteOneSick);
+router.post("/holiday/deleteBlackoutDate/:id", ensureAuth, parkingController.deleteBlackoutDate)
 
 module.exports = router;

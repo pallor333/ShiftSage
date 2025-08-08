@@ -5,7 +5,7 @@ const multer = require("multer")
 const upload = multer({ dest: "uploads/" })
 const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
-const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice} = require("../models/Parking")
+const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice, BlackoutDate} = require("../models/Parking")
 const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
@@ -259,8 +259,9 @@ const fetchCommonData = async () => {
     const holidays = await Holiday.find()
     const extraOT = await ShortNotice.find().populate("mon").lean()
     const sickTime = await SickTime.find().populate("monitorAndOpenShift.monitorId").populate("monitorAndOpenShift.openShiftId").sort({ day: 1 })
+    const blackoutDates = await BlackoutDate.find().lean()
 
-    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup, holidays, extraOT, sickTime };
+    return { monitors, regularShifts, openShifts, locations, overtimeBid, overtimeAudit, vacaLookup, holidays, extraOT, sickTime, blackoutDates};
   } catch (err) {
     console.error("Error fetching common data:", err);
     throw err; // Rethrow the error to handle it in the calling function
@@ -472,7 +473,14 @@ module.exports = {
   //Home page
   getHomePage: async (req, res) => {
     try {
-      const { monitors, regularShifts, openShifts, locations } = await fetchCommonData()
+      const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
+
+    // const result = await OvertimeBid.updateMany({}, { $unset: { workMoreThanOne: "" } });
+    // console.log(`Updated ${result.modifiedCount} docs`);
+
+    // // Verify it's gone
+    // const check = await OvertimeBid.find({}, { workMoreThanOne: 1 });
+    // console.log(check); // Should be empty objects with _id only
 
       // Render the home.ejs template and pass the data
       const [start, end] = getNextThursDateObj(THISWEEK)
@@ -628,14 +636,25 @@ module.exports = {
   //Holiday page
   getHolidayPage: async(req, res) => {
     try{
-      const { holidays } = await fetchCommonData()
-      // console.log(holidays)
+      const { holidays, blackoutDates } = await fetchCommonData()
+
       //Create holiday arr to display in the frontend
       let frontEndHolidayArr = []
       for(let entry of holidays){
         frontEndHolidayArr.push({
           name: entry.name,
           date: `${entry.month}/${entry.day}/${entry.year}`,
+          _id: entry._id
+        })
+      }
+
+      // Create blackout date arr for frontend display
+      let frontEndBlackoutArr = []
+      for(entry of blackoutDates){
+        frontEndBlackoutArr.push({
+          name: entry.name, 
+          start: formatDate(entry.start),
+          end: formatDate(entry.end),
           _id: entry._id
         })
       }
@@ -647,6 +666,7 @@ module.exports = {
       // console.log(frontEndHolidayArr)
       res.render("holiday.ejs", {
         holidays: frontEndHolidayArr,
+        blackout: frontEndBlackoutArr,
       })
     }catch(err){
       console.error(err)
@@ -703,18 +723,7 @@ module.exports = {
   //Finalize/Extra OT/Short Notice page
   getFinalizePage: async(req, res) => {
     try{
-      // const { monitors, overtimeAudit } = await fetchCommonData()
-      // if(!monitors){
-      //   console.log("Monitors missing.")
-      //   res.redirect("/parking/home")
-      // }
-      // if(!overtimeAudit){
-      //   console.log("Overtime winners missing.")
-      //   res.redirect("/parking/home")
-      // }
-
-      res.render("finalize.ejs",{
-      })
+      res.render("finalize.ejs",{})
     }catch(err){
       console.error(err)
       res.redirect("/parking/home")
@@ -1246,6 +1255,28 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
+  addBlackoutDate: async(req, res) => {
+    try{
+      const { name, blackoutStart, blackoutEnd } = req.body
+      // console.log(blackoutStart, blackoutEnd, name)
+      // // console.log(req.body)
+      // const start = new Date(blackoutStart)
+      // const end = new Date(blackoutEnd)
+      // console.log(start, end)
+
+      await BlackoutDate.create({
+        name: name,
+        start: new Date(blackoutStart),
+        end: new Date(blackoutEnd),
+      })
+
+      console.log("Blackout Date has been added!");
+      res.redirect("/parking/holiday");
+    }catch(err){
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
 
   // Update info in the database
   // 
@@ -1410,8 +1441,14 @@ module.exports = {
       const anyShift = req.body.anyShift.length === 2 
       //monitorId: '6826563dd3f7526aff07d080',
       //rankings: { '6826495e9e8667f3047c5613': '1', '68264a8179f269ffb0f939f8': '2', '68264ac779f269ffb0f93a04': '', }  
-      // console.log(workingMoreThanOne, anyShift)
-
+      console.log(req.body, workingMoreThanOne, anyShift) //how does workMoreThanOne work
+      /* When it's true it looks like this:
+      //  moreThanOneShift: [ 'false', 'true' ],
+      // anyShift: [ 'false', 'true' ],
+      When it's false it looks like this:
+      moreThanOneShift: 'false',
+      anyShift: 'false',
+      */
       //Find Monitor by ID
       const monitor = await Monitor.findById(monId)
       if(!monitor){
@@ -1427,7 +1464,7 @@ module.exports = {
       //Grab vacation dates for this monitor 
       const vacation = monitorTable
         .get(monId)?.vaca
-        .map(date => `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`)
+        .map(v => `${String(v.date.getMonth() + 1).padStart(2, '0')}/${String(v.date.getDate()).padStart(2, '0')}`)
 
       if(anyShift){//Monitor will work any shift
         finalRanking = await rankingsBidGenerator(monitorTable.get(monId.toString()), openShiftTable, rankings)
@@ -1623,35 +1660,7 @@ module.exports = {
     try {
       const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
       await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId)
-      // console.log(vacaId, monitorId, date, dayRaw, openShiftId)
-      // console.log(monitorId, openShiftId)
-      // console.log(req.body)
-      // const dateObj = new Date(dayRaw) //Processing into a date for comparison
 
-      // // Remove this monitor from all vacation lookup days
-      // await Monitor.findOneAndUpdate(
-      //   { _id: monitorId }, //find all documents where monitorId matches
-      //   { $pull: { vaca: date } } //$pull deletes each matched instance (5/1/25)
-      // );
-
-      // // Delete monitor from vacationLookup's monitorAndOpenShift field
-      // const vacLookup = await VacationLookup.findOneAndUpdate(
-      //   { day: dateObj }, //2025-06-23T04:00:00.000+00:00
-      //   { $pull: { monitorAndOpenShift: { monitorId: monitorId, openShiftId: openShiftId} } }, 
-      //   { new: true } //return updated document
-      // );
-      
-      // // Delete corresponding overtime shift
-      // await deleteOpenShift(openShiftId)
-
-      // // If monitorAndOpenShift is now empty, delete the VacationLookup document
-      // if (vacLookup && vacLookup.monitorAndOpenShift.length === 0) {
-      //   await VacationLookup.deleteOne({ _id: vacLookup._id });
-      //   console.log("Deleted empty date!")
-      // }
-
-      // console.log(`Vacation cleared for date: ${date}`);
-      // console.log(`Overtime shift deleted`)
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for date: ${err}`);
@@ -1763,6 +1772,22 @@ module.exports = {
     }catch(err){
       console.error(err);
       req.flash('error_msg', 'Something went wrong while deleting the entry.');
+      res.redirect("/parking/home")
+    }
+  },
+  deleteBlackoutDate: async (req, res) => {
+    try{
+      const blackoutToDelete = await BlackoutDate.findById(req.params.id)
+      if(!blackoutToDelete){
+        console.log("Blackout Date not found")
+        return res.redirect("/parking/home")
+      }
+
+      await BlackoutDate.findByIdAndDelete(req.params.id)
+      console.log("Blackout Date has been deleted!");
+      res.redirect("/parking/holiday");
+    }catch(err){
+      console.error(err);
       res.redirect("/parking/home")
     }
   },

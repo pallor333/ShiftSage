@@ -207,7 +207,8 @@ function monitorNoVacaThisWeek(monitors, date){
 
     //Proprocess monitor vacation dates with a Set of YYYY-MM-DD strings 
     const monitorsWithVacaSet = monitors.map(m => {
-        const vacaSet = new Set(m.vaca.map(d => d.toISOString().slice(0, 10)))
+        // const vacaSet = new Set(m.vaca.map(d => d.toISOString().slice(0, 10)))
+        const vacaSet = new Set(m.vaca.map(v => v.date && v.date.toISOString().slice(0, 10)))
         // console.log(`${m.name} vacation set:`, vacaSet);
         return { ...m, vacaSet } 
     })
@@ -227,13 +228,6 @@ function monitorNoVacaThisWeek(monitors, date){
 
     //Returns an array of monitor objects who are not on vacation keyed by day
     return workingMonitors
-    // Filter monitors on vacation by converting dates to strings
-    // DAYSARRAY.forEach(d => {
-    //     let dateStr = date.toISOString().split('T')[0]
-    //     workingMonitors[d] = ( monitors.filter(m => !m.vaca.some(v => v.toISOString().split('T')[0] === dateStr)) )
-    //     date.setDate(date.getDate() + 1);
-    // }) // console.log(workingMonitors.thursday)
-    // return workingMonitors //Duplicate list of monitors, removing all on vacation and creating a monitor array for each day of the week
 }
 
 /* Monitor/Shift Eligibiility Filtering */
