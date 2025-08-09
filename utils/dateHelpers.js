@@ -41,6 +41,11 @@ function formatDate(date){
   const d = new Date(date);
   return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`
 }
+// Helper: format dates in UTC MM/DD/YY format
+function formatDateUTC(date){
+  const d = new Date(date);
+  return `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${String(d.getUTCFullYear()).slice(-2)}`
+}
 //Formats time in HH:MM
 function formatTime(date) {
   if(!date) return null
@@ -185,6 +190,14 @@ function holidayNextWeek([wkStart, wkEnd], holidays){
   return holidayArr ? holidayArr : false
   // return false
 }
+//Helper overtimeServices.js shiftDuringBlackoutDate(): Return true if openShift conflicts with Blackout Date
+function isDateInRange(date, start, end) {
+  const targetTime = new Date(date).setHours(0, 0, 0, 0); // midnight local time
+  const startTime  = new Date(start).setHours(0, 0, 0, 0);
+  const endTime    = new Date(end).setHours(0, 0, 0, 0);
+
+  return targetTime >= startTime && targetTime <= endTime;
+}
 //Helper to convert 'HH:MM' to total minutes
 function toMinutes(timeStr) {
   const [hour, minute] = timeStr.split(':').map(Number)
@@ -264,9 +277,10 @@ function qualifyingRegularShifts(dateHoliday, monitors, DAYSARRAY){
 
 module.exports = { 
   calculateShiftHours, convertDateToMDYY, 
-  findClosestHoliday, formatDate, formatTime, formatTimeAMPM,
+  findClosestHoliday, formatDate, formatDateUTC, formatTime, formatTimeAMPM,
   getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPreviousDay, getShiftOverlap,
   holidayNextWeek,
+  isDateInRange,
   toMinutes,
   qualifyingRegularShifts,
 }

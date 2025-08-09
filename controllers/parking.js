@@ -6,7 +6,7 @@ const upload = multer({ dest: "uploads/" })
 const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice, BlackoutDate} = require("../models/Parking")
-const { calculateShiftHours, findClosestHoliday, formatDate, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
+const { calculateShiftHours, findClosestHoliday, formatDate, formatDateUTC, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
@@ -474,14 +474,6 @@ module.exports = {
   getHomePage: async (req, res) => {
     try {
       const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
-
-    // const result = await OvertimeBid.updateMany({}, { $unset: { workMoreThanOne: "" } });
-    // console.log(`Updated ${result.modifiedCount} docs`);
-
-    // // Verify it's gone
-    // const check = await OvertimeBid.find({}, { workMoreThanOne: 1 });
-    // console.log(check); // Should be empty objects with _id only
-
       // Render the home.ejs template and pass the data
       const [start, end] = getNextThursDateObj(THISWEEK)
       const nxtWkMonitorVaca = await monitorsOnVacationNextWeek(monitors)
@@ -647,14 +639,14 @@ module.exports = {
           _id: entry._id
         })
       }
-
+      
       // Create blackout date arr for frontend display
       let frontEndBlackoutArr = []
       for(entry of blackoutDates){
         frontEndBlackoutArr.push({
           name: entry.name, 
-          start: formatDate(entry.start),
-          end: formatDate(entry.end),
+          start: formatDateUTC(entry.start),
+          end: formatDateUTC(entry.end),
           _id: entry._id
         })
       }
@@ -793,85 +785,87 @@ module.exports = {
 
   //Getting data from the Database.
   //
-  //
-  getMonitor: async (req, res) => {
-    try {
-      // Fetch monitor data from the database using the Parking model
-      const monitor = await Monitor.findById(req.params.id).populate('regularShift location');
-      //populate() fetches the actual data rather than just reference ids
-      // i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
+  // TODO: Delete these? Do I even need these?
+  // getMonitor: async (req, res) => {
+  //   try {
+  //     // Fetch monitor data from the database using the Parking model
+  //     const monitor = await Monitor.findById(req.params.id).populate('regularShift location');
+  //     //populate() fetches the actual data rather than just reference ids
+  //     // i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
 
-      if (!monitor) {
-        console.error("Monitor not found");
-        return res.redirect("/parking/home");
-      }
+  //     if (!monitor) {
+  //       console.error("Monitor not found");
+  //       return res.redirect("/parking/home");
+  //     }
       
-      // Render the view and pass the monitor data
-      res.render("home.ejs", { monitor: monitor, user: req.user });
-      } catch (err) {
-        console.error(err);
-        res.redirect("/parking/home");
-      }
-  },
-  getLocation: async (req, res) => {
-    try {
-      // Fetch location data from the database using the Parking model
-      const location = await Location.findById(req.params.id)
+  //     // Render the view and pass the monitor data
+  //     res.render("home.ejs", { monitor: monitor, user: req.user });
+  //     } catch (err) {
+  //       console.error(err);
+  //       res.redirect("/parking/home");
+  //     }
+  // },
+  // getLocation: async (req, res) => {
+  //   try {
+  //     // Fetch location data from the database using the Parking model
+  //     const location = await Location.findById(req.params.id)
       
-      if (!location) {
-        console.error("Location not found");
-        return res.redirect("/parking/home");
-      }
+  //     if (!location) {
+  //       console.error("Location not found");
+  //       return res.redirect("/parking/home");
+  //     }
   
-      // Render the view and pass the monitor data
-      res.render("home.ejs", { location: location, user: req.user });
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  getRegularShift: async (req, res) => {
-    try {
-      // Fetch monitor data from the database using the Parking model
-      const regularShift = await RegularShift.findById(req.params.id).populate('location');
-      //populate() fetches the actual data rather than just reference ids
-      // i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
+  //     // Render the view and pass the monitor data
+  //     res.render("home.ejs", { location: location, user: req.user });
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.redirect("/parking/home");
+  //   }
+  // },
+  // getRegularShift: async (req, res) => {
+  //   try {
+  //     // Fetch monitor data from the database using the Parking model
+  //     const regularShift = await RegularShift.findById(req.params.id).populate('location');
+  //     //populate() fetches the actual data rather than just reference ids
+  //     // i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
 
-      if (!monitor) {
-        console.error("Monitor not found");
-        return res.redirect("/parking/home");
-      }
+  //     if (!monitor) {
+  //       console.error("Monitor not found");
+  //       return res.redirect("/parking/home");
+  //     }
     
-      // Render the view and pass the monitor data
-      res.render("home.ejs", { regularShift: regularShift, user: req.user });
-      } catch (err) {
-        console.error(err);
-        res.redirect("/parking/home");
-      }
-  },
-  getOpenShift: async (req, res) => {
-    try {
-      // Fetch monitor data from the database using the Parking model
-      const openShift = await OpenShift.findById(req.params.id).populate('location');
-      // const openShift = await OpenShift.find({})
-      //   //populate() fetches the actual data rather than just reference ids 
-      //   .populate('location') //i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
-      //   .sort( {date: 1}) // 1 ascending, -1 for descending
+  //     // Render the view and pass the monitor data
+  //     res.render("home.ejs", { regularShift: regularShift, user: req.user });
+  //     } catch (err) {
+  //       console.error(err);
+  //       res.redirect("/parking/home");
+  //     }
+  // },
+  // getOpenShift: async (req, res) => {
+  //   try {
+  //     // Fetch monitor data from the database using the Parking model
+  //     const openShift = await OpenShift.findById(req.params.id).populate('location');
+  //     // const openShift = await OpenShift.find({})
+  //     //   //populate() fetches the actual data rather than just reference ids 
+  //     //   .populate('location') //i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
+  //     //   .sort( {date: 1}) // 1 ascending, -1 for descending
 
-      if (!monitor) {
-        console.error("Monitor not found");
-        return res.redirect("/parking/home");
-      }
+  //     if (!monitor) {
+  //       console.error("Monitor not found");
+  //       return res.redirect("/parking/home");
+  //     }
     
-      // Render the view and pass the monitor data
-      res.render("home.ejs", { openShift: openShift, user: req.user });
-      } catch (err) {
-        console.error(err);
-        res.redirect("/parking/home");
-      }
-  },
+  //     // Render the view and pass the monitor data
+  //     res.render("home.ejs", { openShift: openShift, user: req.user });
+  //     } catch (err) {
+  //       console.error(err);
+  //       res.redirect("/parking/home");
+  //     }
+  // },
 
   //Add entries to the database
+  //
+  //
   //
   //
   addMonitor: async (req, res) => {
@@ -1258,12 +1252,7 @@ module.exports = {
   addBlackoutDate: async(req, res) => {
     try{
       const { name, blackoutStart, blackoutEnd } = req.body
-      // console.log(blackoutStart, blackoutEnd, name)
-      // // console.log(req.body)
-      // const start = new Date(blackoutStart)
-      // const end = new Date(blackoutEnd)
-      // console.log(start, end)
-
+      
       await BlackoutDate.create({
         name: name,
         start: new Date(blackoutStart),
@@ -1281,6 +1270,8 @@ module.exports = {
   // Update info in the database
   // 
   // 
+  //
+  //
   updateExtraOT: async (req, res) => {
     try {
       const { extraOT } = await fetchCommonData()
@@ -1354,25 +1345,6 @@ module.exports = {
       const auditTable = await createAuditTable(monitors, overtimeAudit)
       const monitorTable = monitorLookupByMonitorNameTable(monitors)
 
-      // Loop over audit table, updating each monitor.hours with auditTable.totalHours
-      // for(const monitor of Object.keys(auditTable)){
-      //   const endHrs = auditTable[monitor].startEndHours[1]
-      //   const monitorId = monitorTable.get(monitor)._id
-      //   if (!monitorId) {
-      //     console.warn(`Monitor ${monitor} not found in lookup table.`);
-      //     continue;
-      //   }
-
-      //   await Monitor.findByIdAndUpdate(monitorId, { 
-      //     $set: {
-      //       //Coercing endHrs into Decimal128 explicitly
-      //       hours: mongoose.Types.Decimal128.fromString(endHrs.toString()), 
-      //       lastUpdated: new Date(),
-      //     }}, { new: true}
-      //   )
-      // }
-      // console.log("All Monitor Hours have been updated!");
-
       //Automatically generate overtime shifts if NEXTWEEK is holiday
       await holidayOvertimeCreator(holidays)
 
@@ -1437,18 +1409,8 @@ module.exports = {
       const monId = req.params.id, rankings = req.body.rankings
       let rankingArr = [], finalRanking = []
       //check => [false, true], comparision logic filters to just true or just false
-      const workingMoreThanOne = req.body.moreThanOneShift.length === 2 
       const anyShift = req.body.anyShift.length === 2 
-      //monitorId: '6826563dd3f7526aff07d080',
-      //rankings: { '6826495e9e8667f3047c5613': '1', '68264a8179f269ffb0f939f8': '2', '68264ac779f269ffb0f93a04': '', }  
-      console.log(req.body, workingMoreThanOne, anyShift) //how does workMoreThanOne work
-      /* When it's true it looks like this:
-      //  moreThanOneShift: [ 'false', 'true' ],
-      // anyShift: [ 'false', 'true' ],
-      When it's false it looks like this:
-      moreThanOneShift: 'false',
-      anyShift: 'false',
-      */
+
       //Find Monitor by ID
       const monitor = await Monitor.findById(monId)
       if(!monitor){
@@ -1505,7 +1467,6 @@ module.exports = {
         { 
           $set: { 
             rankings: finalRanking, //insert formatted rankings
-            workMoreThanOne: workingMoreThanOne, //monitor works 1+ shift
             workAnyShift: anyShift, //monitor will work ANY shift
           },
         },
@@ -1590,6 +1551,8 @@ module.exports = {
   },
 
   //Delete entries from DB
+  //
+  //
   //
   //
   deleteMonitor: async (req, res) => {

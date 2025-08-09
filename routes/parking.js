@@ -50,9 +50,9 @@ router.post("/mongo/import", parkingController.importMongoData);
 
 // GET routes to gather monitor/location/shifts from DB
 // /home/monitor/:id = /home/monitor/12345
-router.get("/monitor/:id", ensureAuth, parkingController.getMonitor);
-router.get("/location/:id", ensureAuth, parkingController.getLocation);
-router.get("/shift/:id", ensureAuth, parkingController.getRegularShift);
+// router.get("/monitor/:id", ensureAuth, parkingController.getMonitor);
+// router.get("/location/:id", ensureAuth, parkingController.getLocation);
+// router.get("/shift/:id", ensureAuth, parkingController.getRegularShift);
 
 // POST routes to add new entries
 router.post("/monitor", ensureAuth, parkingController.addMonitor)

@@ -43,15 +43,6 @@
               <% }) %>
             </select>
           </section>
-          <!-- Work 1+ OT shift (boolean) -->
-          <section class="col-md-6">
-              <label for="overtimeMoreThanOne" class="form-label">Interested in working more than one overtime shift?</label>
-              <section class="form-check form-switch">
-                  <input type="hidden" name="moreThanOneShift" value="false">
-                  <input class="form-check-input" type="checkbox" id="overtimeMoreThanOne" name="moreThanOneShift" value="true">
-                  <label class="form-check-label" for="overtimeMoreThanOne">Yes</label>
-              </section>
-          </section>
           <!-- Work ANY OT shift (boolean) -->
           <section class="col-md-6">
               <label for="overtimeAnyShift" class="form-label">Will work any shift?</label>
@@ -102,7 +93,6 @@
             <tr>
               <th>Monitor Name (ID)</th>
               <th>Overtime Rankings</th>
-              <th>Work 1+ Overtime Shifts</th>
               <th>Work Any Shift</th>
               <th>Actions</th>
             </tr>
@@ -116,7 +106,6 @@
                     <p><%= ranking?.rank %>) <%= ranking?.position?.name %> </p>
                   <% }) %>
                 </td>
-                <td><%= bid?.workMoreThanOne %></td>
                 <td><%= bid?.workAnyShift %></td>
                 <td>
                   <!-- Delete Button -->

@@ -29,7 +29,7 @@
             <tbody>
                 <% blackout.forEach((entry) => { %>
                     <tr>
-                        <td><%= entry.name%>:  <%=entry.start%> - <%=entry.end%></td>
+                        <td><%= entry.name%>: <%= entry.start %> - <%= entry.end %></td>
                         <td> <!-- Delete Button-->
                             <form action="/parking/holiday/deleteBlackoutDate/<%= entry._id %>" method="POST">
                                 <button type="submit" class="btn btn-warning btn-sm">Delete Blackout</button>
