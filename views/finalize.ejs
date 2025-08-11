@@ -13,6 +13,8 @@
             <li>Pressing this button will:</li>
             <li>Add hours calculated from overtime to monitor hour totals.</li>
             <li>Generate Overtime shifts if there's a holiday next week.</li>
+            <li>Delete overtime shifts, vacation and sick time that's one month old.</li>
+            <li>Create next week's recurring overtime shifts.</li>
         </ul>
         <form action="/parking/finalize/update" method="POST" style="display: inline;"
         onsubmit="return confirm('Are you sure you want to update monitor hours and generate holiday overtime? This action is irreversible.')">

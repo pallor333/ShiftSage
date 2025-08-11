@@ -6,7 +6,7 @@ const upload = multer({ dest: "uploads/" })
 const mongoose = require('mongoose')
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice, BlackoutDate} = require("../models/Parking")
-const { calculateShiftHours, findClosestHoliday, formatDate, formatDateUTC, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPreviousDay, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
+const { calculateShiftHours, findClosestHoliday, formatDate, formatDateUTC, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPrevThursDateObj, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
 const { monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable, openShiftLookupByOpenShiftIdTable, regularShiftLookupByRegularShiftIdTable, locationLookupByLocationIdTable } = require('../utils/lookupHelpers')
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
@@ -17,7 +17,7 @@ const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //const [month, day, year] = [new Date().getMonth() + 1, new Date().getDate(), new Date().getFullYear()];
 //console.log(`${month}/${day}/${year}`); // "5/22/2025"
 //temp hardcoding date:
-const THISWEEK = new Date("4/30/25") //new Date("6/29/25") 
+const THISWEEK = new Date("8/11/25")//new Date("4/30/25") //new Date("6/29/25") 
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};
@@ -83,6 +83,43 @@ async function addOpenShiftFromVacation(monitorObj, monitorId, dateRange, partia
 
   return monitorAndOvertimeArray //[ [date, monitorId, openshift _id], [date, monitorId, openshift _id], etc] 
 }
+//Helper: Create recurring OT shift for next week. 
+async function addRecurringOpenShift(currentWeek){
+  const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000
+  const recurringOpen = await OpenShift.find({ recurring: true })
+
+  for(const shift of recurringOpen){
+    // console.log("before:", shift.name)
+    if(!(currentWeek[0] < shift.date && shift.date < currentWeek[1] )) continue
+    // console.log("after:", shift.name)
+    const [start, end] =  getFixedTimeRange(shift.startTime, shift.endTime)
+    const nxtWkStart = new Date(start + oneWeekInMilliseconds)
+    const nxtWkEnd = new Date(end + oneWeekInMilliseconds)
+    //For name string
+    const date = new Date(nxtWkStart)
+    const currentDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().slice(-2)}`
+    const formattedStart = nxtWkStart.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    const formattedEnd = nxtWkEnd.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    const location = shift.name.split(" ")[2]
+    const totalHours = shift.totalHours.toString().endsWith("0") ? shift.totalHours.slice(0, -1) : shift.totalHours.toFixed(1)
+
+    const data = {
+      name: `${DAYMAPPING[shift.day]} ${currentDate} ${location} ${formattedStart} - ${formattedEnd} (${totalHours})`, 
+      location: shift.location, // ObjectId of the location
+      day: shift.day, 
+      date: currentDate, 
+      startTime: nxtWkStart, 
+      endTime: nxtWkEnd, 
+      totalHours: totalHours,
+      recurring: true, 
+      type: shift.type,
+    }
+
+    //Create recurring shift
+    await createOpenShift(data)
+    console.log(`Recurring shift created: ${data.name}`)
+  }
+}
 //Helper function to process OT data for schema (map to plain object)
 function convertMapToPlainObject(overtimeCalcsMap) {
   const forSchema = {}
@@ -108,6 +145,50 @@ function convertMapToPlainObject(overtimeCalcsMap) {
 
   return forSchema
 }
+//Helper to updateFinalizeHours, delete month-old overtime, vaca and sick. 
+async function cleanupOldEntries(date, daysOld = 30){
+  // console.log(date, daysOld) //[ 2025-05-01T04:00:00.000Z, 2025-05-07T04:00:00.000Z ] 30
+  //30 days, 24 hrs, 60 min, 60 sec, 1000 ms
+  const monthInMilliseconds = daysOld * 24 * 60 * 60 * 1000
+  const dateInMilliseconds = date[0].getTime()
+  const dateOneMonthAgo = new Date(dateInMilliseconds - monthInMilliseconds)
+
+  //1) Delete month-old overtime shifts
+  //Single DB call to remove all dates <= dateOneMonthAgo
+  await OpenShift.deleteMany({
+    date: { $lte: dateOneMonthAgo },//$lte = less than or equal to
+    // recurring: { $ne: true }, //$ne means "not equal"
+  })
+  console.log(`All month-old overtime shifts deleted.`)
+  
+  //2) Delete month-old sick/vaca time from monitors
+  //$pull → removes from an array all elements that match the condition.
+  //vaca: { date: { $lte: dateOneMonthAgo } } → finds vacation entries older than 1 month.
+  //sick: { date: { $lte: dateOneMonthAgo } } → does the same for sick entries.
+  //Runs in MongoDB, so no JS looping needed.
+  await Monitor.updateMany(
+    {},{
+      $pull: {
+        vaca: { date: { $lte: dateOneMonthAgo } },
+        sick: { date: { $lte: dateOneMonthAgo } }
+      }
+    }
+  )
+  console.log(`All month-old sick/vaca removed from monitor DB.`)
+
+  //3) Delete month-old sick/vaca time from monitors from individual DBs
+  //$pull used for arrays while deleteMany is used for single date
+  await SickTime.deleteMany({
+      day: { $lte: dateOneMonthAgo }
+    }
+  )
+  await VacationLookup.deleteMany({
+      day: { $lte: dateOneMonthAgo }
+    }
+  )
+  console.log(`All month-old sick/vaca deleted from individual DBs.`)
+
+}
 //Helper: takes monitorId and deletes all vaca associated w/ that id
 async function clearMonitorVacationShiftsAndOvertimeBids(monitorId) {
   const vacationDocs = await VacationLookup.find({ 'monitorAndOpenShift.monitorId': monitorId }).lean();
@@ -125,6 +206,7 @@ async function clearMonitorVacationShiftsAndOvertimeBids(monitorId) {
 
   console.log(`All vacation + overtime shifts cleared for monitor ID: ${monitorId}`)
 }
+//Helpers used in deleteVaca and deleteSick
 async function clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId, type = 'vacation'){
   const dateObj = new Date(dayRaw) //Processing into a date for comparison
   //1) Boolean to define as either vacation or sick
@@ -338,7 +420,6 @@ async function filterTimeOffDuplicates(monitorId, dateRange, isPartial, parsedSt
 }
 //Helper function: Creates overtime shifts of every shift on a holiday
 async function holidayOvertimeCreator(holidays){
-  // const { holidays } = await fetchCommonData()
   //0)given this week's date start -> end => helper function returns true if there's vacation this week
   let currentHoliday = holidayNextWeek(getNextThursDateObj(THISWEEK), holidays)   
   if(currentHoliday.length === 0) {
@@ -1347,8 +1428,14 @@ module.exports = {
 
       //Automatically generate overtime shifts if NEXTWEEK is holiday
       await holidayOvertimeCreator(holidays)
+      
+      //Create this week's recurring openShifts
+      await addRecurringOpenShift(getPrevDateThursObj(THISWEEK))
 
-      req.flash('success_msg', 'Monitor hour update successful, holiday overtime shifts generated.');
+      //Delete month-old overtime shifts, sick and vaca time
+      await cleanupOldEntries(getNextThursDateObj(THISWEEK))
+
+      req.flash('success_msg', 'Monitors charged, holiday overtime shifts generated, and month old overtime/sick/vacation deleted.');
       res.redirect("/parking/finalize") 
     } catch (err) {
       console.error(err);

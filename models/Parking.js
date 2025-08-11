@@ -43,12 +43,13 @@ const OpenShiftSchema = new Schema({
   date: {type: Date, required: true},  // MM/DD/YY
   startTime: { type: Date, required: true, },
   endTime: { type: Date, required: true },
-  totalHours: {type: Number},
-  recurring: { type: Boolean, default: false },
+  totalHours: {type: Number, required: true},
+  recurring: { type: Boolean, default: false, required: true},
   type: { 
     type: String,
     enum: ["firstShift", "secondShift", "thirdShift", "none"],
-    default: "none"
+    default: "none",
+    required: true,
    },
 });
 // Add a compound unique index to prevent duplicates

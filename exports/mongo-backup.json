@@ -96,17 +96,7 @@
       "name": "VACACHECK",
       "regularShift": "681152bd26093510a53bf3b5",
       "location": "6850e46b841052db64eb41d7",
-      "vaca": [
-        "2025-05-13T04:00:00.000Z",
-        "2025-05-01T04:00:00.000Z",
-        "2025-05-02T04:00:00.000Z",
-        "2025-05-03T04:00:00.000Z",
-        "2025-05-04T04:00:00.000Z",
-        "2025-05-05T04:00:00.000Z",
-        "2025-05-06T04:00:00.000Z",
-        "2025-05-07T04:00:00.000Z",
-        "2025-05-08T04:00:00.000Z"
-      ],
+      "vaca": [],
       "sick": [],
       "hours": {
         "$numberDecimal": "50"
@@ -226,8 +216,50 @@
       "name": "OVERNIGHTTEST",
       "regularShift": "681153b626093510a53bf3e1",
       "location": "6850e48a841052db64eb4209",
-      "vaca": [],
-      "sick": [],
+      "vaca": [
+        {
+          "date": "2025-08-04T04:00:00.000Z",
+          "startTime": "2025-08-05T03:17:00.000Z",
+          "endTime": "2025-08-04T07:00:00.000Z",
+          "_id": "68941aded217d72956be3a6e"
+        },
+        {
+          "date": "2025-08-05T04:00:00.000Z",
+          "_id": "68941aefd217d72956be3afb"
+        },
+        {
+          "date": "2025-08-06T04:00:00.000Z",
+          "_id": "68941aefd217d72956be3afc"
+        },
+        {
+          "date": "2025-08-07T04:00:00.000Z",
+          "_id": "68941aefd217d72956be3afd"
+        },
+        {
+          "date": "2025-08-08T04:00:00.000Z",
+          "_id": "68941aefd217d72956be3afe"
+        }
+      ],
+      "sick": [
+        {
+          "date": "2025-08-11T04:00:00.000Z",
+          "_id": "68941a55d217d72956be3877"
+        },
+        {
+          "date": "2025-08-12T04:00:00.000Z",
+          "_id": "68941a55d217d72956be3878"
+        },
+        {
+          "date": "2025-08-13T04:00:00.000Z",
+          "_id": "68941a55d217d72956be3879"
+        },
+        {
+          "date": "2025-08-14T04:00:00.000Z",
+          "startTime": "2025-08-15T03:18:00.000Z",
+          "endTime": "2025-08-14T07:00:00.000Z",
+          "_id": "68941b28d217d72956be3bc8"
+        }
+      ],
       "hours": {
         "$numberDecimal": "10"
       },
@@ -405,7 +437,8 @@
       "endTime": "2025-05-02T11:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ad636a88bee7e030675c1",
@@ -417,7 +450,8 @@
       "endTime": "2025-05-01T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ad680a88bee7e030675e3",
@@ -429,7 +463,8 @@
       "endTime": "2025-05-02T03:00:00.000Z",
       "totalHours": 9,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ad6a8a88bee7e030675f4",
@@ -441,7 +476,8 @@
       "endTime": "2025-05-02T11:00:00.000Z",
       "totalHours": 7,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687add9ca88bee7e03067605",
@@ -453,7 +489,8 @@
       "endTime": "2025-05-03T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687addbba88bee7e03067616",
@@ -465,7 +502,8 @@
       "endTime": "2025-05-03T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adde8a88bee7e03067627",
@@ -477,7 +515,8 @@
       "endTime": "2025-05-04T11:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ade17a88bee7e03067638",
@@ -489,7 +528,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ade62a88bee7e0306765a",
@@ -501,7 +541,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687ade91a88bee7e0306768b",
@@ -513,7 +554,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adeaaa88bee7e0306769c",
@@ -525,7 +567,8 @@
       "endTime": "2025-05-04T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adec8a88bee7e030676ad",
@@ -537,7 +580,8 @@
       "endTime": "2025-05-04T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adedfa88bee7e030676be",
@@ -549,7 +593,8 @@
       "endTime": "2025-05-04T04:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adef9a88bee7e030676cf",
@@ -561,7 +606,8 @@
       "endTime": "2025-05-05T11:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adf5aa88bee7e030676fb",
@@ -573,7 +619,8 @@
       "endTime": "2025-05-04T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adf76a88bee7e0306770c",
@@ -585,7 +632,8 @@
       "endTime": "2025-05-04T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adf91a88bee7e0306771d",
@@ -597,7 +645,8 @@
       "endTime": "2025-05-04T19:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "687adfc0a88bee7e03067746",
@@ -609,7 +658,8 @@
       "endTime": "2025-05-05T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adfd2a88bee7e03067757",
@@ -621,7 +671,8 @@
       "endTime": "2025-05-05T04:00:00.000Z",
       "totalHours": 9,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687adff2a88bee7e03067768",
@@ -633,7 +684,8 @@
       "endTime": "2025-05-05T11:00:00.000Z",
       "totalHours": 7,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ae0f4a88bee7e030677c8",
@@ -645,7 +697,8 @@
       "endTime": "2025-05-06T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae10ca88bee7e030677d9",
@@ -657,7 +710,8 @@
       "endTime": "2025-05-06T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae130a88bee7e030677ea",
@@ -669,7 +723,8 @@
       "endTime": "2025-05-07T03:00:00.000Z",
       "totalHours": 9,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae148a88bee7e030677fb",
@@ -681,7 +736,8 @@
       "endTime": "2025-05-07T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae190a88bee7e0306780c",
@@ -693,7 +749,8 @@
       "endTime": "2025-05-08T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae1a3a88bee7e0306781d",
@@ -705,7 +762,8 @@
       "endTime": "2025-05-08T03:00:00.000Z",
       "totalHours": 7.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "687ae572fb700a9f97019849",
@@ -717,7 +775,8 @@
       "endTime": "2025-05-01T11:00:00.000Z",
       "totalHours": 7,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "thirdShift"
     },
     {
       "_id": "687ae5adfb700a9f9701986d",
@@ -729,127 +788,8 @@
       "endTime": "2025-05-03T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a17",
-      "name": "FRI 7/4/25 SFPG BOOTH 07:00 AM - 03:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T12:00:00.000Z",
-      "endTime": "1970-01-01T20:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a1b",
-      "name": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.5)",
-      "location": "6850e2c9841052db64eb410f",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T12:00:00.000Z",
-      "endTime": "1970-01-01T20:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a1f",
-      "name": "FRI 7/4/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a23",
-      "name": "FRI 7/4/25 10EV 05:30 AM - 09:00 AM (3.5)",
-      "location": "6850e2c9841052db64eb410f",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T10:30:00.000Z",
-      "endTime": "1970-01-01T14:00:00.000Z",
-      "totalHours": 3.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a27",
-      "name": "FRI 7/4/25 HBS 07:00 AM - 03:30 PM (8.5)",
-      "location": "6850e2e6841052db64eb415a",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T12:00:00.000Z",
-      "endTime": "1970-01-01T20:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a2d",
-      "name": "FRI 7/4/25 SFPG BOOTH 08:00 AM - 04:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T13:00:00.000Z",
-      "endTime": "1970-01-01T21:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a31",
-      "name": "FRI 7/4/25 SFPG/1WES 03:00 PM - 11:30 PM (8.5)",
-      "location": "6850e48a841052db64eb4209",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T20:00:00.000Z",
-      "endTime": "1970-01-02T04:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a35",
-      "name": "FRI 7/4/25 ROVING 03:30 PM - 12:00 AM (8.5)",
-      "location": "6850e465841052db64eb41be",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T20:30:00.000Z",
-      "endTime": "1970-01-01T05:00:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a39",
-      "name": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 02:00 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
-      "day": "friday",
-      "date": "2025-07-04T04:00:00.000Z",
-      "startTime": "1970-01-01T10:30:00.000Z",
-      "endTime": "1970-01-01T19:00:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "6881a72bffc6a25024c15a3d",
-      "name": "THU 7/3/25 SFPG/1WES 11:00 PM - 07:30 AM (8.5)",
-      "location": "6850e48a841052db64eb4209",
-      "day": "thursday",
-      "date": "2025-07-03T04:00:00.000Z",
-      "startTime": "1970-01-02T04:00:00.000Z",
-      "endTime": "1970-01-01T12:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "6882e4fbd973b1a907119ed3",
@@ -861,7 +801,8 @@
       "endTime": "2025-05-08T19:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "6882e514d973b1a907119ef7",
@@ -873,7 +814,8 @@
       "endTime": "2025-05-10T03:00:00.000Z",
       "totalHours": 8,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "secondShift"
     },
     {
       "_id": "6882e91719ac810ce4d08674",
@@ -885,7 +827,8 @@
       "endTime": "1970-01-01T20:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
       "_id": "6882e967ade9f69e453b360b",
@@ -897,90 +840,267 @@
       "endTime": "1970-01-01T20:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
-      "__v": 0
+      "__v": 0,
+      "type": "firstShift"
     },
     {
-      "_id": "6882eaafafa5fe51ca0bd9bf",
-      "name": "TUE 5/13/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
-      "day": "tuesday",
-      "date": "2025-05-13T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
-      "totalHours": 8.5,
-      "recurring": false,
-      "__v": 0
-    },
-    {
-      "_id": "68842a1fc367a51500174317",
-      "name": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
+      "_id": "6891121b63cf682d54e659fe",
+      "name": "THU 7/3/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
       "day": "thursday",
-      "date": "2025-05-01T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
+      "date": "2025-07-03T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
+      "type": "thirdShift",
       "__v": 0
     },
     {
-      "_id": "68842a1fc367a5150017431a",
-      "name": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "_id": "6891121b63cf682d54e65a04",
+      "name": "FRI 7/4/25 SFPG BOOTH 07:00 AM - 03:30 PM (8.50)",
       "location": "6850e46b841052db64eb41d7",
       "day": "friday",
-      "date": "2025-05-02T04:00:00.000Z",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "firstShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a08",
+      "name": "FRI 7/4/25 10EV 07:00 AM - 03:30 PM (8.50)",
+      "location": "6850e2c9841052db64eb410f",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "firstShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a0c",
+      "name": "FRI 7/4/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.50)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
       "startTime": "1970-01-01T10:00:00.000Z",
       "endTime": "1970-01-01T18:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
+      "type": "firstShift",
       "__v": 0
     },
     {
-      "_id": "68842a1fc367a5150017431d",
-      "name": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
+      "_id": "6891121b63cf682d54e65a10",
+      "name": "FRI 7/4/25 10EV 05:30 AM - 09:00 AM (3.50)",
+      "location": "6850e2c9841052db64eb410f",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T14:00:00.000Z",
+      "totalHours": 3.5,
+      "recurring": false,
+      "type": "firstShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a14",
+      "name": "FRI 7/4/25 HBS 07:00 AM - 03:30 PM (8.50)",
+      "location": "6850e2e6841052db64eb415a",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T12:00:00.000Z",
+      "endTime": "1970-01-01T20:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "firstShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a1a",
+      "name": "FRI 7/4/25 SFPG BOOTH 08:00 AM - 04:30 PM (8.50)",
       "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T13:00:00.000Z",
+      "endTime": "1970-01-01T21:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "firstShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a1e",
+      "name": "FRI 7/4/25 SFPG/1WES 03:00 PM - 11:30 PM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T20:00:00.000Z",
+      "endTime": "1970-01-02T04:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "secondShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a22",
+      "name": "FRI 7/4/25 ROVING 03:30 PM - 12:00 AM (8.50)",
+      "location": "6850e465841052db64eb41be",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T20:30:00.000Z",
+      "endTime": "1970-01-01T05:00:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "secondShift",
+      "__v": 0
+    },
+    {
+      "_id": "6891121b63cf682d54e65a26",
+      "name": "FRI 7/4/25 SFPG BOOTH 05:30 AM - 02:00 PM (8.50)",
+      "location": "6850e46b841052db64eb41d7",
+      "day": "friday",
+      "date": "2025-07-04T04:00:00.000Z",
+      "startTime": "1970-01-01T10:30:00.000Z",
+      "endTime": "1970-01-01T19:00:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "firstShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941a55d217d72956be3882",
+      "name": "MON 8/11/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
       "day": "monday",
-      "date": "2025-05-05T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
+      "date": "2025-08-11T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
+      "type": "thirdShift",
       "__v": 0
     },
     {
-      "_id": "68842a1fc367a51500174320",
-      "name": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
+      "_id": "68941a55d217d72956be3885",
+      "name": "TUE 8/12/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
       "day": "tuesday",
-      "date": "2025-05-06T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
+      "date": "2025-08-12T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
+      "type": "thirdShift",
       "__v": 0
     },
     {
-      "_id": "68842a20c367a51500174323",
-      "name": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
+      "_id": "68941a55d217d72956be3888",
+      "name": "WED 8/13/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
       "day": "wednesday",
-      "date": "2025-05-07T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
+      "date": "2025-08-13T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
+      "type": "thirdShift",
       "__v": 0
     },
     {
-      "_id": "68842a20c367a51500174326",
-      "name": "THU 5/8/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "location": "6850e46b841052db64eb41d7",
-      "day": "thursday",
-      "date": "2025-05-08T04:00:00.000Z",
-      "startTime": "1970-01-01T10:00:00.000Z",
-      "endTime": "1970-01-01T18:30:00.000Z",
+      "_id": "68941aded217d72956be3a75",
+      "name": "MON 8/4/25 SFPG/1WES 11:17 PM - 03:00 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "monday",
+      "date": "2025-08-04T04:00:00.000Z",
+      "startTime": "2025-08-05T03:17:00.000Z",
+      "endTime": "2025-08-05T07:00:00.000Z",
       "totalHours": 8.5,
       "recurring": false,
+      "type": "thirdShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941aefd217d72956be3b09",
+      "name": "MON 8/4/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "monday",
+      "date": "2025-08-04T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "thirdShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941aefd217d72956be3b0c",
+      "name": "TUE 8/5/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "tuesday",
+      "date": "2025-08-05T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "thirdShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941aefd217d72956be3b0f",
+      "name": "WED 8/6/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "wednesday",
+      "date": "2025-08-06T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "thirdShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941aefd217d72956be3b12",
+      "name": "THU 8/7/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "thursday",
+      "date": "2025-08-07T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "thirdShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941aefd217d72956be3b15",
+      "name": "FRI 8/8/25 SFPG/1WES 11:00 PM - 07:30 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "friday",
+      "date": "2025-08-08T04:00:00.000Z",
+      "startTime": "1970-01-02T04:00:00.000Z",
+      "endTime": "1970-01-01T12:30:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "thirdShift",
+      "__v": 0
+    },
+    {
+      "_id": "68941b29d217d72956be3bd4",
+      "name": "THU 8/14/25 SFPG/1WES 11:18 PM - 03:00 AM (8.50)",
+      "location": "6850e48a841052db64eb4209",
+      "day": "thursday",
+      "date": "2025-08-14T04:00:00.000Z",
+      "startTime": "2025-08-15T03:18:00.000Z",
+      "endTime": "2025-08-15T07:00:00.000Z",
+      "totalHours": 8.5,
+      "recurring": false,
+      "type": "thirdShift",
       "__v": 0
     }
   ],
@@ -1171,7 +1291,6 @@
           "_id": "687ae220a88bee7e030678f8"
         }
       ],
-      "workMoreThanOne": true,
       "workAnyShift": false,
       "__v": 0
     },
@@ -1195,7 +1314,6 @@
           "_id": "687ae23fa88bee7e03067952"
         }
       ],
-      "workMoreThanOne": false,
       "workAnyShift": false,
       "__v": 0
     },
@@ -1229,7 +1347,6 @@
           "_id": "687ae63bfb700a9f97019b69"
         }
       ],
-      "workMoreThanOne": true,
       "workAnyShift": false,
       "__v": 0
     },
@@ -1263,41 +1380,6 @@
           "_id": "687ae642fb700a9f97019bbf"
         }
       ],
-      "workMoreThanOne": true,
-      "workAnyShift": false,
-      "__v": 0
-    },
-    {
-      "_id": "6887c9d31a6a5d4aa078e563",
-      "monitor": "6830d73bb73f6f94f7fab410",
-      "rankings": [
-        {
-          "position": "68842a1fc367a51500174317",
-          "rank": 1,
-          "_id": "68882dbaff109bbe3d78e143"
-        },
-        {
-          "position": "687ae572fb700a9f97019849",
-          "rank": 2,
-          "_id": "68882dbaff109bbe3d78e144"
-        },
-        {
-          "position": "687ad636a88bee7e030675c1",
-          "rank": 3,
-          "_id": "68882dbaff109bbe3d78e145"
-        },
-        {
-          "position": "687ad680a88bee7e030675e3",
-          "rank": 4,
-          "_id": "68882dbaff109bbe3d78e146"
-        },
-        {
-          "position": "687ad5dfa88bee7e0306759f",
-          "rank": 5,
-          "_id": "68882dbaff109bbe3d78e147"
-        }
-      ],
-      "workMoreThanOne": false,
       "workAnyShift": false,
       "__v": 0
     },
@@ -1326,26 +1408,82 @@
           "_id": "688a6e8d7fae0d321f889093"
         }
       ],
-      "workMoreThanOne": true,
       "workAnyShift": false,
       "__v": 0
+    },
+    {
+      "_id": "68966d2e8d70fc738bf47f40",
+      "monitor": "688a7dc7fdcd9810e41edf66",
+      "__v": 0,
+      "rankings": [
+        {
+          "position": "687adf76a88bee7e0306770c",
+          "rank": 1,
+          "_id": "6896715dbaa85432035f20a9"
+        },
+        {
+          "position": "687adf91a88bee7e0306771d",
+          "rank": 2,
+          "_id": "6896715dbaa85432035f20aa"
+        },
+        {
+          "position": "687adfd2a88bee7e03067757",
+          "rank": 3,
+          "_id": "6896715dbaa85432035f20ab"
+        },
+        {
+          "position": "687adfc0a88bee7e03067746",
+          "rank": 4,
+          "_id": "6896715dbaa85432035f20ac"
+        },
+        {
+          "position": "687adef9a88bee7e030676cf",
+          "rank": 5,
+          "_id": "6896715dbaa85432035f20ad"
+        },
+        {
+          "position": "687adff2a88bee7e03067768",
+          "rank": 6,
+          "_id": "6896715dbaa85432035f20ae"
+        },
+        {
+          "position": "687ae0f4a88bee7e030677c8",
+          "rank": 7,
+          "_id": "6896715dbaa85432035f20af"
+        },
+        {
+          "position": "687ae10ca88bee7e030677d9",
+          "rank": 8,
+          "_id": "6896715dbaa85432035f20b0"
+        },
+        {
+          "position": "687ae130a88bee7e030677ea",
+          "rank": 9,
+          "_id": "6896715dbaa85432035f20b1"
+        },
+        {
+          "position": "687ae148a88bee7e030677fb",
+          "rank": 10,
+          "_id": "6896715dbaa85432035f20b2"
+        },
+        {
+          "position": "687ae1a3a88bee7e0306781d",
+          "rank": 11,
+          "_id": "6896715dbaa85432035f20b3"
+        }
+      ],
+      "workAnyShift": false
     }
   ],
   "OvertimeSchedule": [
     {
-      "_id": "688ba8d5c001f3bf41f1ccc1",
+      "_id": "68969d792505545212072011",
       "days": {
         "thursday": {
           "locIds": [
             "6850e6c11c9aa50730b201fe"
           ],
           "shifts": {
-            "68842a1fc367a51500174317": {
-              "monitorId": "6830d73bb73f6f94f7fab410",
-              "monitorName": "QUINCY",
-              "shiftName": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-              "locationId": "6850e46b841052db64eb41d7"
-            },
             "687ae572fb700a9f97019849": {
               "monitorId": "68433752b08726f40bada443",
               "monitorName": "TESTERTWO",
@@ -1375,12 +1513,6 @@
         "friday": {
           "locIds": [],
           "shifts": {
-            "68842a1fc367a5150017431a": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "FRI 5/2/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-              "locationId": "6850e46b841052db64eb41d7"
-            },
             "687ad6a8a88bee7e030675f4": {
               "monitorId": "6826563dd3f7526aff07d080",
               "monitorName": "VACACHECK",
@@ -1466,8 +1598,8 @@
               "locationId": "6850e2e1841052db64eb4141"
             },
             "687adf76a88bee7e0306770c": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": "688a7dc7fdcd9810e41edf66",
+              "monitorName": "OVERNIGHTTEST",
               "shiftName": "SUN 5/4/25 NORTH 07:00 AM - 03:00 PM (8.0)",
               "locationId": "6850e2f0841052db64eb4173"
             },
@@ -1478,8 +1610,8 @@
               "locationId": "6850e6951c9aa50730b201b3"
             },
             "687adfd2a88bee7e03067757": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": "688a7dc7fdcd9810e41edf66",
+              "monitorName": "OVERNIGHTTEST",
               "shiftName": "SUN 5/4/25 BWYG 03:00 PM - 12:00 AM (9.0)",
               "locationId": "6850e2e1841052db64eb4141"
             },
@@ -1500,12 +1632,6 @@
         "monday": {
           "locIds": [],
           "shifts": {
-            "68842a1fc367a5150017431d": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "MON 5/5/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-              "locationId": "6850e46b841052db64eb41d7"
-            },
             "687adff2a88bee7e03067768": {
               "monitorId": null,
               "monitorName": "OPEN",
@@ -1513,8 +1639,8 @@
               "locationId": "6850e465841052db64eb41be"
             },
             "687ae0f4a88bee7e030677c8": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": "688a7dc7fdcd9810e41edf66",
+              "monitorName": "OVERNIGHTTEST",
               "shiftName": "MON 5/5/25 HBS 03:30 PM - 11:00 PM (7.5)",
               "locationId": "6850e2e6841052db64eb415a"
             },
@@ -1529,15 +1655,9 @@
         "tuesday": {
           "locIds": [],
           "shifts": {
-            "68842a1fc367a51500174320": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "TUE 5/6/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-              "locationId": "6850e46b841052db64eb41d7"
-            },
             "687ae130a88bee7e030677ea": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": "688a7dc7fdcd9810e41edf66",
+              "monitorName": "OVERNIGHTTEST",
               "shiftName": "TUE 5/6/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
               "locationId": "6850e524841052db64eb423b"
             },
@@ -1552,15 +1672,9 @@
         "wednesday": {
           "locIds": [],
           "shifts": {
-            "68842a20c367a51500174323": {
-              "monitorId": null,
-              "monitorName": "OPEN",
-              "shiftName": "WED 5/7/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-              "locationId": "6850e46b841052db64eb41d7"
-            },
             "687ae1a3a88bee7e0306781d": {
-              "monitorId": null,
-              "monitorName": "OPEN",
+              "monitorId": "688a7dc7fdcd9810e41edf66",
+              "monitorName": "OVERNIGHTTEST",
               "shiftName": "WED 5/7/25 HBS 03:30 PM - 11:00 PM (7.5)",
               "locationId": "6850e2e6841052db64eb415a"
             },
@@ -1573,19 +1687,32 @@
           }
         }
       },
-      "createdAt": "2025-07-31T17:33:09.096Z",
-      "updatedAt": "2025-07-31T17:33:09.096Z",
+      "createdAt": "2025-08-09T00:59:37.413Z",
+      "updatedAt": "2025-08-09T00:59:37.413Z",
       "__v": 0
     }
   ],
   "OvertimeAudit": [
     {
-      "_id": "688ba8d5c001f3bf41f1ccb7",
+      "_id": "68969d792505545212072003",
+      "shiftName": "SUN 5/4/25 NORTH 07:00 AM - 03:00 PM (8.0)",
+      "monitorName": "OVERNIGHTTEST",
+      "hours": 8,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 8
+      },
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.374Z",
+      "updatedAt": "2025-08-09T00:59:37.374Z"
+    },
+    {
+      "_id": "68969d792505545212072004",
       "shiftName": "FRI 5/2/25 HBS 12:00 AM - 07:00 AM (7.0)",
       "monitorName": "VACACHECK",
       "hours": 7,
       "monitorsToCharge": {
         "OVERNIGHTTEST": 7,
+        "VACACHECK": 6,
         "JEFFERSON": 7,
         "KENNEDY": 7,
         "MADISON": 7,
@@ -1597,12 +1724,12 @@
         "COOLIDGE": 7,
         "GARFIELD": 7
       },
-      "createdAt": "2025-07-31T17:33:09.049Z",
-      "updatedAt": "2025-07-31T17:33:09.049Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.375Z",
+      "updatedAt": "2025-08-09T00:59:37.375Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccb8",
+      "_id": "68969d792505545212072005",
       "shiftName": "FRI 5/2/25 HBS 03:30 PM - 11:00 PM (7.5)",
       "monitorName": "VACACHECK2",
       "hours": 7.5,
@@ -1620,41 +1747,30 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.375Z",
+      "updatedAt": "2025-08-09T00:59:37.375Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccb9",
+      "_id": "68969d792505545212072006",
       "shiftName": "SUN 5/4/25 RIVER 07:30 AM - 03:00 PM (7.5)",
       "monitorName": "JEFFERSON",
       "hours": 7.5,
       "monitorsToCharge": {
-        "OVERNIGHTTEST": 7,
-        "VACACHECK2": 7,
-        "JEFFERSON": 7.25,
-        "KENNEDY": 7,
-        "MADISON": 7,
-        "TESTERTWO": 7,
-        "WASHINGTON": 7,
-        "ADAMS": 7,
-        "VAN BUREN": 7,
-        "HARRISON": 7,
-        "COOLIDGE": 7,
-        "GARFIELD": 7,
-        "TESTERONE": 7
+        "JEFFERSON": 7.25
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccba",
+      "_id": "68969d792505545212072007",
       "shiftName": "THU 5/1/25 ROVING 12:00 AM - 07:00 AM (7.0)",
       "monitorName": "TESTERTWO",
       "hours": 7,
       "monitorsToCharge": {
         "OVERNIGHTTEST": 7,
+        "VACACHECK": 7,
         "VACACHECK2": 7,
         "JEFFERSON": 7,
         "KENNEDY": 7,
@@ -1664,60 +1780,57 @@
         "ADAMS": 7,
         "VAN BUREN": 7,
         "HARRISON": 7,
+        "QUINCY": 7,
         "COOLIDGE": 7,
         "GARFIELD": 7
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccbb",
-      "shiftName": "THU 5/1/25 SFPG BOOTH 05:00 AM - 01:30 PM (8.5)",
-      "monitorName": "QUINCY",
-      "hours": 8.5,
-      "monitorsToCharge": {
-        "OVERNIGHTTEST": 7,
-        "JEFFERSON": 7,
-        "KENNEDY": 7,
-        "MADISON": 7,
-        "WASHINGTON": 7,
-        "VAN BUREN": 7,
-        "QUINCY": 8.5,
-        "GARFIELD": 7
-      },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
-    },
-    {
-      "_id": "688ba8d5c001f3bf41f1ccbc",
+      "_id": "68969d792505545212072008",
       "shiftName": "THU 5/1/25 HBS 02:00 PM - 11:00 PM (9.0)",
       "monitorName": "TESTERONE",
       "hours": 9,
       "monitorsToCharge": {
         "OVERNIGHTTEST": 7,
+        "VACACHECK": 7,
         "VACACHECK2": 7,
         "JEFFERSON": 7,
         "WASHINGTON": 7,
         "ADAMS": 7,
         "VAN BUREN": 7,
         "HARRISON": 7,
+        "QUINCY": 7,
         "COOLIDGE": 7,
         "GARFIELD": 7,
         "TESTERONE": 8
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccbd",
+      "_id": "68969d792505545212072009",
+      "shiftName": "SUN 5/4/25 BWYG 03:00 PM - 12:00 AM (9.0)",
+      "monitorName": "OVERNIGHTTEST",
+      "hours": 9,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 9
+      },
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
+    },
+    {
+      "_id": "68969d79250554521207200a",
       "shiftName": "FRI 5/2/25 RIVER ROVER 03:30 PM - 11:00 PM (7.5)",
       "monitorName": "VACACHECK",
       "hours": 7.5,
       "monitorsToCharge": {
         "OVERNIGHTTEST": 7,
+        "VACACHECK": 7.5,
         "JEFFERSON": 7,
         "TESTERTWO": 7,
         "WASHINGTON": 7,
@@ -1729,12 +1842,12 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccbe",
+      "_id": "68969d79250554521207200b",
       "shiftName": "SAT 5/3/25 BWYG 07:00 AM - 03:00 PM (8.0)",
       "monitorName": "VACACHECK2",
       "hours": 8,
@@ -1753,16 +1866,17 @@
         "GARFIELD": 7,
         "TESTERONE": 7
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
     },
     {
-      "_id": "688ba8d5c001f3bf41f1ccbf",
+      "_id": "68969d79250554521207200c",
       "shiftName": "THU 5/1/25 52OX 11:00 PM - 07:00 AM (8.0)",
       "monitorName": "TESTERTWO",
       "hours": 8,
       "monitorsToCharge": {
+        "VACACHECK": 7,
         "VACACHECK2": 7,
         "JEFFERSON": 7,
         "KENNEDY": 7,
@@ -1771,122 +1885,200 @@
         "ADAMS": 7,
         "VAN BUREN": 7,
         "HARRISON": 7,
+        "QUINCY": 7,
         "COOLIDGE": 7,
         "GARFIELD": 7
       },
-      "createdAt": "2025-07-31T17:33:09.052Z",
-      "updatedAt": "2025-07-31T17:33:09.052Z",
-      "__v": 0
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
+    },
+    {
+      "_id": "68969d79250554521207200d",
+      "shiftName": "MON 5/5/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "monitorName": "OVERNIGHTTEST",
+      "hours": 7.5,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7.5
+      },
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
+    },
+    {
+      "_id": "68969d79250554521207200e",
+      "shiftName": "TUE 5/6/25 RIVER ROVER 02:00 PM - 11:00 PM (9.0)",
+      "monitorName": "OVERNIGHTTEST",
+      "hours": 9,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 9
+      },
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
+    },
+    {
+      "_id": "68969d79250554521207200f",
+      "shiftName": "WED 5/7/25 HBS 03:30 PM - 11:00 PM (7.5)",
+      "monitorName": "OVERNIGHTTEST",
+      "hours": 7.5,
+      "monitorsToCharge": {
+        "OVERNIGHTTEST": 7.5,
+        "VACACHECK": 7,
+        "VACACHECK2": 7,
+        "JEFFERSON": 7,
+        "TESTERTWO": 7,
+        "WASHINGTON": 7,
+        "ADAMS": 7,
+        "VAN BUREN": 7,
+        "HARRISON": 7,
+        "QUINCY": 7,
+        "COOLIDGE": 7,
+        "GARFIELD": 7,
+        "TESTERONE": 7
+      },
+      "__v": 0,
+      "createdAt": "2025-08-09T00:59:37.376Z",
+      "updatedAt": "2025-08-09T00:59:37.376Z"
     }
   ],
   "VacationLookup": [
     {
-      "_id": "6882eaae1a6a5d4aa077e383",
-      "day": "2025-05-13T04:00:00.000Z",
+      "_id": "68941add97132e1ae4e333cf",
+      "day": "2025-08-04T04:00:00.000Z",
+      "__v": 0,
       "monitorAndOpenShift": [
         {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "6882eaafafa5fe51ca0bd9bf",
-          "_id": "6882eaafafa5fe51ca0bd9c1"
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941aded217d72956be3a75",
+          "startTime": "2025-08-05T03:17:00.000Z",
+          "endTime": "2025-08-05T07:00:00.000Z",
+          "_id": "68941aded217d72956be3a77"
         }
-      ],
-      "__v": 0
+      ]
     },
     {
-      "_id": "68842a1f1a6a5d4aa07836a2",
-      "day": "2025-05-01T04:00:00.000Z",
+      "_id": "68941aef97132e1ae4e333dd",
+      "day": "2025-08-05T04:00:00.000Z",
+      "__v": 0,
       "monitorAndOpenShift": [
         {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "68842a1fc367a51500174317",
-          "_id": "68842a20c367a51500174328"
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941aefd217d72956be3b0c",
+          "_id": "68941aefd217d72956be3b17"
         }
-      ],
-      "__v": 0
+      ]
     },
     {
-      "_id": "68842a1f1a6a5d4aa07836a3",
-      "day": "2025-05-02T04:00:00.000Z",
+      "_id": "68941aef97132e1ae4e333de",
+      "day": "2025-08-06T04:00:00.000Z",
+      "__v": 0,
       "monitorAndOpenShift": [
         {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "68842a1fc367a5150017431a",
-          "_id": "68842a20c367a5150017432b"
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941aefd217d72956be3b0f",
+          "_id": "68941aefd217d72956be3b1a"
         }
-      ],
-      "__v": 0
+      ]
     },
     {
-      "_id": "68842a1f1a6a5d4aa07836a5",
-      "day": "2025-05-05T04:00:00.000Z",
+      "_id": "68941aef97132e1ae4e333df",
+      "day": "2025-08-07T04:00:00.000Z",
+      "__v": 0,
       "monitorAndOpenShift": [
         {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "68842a1fc367a5150017431d",
-          "_id": "68842a20c367a5150017432e"
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941aefd217d72956be3b12",
+          "_id": "68941aefd217d72956be3b1d"
         }
-      ],
-      "__v": 0
+      ]
     },
     {
-      "_id": "68842a1f1a6a5d4aa07836a6",
-      "day": "2025-05-06T04:00:00.000Z",
+      "_id": "68941aef97132e1ae4e333e0",
+      "day": "2025-08-08T04:00:00.000Z",
+      "__v": 0,
       "monitorAndOpenShift": [
         {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "68842a1fc367a51500174320",
-          "_id": "68842a20c367a51500174331"
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941aefd217d72956be3b15",
+          "_id": "68941aefd217d72956be3b20"
         }
-      ],
-      "__v": 0
-    },
-    {
-      "_id": "68842a1f1a6a5d4aa07836a7",
-      "day": "2025-05-07T04:00:00.000Z",
-      "monitorAndOpenShift": [
-        {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "68842a20c367a51500174323",
-          "_id": "68842a20c367a51500174334"
-        }
-      ],
-      "__v": 0
-    },
-    {
-      "_id": "68842a1f1a6a5d4aa07836a8",
-      "day": "2025-05-08T04:00:00.000Z",
-      "monitorAndOpenShift": [
-        {
-          "monitorId": "6826563dd3f7526aff07d080",
-          "openShiftId": "68842a20c367a51500174326",
-          "_id": "68842a20c367a51500174337"
-        }
-      ],
-      "__v": 0
+      ]
     }
   ],
   "Holiday": [
     {
-      "_id": "6881a5a16a037b1b51ef4d75",
-      "name": "ind",
+      "_id": "689111c7c4965efb40115176",
+      "name": "Independence Day",
       "month": 7,
       "day": 4,
       "year": 2025,
       "openShiftArr": [
-        "6881a72bffc6a25024c15a17",
-        "6881a72bffc6a25024c15a1b",
-        "6881a72bffc6a25024c15a1f",
-        "6881a72bffc6a25024c15a23",
-        "6881a72bffc6a25024c15a27",
-        "6881a72bffc6a25024c15a2d",
-        "6881a72bffc6a25024c15a31",
-        "6881a72bffc6a25024c15a35",
-        "6881a72bffc6a25024c15a39",
-        "6881a72bffc6a25024c15a3d"
+        "6891121b63cf682d54e659fe",
+        "6891121b63cf682d54e65a04",
+        "6891121b63cf682d54e65a08",
+        "6891121b63cf682d54e65a0c",
+        "6891121b63cf682d54e65a10",
+        "6891121b63cf682d54e65a14",
+        "6891121b63cf682d54e65a1a",
+        "6891121b63cf682d54e65a1e",
+        "6891121b63cf682d54e65a22",
+        "6891121b63cf682d54e65a26"
       ],
       "__v": 0
     }
   ],
-  "SickTime": [],
+  "SickTime": [
+    {
+      "_id": "68941a5497132e1ae4e33398",
+      "day": "2025-08-11T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941a55d217d72956be3882",
+          "_id": "68941a55d217d72956be388a"
+        }
+      ]
+    },
+    {
+      "_id": "68941a5497132e1ae4e33399",
+      "day": "2025-08-12T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941a55d217d72956be3885",
+          "_id": "68941a55d217d72956be388d"
+        }
+      ]
+    },
+    {
+      "_id": "68941a5497132e1ae4e3339a",
+      "day": "2025-08-13T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941a55d217d72956be3888",
+          "_id": "68941a55d217d72956be3890"
+        }
+      ]
+    },
+    {
+      "_id": "68941b2897132e1ae4e333e9",
+      "day": "2025-08-14T04:00:00.000Z",
+      "__v": 0,
+      "monitorAndOpenShift": [
+        {
+          "monitorId": "688a7dc7fdcd9810e41edf66",
+          "openShiftId": "68941b29d217d72956be3bd4",
+          "startTime": "2025-08-15T03:18:00.000Z",
+          "endTime": "2025-08-15T07:00:00.000Z",
+          "_id": "68941b29d217d72956be3bd6"
+        }
+      ]
+    }
+  ],
   "ShortNotice": []
 }

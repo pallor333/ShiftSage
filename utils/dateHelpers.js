@@ -9,7 +9,15 @@ function calculateShiftHours(startTime, endTime){
   }
 
   const diffInHours = diffInMilliseconds / (1000 * 60 * 60) // Convert to hours
-  return diffInHours.toFixed(2) // Round to 1 decimal place
+  let rounded = diffInHours.toFixed(2)
+
+  // Remove trailing zero if last digit is zero
+  if (rounded.endsWith("0")) {
+    rounded = rounded.slice(0, -1)
+  }
+
+  return rounded
+  // return diffInHours.toFixed(2) // Round to 1 decimal place
 }
 //Helper converts Date Objects or Strings to M/D/YY
 function convertDateToMDYY(input) {
@@ -95,11 +103,12 @@ function getFixedTimeRangeISO(startTime, endTime, shiftDate){
 function getNextThurs(date){
   const day = date.getDay() //0 = Sun, 6 = Sat
   const wkStart = new Date(date)
+  const sixDaysInMs = 518400000
 
   //Calculate days till next Thurs
   const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7;
   wkStart.setDate(date.getDate() + daysUntilThursday)
-  const wkEnd = new Date(wkStart.getTime() + 518400000) //6 days in ms  
+  const wkEnd = new Date(wkStart.getTime() + sixDaysInMs)  
   // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
   // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
 
@@ -111,17 +120,18 @@ function getNextThurs(date){
 function getNextThursDateObj(date){
   const day = date.getDay() //0 = Sun, 6 = Sat
   const wkStart = new Date(date)
+  const sixDaysInMs = 518400000
 
   //Calculate days till next Thurs
   const daysUntilThursday = day <= 4 ? 4 - day : 4 - day + 7;
   wkStart.setDate(date.getDate() + daysUntilThursday)
-  const wkEnd = new Date(wkStart.getTime() + 518400000) //6 days in ms  
+  const wkEnd = new Date(wkStart.getTime() + sixDaysInMs) //6 days in ms  
   // day = 0 (sun) (5/18); 4 - 0 = 4; 5/18 + 4 = 5/22 (thur)  
   // day = 5 (fri) (5/23); 4 - 5 + 7 = 6; 5/23 + 6 = 5/29 (thurs)
 
   return [wkStart, wkEnd] //Return as Date Object
 }
-//Helper: Get start  of next next Thurs as string
+//Helper: Get start of next next Thurs as string
 function getNextNextThurs(date){
   const [wkStart, wkEnd] = getNextThursDateObj(date)
   // console.log(wkStart, wkEnd)
@@ -130,6 +140,19 @@ function getNextNextThurs(date){
 
   return secondWk
 
+}
+//Returns previous Thurs to Weds as Date Obj
+function getPrevThursDateObj(date){
+  const day = date.getDay() //0 = Sun, 6 = Sat
+  const wkStart = new Date(date)
+  const sixDaysInMs = 518400000
+
+  //Calculate days till prev Thurs
+  const daysUntilThursday = (day >= 4) ? day - 4 : day + 3; // e.g. if Mon(1): 1 + 3 =4 days ago
+  wkStart.setDate(date.getDate() - daysUntilThursday)
+  const wkEnd = new Date(wkStart.getTime() + sixDaysInMs ) 
+
+  return [wkStart, wkEnd] //Return as Date Object
 }
 //Helper function to get previous day
 function getPreviousDay(dateStr) {
@@ -278,7 +301,7 @@ function qualifyingRegularShifts(dateHoliday, monitors, DAYSARRAY){
 module.exports = { 
   calculateShiftHours, convertDateToMDYY, 
   findClosestHoliday, formatDate, formatDateUTC, formatTime, formatTimeAMPM,
-  getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPreviousDay, getShiftOverlap,
+  getCurrentDay, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextThursDateObj, getNextNextThurs, getPrevThursDateObj, getPreviousDay, getShiftOverlap,
   holidayNextWeek,
   isDateInRange,
   toMinutes,
