@@ -40,7 +40,7 @@ async function addOpenShiftFromVacation(monitorObj, monitorId, dateRange, partia
   const locationId = monitorObj.location._id, locationName = monitorObj.location.name
   const shiftType = monitorObj.regularShift.type
   //Both values !== null = true = partial day
-  const partialDay = partialShift[0] !== null && partialShift[1] !== null 
+  const partialDay = Array.isArray(partialShift) && partialShift[0] !== null && partialShift[1] !== null 
 
 
   if(partialDay){ //partial day = 
@@ -545,32 +545,111 @@ async function monitorsOnVacationNextWeek(monitors){
 
   return nxtWkMonitorVaca
 }
+//Helper for addSick() and addVaca()
+async function addTimeOffHelper(timeOffMonitorSelect, timeOffStartDate, timeOffEndDate, timeOffStartTime, timeOffEndTime,  timeOffType){
+  //console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
+  const { monitors, vacaLookup, sickTime } = await fetchCommonData()
+
+  const isVacation = timeOffType === 'vacation'
+  const TimeOffModel = isVacation ? VacationLookup : SickTime;
+  const TimeOffModelFetched = isVacation ? vacaLookup : sickTime
+  const timeOffField = isVacation ? 'vaca' : 'sick'
+
+  //Create lookup table and get monitor from monitor id
+  const monitorObj = monitorLookupByMonitorIdTable(monitors).get(timeOffMonitorSelect)
+  const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
+  //Parse local dates + split before declaring the date
+  const [startYear, startMonth, startDay] = timeOffStartDate.split("-").map(Number);
+  const [endYear, endMonth, endDay] = timeOffEndDate.split("-").map(Number);
+  const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
+  const end = new Date(endYear, endMonth - 1, endDay);
+  //Ensure start/endDate are valid
+  if(isNaN(start) || isNaN(end) || start > end){
+    return res.status(400).send("Invalid vacation date range provided.");
+  }
+
+  //Boolean to check for partial days
+  const isPartial = (timeOffStartTime && timeOffEndTime)
+  const parsedStartTime = isPartial ? new Date(`${timeOffStartDate}T${timeOffStartTime}`) : null;
+  const parsedEndTime = isPartial ? new Date(`${timeOffEndDate}T${timeOffEndTime}`) : null;
+  // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
+
+  //Generate all dates in range & filter
+  const dateRange = []
+  let currentDate = new Date(start)
+  while (currentDate <= end){
+    //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
+    const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
+    //Only push if day in regular shift
+    if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+
+  // 1) Build vaca entries array, filtering away duplicates
+  const timeOffEntries =  await filterTimeOffDuplicates(timeOffMonitorSelect, dateRange, isPartial, parsedStartTime, parsedEndTime)
+
+  //2) Update monitor schema -> add to time off array
+  const monitor = await Monitor.findOneAndUpdate(
+    { _id: timeOffMonitorSelect}, 
+    { $addToSet: { [timeOffField]: { $each: timeOffEntries} } }, //ensures dupes are not added to time off array
+    { new: true} // return updated document
+  )
+  if(!monitor) return res.status(404).send("Monitor not found.")
+
+  //3) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
+  let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, timeOffMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
+  // console.log("osa:", openShiftIdArr) //[date, monitorId, openShiftId]
+
+  //4) By Day (Vaca/Sick) Schema -> Loop over range, adding each date and ordered pair
+  for (const entry of openShiftIdArr) {
+    const [day, monitorId, openShiftId, timeRange] = entry
+    const [startTime, endTime] = Array.isArray(timeRange) ? timeRange : [null, null]
+
+    //Does this monitor already have a shift assigned for today?
+    const dayMatch = TimeOffModelFetched.find(doc => {
+      // let day1 = new Date(doc.day).toDateString(), day2 = new Date(day).toDateString()
+      // console.log("days:", day1, day2, day1===day2)
+      return new Date(doc.day).toDateString() === new Date(day).toDateString()
+    })
+    const alreadyExists = dayMatch?.monitorAndOpenShift?.some(entry => {
+      // let id1= entry.monitorId._id.toString(), id2 = monitorId
+      // console.log("id: ",id1, id2, id1===id2)
+      return entry.monitorId._id.equals(monitorId)
+    })
+
+    if(!alreadyExists){ //Only add if monitor is not taking off this date already
+    // Use upsert to create the document if it doesn't exist
+      await TimeOffModel.findOneAndUpdate(
+        { day: day },
+        {
+          $addToSet: {
+            monitorAndOpenShift: {
+              monitorId: monitorId,
+              openShiftId: openShiftId,
+              ...(startTime && endTime && {
+                startTime: startTime,
+                endTime: endTime
+              })
+            }
+          }
+        },
+        { upsert: true, new: true }
+      )
+    }else{
+      console.log(`Monitor ${monitorId} already has vacation time on ${day}. Skipping.`)
+    }
+
+  }   
+
+  console.log(`${timeOffType} has been added!`)
+  console.log("Monitor's shifts have been put up for bid!")
+}
 
 //Get current monitors, get locations, get regular shifts and get open shifts. 
 module.exports = {
   // Rendering pages
   //
   //
-  //Home page
-  getHomePage: async (req, res) => {
-    try {
-      const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
-      // Render the home.ejs template and pass the data
-      const [start, end] = getNextThursDateObj(THISWEEK)
-      const nxtWkMonitorVaca = await monitorsOnVacationNextWeek(monitors)
-      res.render("home.ejs", {
-        user: req.user,
-        monitors: monitors,
-        regularShifts: regularShifts,
-        openShifts: openShifts,
-        locations: locations,
-        monitorsOnVacaNextWeek: nxtWkMonitorVaca,
-      });
-    } catch (err) {
-      console.log(err);
-      res.redirect("/parking/home");
-    }
-  },
   //Render Edit page
   getEditPage: async (req, res) => {
     try {
@@ -627,6 +706,123 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
+  //Extra OT/Short Notice page
+  getExtraOTPage: async(req, res) => {
+    try{
+      const { monitors, extraOT } = await fetchCommonData()
+
+      res.render("extraOT.ejs",{
+        monitors: monitors,
+        extraOT: extraOT,
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Export Overtime page
+  getExportOvertimePage: async(req, res) => {
+    const { monitors, overtimeAudit } = await fetchCommonData()
+
+    //grab shifts bound by start/end of next next week
+    const [nextNextWeekStart,  nextNextWeekEnd] = getNextNextThurs(THISWEEK)
+    const openShifts = await OpenShift.find({ // Dates >= 5/8/25 // Dates <= 5/14/25
+        date: { $gte: nextNextWeekStart, $lte: nextNextWeekEnd } 
+    }).populate("location").sort({ date: 1, startTime: 1})
+
+    const auditTable = await createAuditTable(monitors, overtimeAudit)
+    console.log(nextNextWeekStart,  nextNextWeekEnd, openShifts)
+
+    try{
+      res.render("exportovertime.ejs",{
+        nextNextWeekOpenShifts: openShifts, //open shifts next next week
+        overtimeFlattened: overtimeAudit, //ot bids structured for easy display
+        overtimeAudit: auditTable, //audit table for charging monitors
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Finalize/Extra OT/Short Notice page
+  getFinalizePage: async(req, res) => {
+    try{
+      res.render("finalize.ejs",{})
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },  
+  //Holiday page
+  getHolidayPage: async(req, res) => {
+    try{
+      const { holidays, blackoutDates } = await fetchCommonData()
+
+      //Create holiday arr to display in the frontend
+      let frontEndHolidayArr = []
+      for(let entry of holidays){
+        frontEndHolidayArr.push({
+          name: entry.name,
+          date: `${entry.month}/${entry.day}/${entry.year}`,
+          _id: entry._id
+        })
+      }
+      
+      // Create blackout date arr for frontend display
+      let frontEndBlackoutArr = []
+      for(entry of blackoutDates){
+        frontEndBlackoutArr.push({
+          name: entry.name, 
+          start: formatDateUTC(entry.start),
+          end: formatDateUTC(entry.end),
+          _id: entry._id
+        })
+      }
+
+      //Automatically generate overtime shifts if NEXTWEEK is holiday
+      // if(holiday){regular shift => overtime shift}
+      // await holidayOvertimeCreator(holidays)
+
+      // console.log(frontEndHolidayArr)
+      res.render("holiday.ejs", {
+        holidays: frontEndHolidayArr,
+        blackout: frontEndBlackoutArr,
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
+  //Home page
+  getHomePage: async (req, res) => {
+    try {
+      const { monitors, regularShifts, openShifts, locations, overtimeBid } = await fetchCommonData()
+      // Render the home.ejs template and pass the data
+      const [start, end] = getNextThursDateObj(THISWEEK)
+      const nxtWkMonitorVaca = await monitorsOnVacationNextWeek(monitors)
+      res.render("home.ejs", {
+        user: req.user,
+        monitors: monitors,
+        regularShifts: regularShifts,
+        openShifts: openShifts,
+        locations: locations,
+        monitorsOnVacaNextWeek: nxtWkMonitorVaca,
+      });
+    } catch (err) {
+      console.log(err);
+      res.redirect("/parking/home");
+    }
+  },
+  //Mongo page
+  getMongoPage: async(req, res) => {
+    try{
+      res.render("mongo.ejs",{
+      })
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
+    }
+  },
   //Overtime page
   getOvertimePage: async (req, res) => {
     try { 
@@ -660,6 +856,15 @@ module.exports = {
     } catch (err) {
       console.error(err);
       res.redirect("/parking/home");
+    }
+  },
+  //Quickstart page
+  getQuickstartPage: async(req, res) => {
+    try{
+      res.render("quickstart.ejs"),{}
+    }catch(err){
+      console.error(err)
+      res.redirect("/parking/home")
     }
   },
   //Scheduling page
@@ -706,482 +911,24 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
-  //Holiday page
-  getHolidayPage: async(req, res) => {
-    try{
-      const { holidays, blackoutDates } = await fetchCommonData()
 
-      //Create holiday arr to display in the frontend
-      let frontEndHolidayArr = []
-      for(let entry of holidays){
-        frontEndHolidayArr.push({
-          name: entry.name,
-          date: `${entry.month}/${entry.day}/${entry.year}`,
-          _id: entry._id
-        })
-      }
-      
-      // Create blackout date arr for frontend display
-      let frontEndBlackoutArr = []
-      for(entry of blackoutDates){
-        frontEndBlackoutArr.push({
-          name: entry.name, 
-          start: formatDateUTC(entry.start),
-          end: formatDateUTC(entry.end),
-          _id: entry._id
-        })
-      }
-
-      //Automatically generate overtime shifts if NEXTWEEK is holiday
-      // if(holiday){regular shift => overtime shift}
-      // await holidayOvertimeCreator(holidays)
-
-      // console.log(frontEndHolidayArr)
-      res.render("holiday.ejs", {
-        holidays: frontEndHolidayArr,
-        blackout: frontEndBlackoutArr,
-      })
-    }catch(err){
-      console.error(err)
-      res.redirect("/parking/home")
-    }
-  },
-  //Quickstart page
-  getQuickstartPage: async(req, res) => {
-    try{
-      res.render("quickstart.ejs"),{}
-    }catch(err){
-      console.error(err)
-      res.redirect("/parking/home")
-    }
-  },
-  //Export Overtime page
-  getExportOvertimePage: async(req, res) => {
-    const { monitors, overtimeAudit } = await fetchCommonData()
-
-    //grab shifts bound by start/end of next next week
-    const [nextNextWeekStart,  nextNextWeekEnd] = getNextNextThurs(THISWEEK)
-    const openShifts = await OpenShift.find({ // Dates >= 5/8/25 // Dates <= 5/14/25
-        date: { $gte: nextNextWeekStart, $lte: nextNextWeekEnd } 
-    }).populate("location").sort({ date: 1, startTime: 1})
-
-    const auditTable = await createAuditTable(monitors, overtimeAudit)
-    console.log(nextNextWeekStart,  nextNextWeekEnd, openShifts)
-
-    try{
-      res.render("exportovertime.ejs",{
-        nextNextWeekOpenShifts: openShifts, //open shifts next next week
-        overtimeFlattened: overtimeAudit, //ot bids structured for easy display
-        overtimeAudit: auditTable, //audit table for charging monitors
-      })
-    }catch(err){
-      console.error(err)
-      res.redirect("/parking/home")
-    }
-  },
-  //Extra OT/Short Notice page
-  getExtraOTPage: async(req, res) => {
-    try{
-      const { monitors, extraOT } = await fetchCommonData()
-
-      res.render("extraOT.ejs",{
-        monitors: monitors,
-        extraOT: extraOT,
-      })
-    }catch(err){
-      console.error(err)
-      res.redirect("/parking/home")
-    }
-  },
-  //Finalize/Extra OT/Short Notice page
-  getFinalizePage: async(req, res) => {
-    try{
-      res.render("finalize.ejs",{})
-    }catch(err){
-      console.error(err)
-      res.redirect("/parking/home")
-    }
-  },
-  //Mongo page
-  getMongoPage: async(req, res) => {
-    try{
-      res.render("mongo.ejs",{
-      })
-    }catch(err){
-      console.error(err)
-      res.redirect("/parking/home")
-    }
-  },
-
-  //EXPORT and IMPORT from Mongo
-  //
-  //
-  exportMongoData: async (req, res) => {
-    try {
-      const exportData = {};
-      for (const [name, Model] of Object.entries(COLLECTIONS)) {
-        const docs = await Model.find().lean();
-        exportData[name] = docs;
-      }
-
-      //TODO: REname backup with week date
-      const jsonStr = JSON.stringify(exportData, null, 2);
-      const filePath = path.join(__dirname, "../exports/mongo-backup.json");
-
-      fs.writeFileSync(filePath, jsonStr);
-
-      res.download(filePath, "mongo-backup.json");
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Export failed");
-    }
-  },
-  importMongoData: [
-    upload.single("importFile"),
-    async (req, res) => {
-      try {
-        const filePath = req.file.path;
-        const rawData = fs.readFileSync(filePath, "utf-8");
-        const jsonData = JSON.parse(rawData);
-
-        for (const [name, data] of Object.entries(jsonData)) {
-          const Model = COLLECTIONS[name];
-          if (!Model || !Array.isArray(data)) continue;
-
-          await Model.deleteMany({});
-          await Model.insertMany(data);
-        }
-
-        fs.unlinkSync(filePath); // Clean up
-        // res.send("Import successful");
-        req.flash('success_msg', 'Database Import successful!');
-        res.redirect("/parking/finalize"); 
-      } catch (err) {
-        console.error(err);
-        res.status(500).send("Import failed");
-      }
-    }
-  ],
-  
-
-  //Getting data from the Database.
-  //
-  // TODO: Delete these? Do I even need these?
-  // getMonitor: async (req, res) => {
-  //   try {
-  //     // Fetch monitor data from the database using the Parking model
-  //     const monitor = await Monitor.findById(req.params.id).populate('regularShift location');
-  //     //populate() fetches the actual data rather than just reference ids
-  //     // i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
-
-  //     if (!monitor) {
-  //       console.error("Monitor not found");
-  //       return res.redirect("/parking/home");
-  //     }
-      
-  //     // Render the view and pass the monitor data
-  //     res.render("home.ejs", { monitor: monitor, user: req.user });
-  //     } catch (err) {
-  //       console.error(err);
-  //       res.redirect("/parking/home");
-  //     }
-  // },
-  // getLocation: async (req, res) => {
-  //   try {
-  //     // Fetch location data from the database using the Parking model
-  //     const location = await Location.findById(req.params.id)
-      
-  //     if (!location) {
-  //       console.error("Location not found");
-  //       return res.redirect("/parking/home");
-  //     }
-  
-  //     // Render the view and pass the monitor data
-  //     res.render("home.ejs", { location: location, user: req.user });
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.redirect("/parking/home");
-  //   }
-  // },
-  // getRegularShift: async (req, res) => {
-  //   try {
-  //     // Fetch monitor data from the database using the Parking model
-  //     const regularShift = await RegularShift.findById(req.params.id).populate('location');
-  //     //populate() fetches the actual data rather than just reference ids
-  //     // i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
-
-  //     if (!monitor) {
-  //       console.error("Monitor not found");
-  //       return res.redirect("/parking/home");
-  //     }
-    
-  //     // Render the view and pass the monitor data
-  //     res.render("home.ejs", { regularShift: regularShift, user: req.user });
-  //     } catch (err) {
-  //       console.error(err);
-  //       res.redirect("/parking/home");
-  //     }
-  // },
-  // getOpenShift: async (req, res) => {
-  //   try {
-  //     // Fetch monitor data from the database using the Parking model
-  //     const openShift = await OpenShift.findById(req.params.id).populate('location');
-  //     // const openShift = await OpenShift.find({})
-  //     //   //populate() fetches the actual data rather than just reference ids 
-  //     //   .populate('location') //i.e. "regularShift": "60f81fa38a887bf2f3080e5d", "location": "60f81fa38a887bf2f3080e5e" turns into real values
-  //     //   .sort( {date: 1}) // 1 ascending, -1 for descending
-
-  //     if (!monitor) {
-  //       console.error("Monitor not found");
-  //       return res.redirect("/parking/home");
-  //     }
-    
-  //     // Render the view and pass the monitor data
-  //     res.render("home.ejs", { openShift: openShift, user: req.user });
-  //     } catch (err) {
-  //       console.error(err);
-  //       res.redirect("/parking/home");
-  //     }
-  // },
 
   //Add entries to the database
   //
   //
   //
-  //
-  addMonitor: async (req, res) => {
-    try {
-      await Monitor.create({
-        id: req.body.id,
-        name: req.body.displayName,
-        regularShift: req.body.regularShift, // ObjectId of the shift
-        location: req.body.shiftLocation, // ObjectId of the location
-        // vaca: req.body.vacationStatus === "true", //Convert string to Boolean
-        hours: req.body.hours,
-        seniority: req.body.seniority,
-      });
-      console.log("Monitor has been added!");
-      res.redirect("/parking/edit?tab=monitor-tab #monitors"); // Redirect to a relevant page
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  addLocation: async (req, res) => {
-    try {
-      console.log("Request body:", req.body); // Log the request body
-      const { locationSelectionType, customDays } = req.body;
-      let selectedDays = []
-      switch(locationSelectionType) {
-        case 'weekdays':
-          selectedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
-          break;
-        case 'everyday':
-          selectedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-          break;
-        case 'custom':
-          selectedDays = Array.isArray(customDays) ? customDays : [] // Array of checked values
-          break; 
-        case 'none':
-          selectedDays = Array.isArray(customDays) ? customDays : [] // Array of checked values
-          break; // 'none' falls through to empty array
-      }
-
-      await Location.create({
-        name: req.body.locationName,
-        scheduleType: selectedDays,
-        // scheduleType: req.body.locationDay,
-      });
-      console.log("Location has been added!");
-      res.redirect("/parking/edit?tab=location-tab#locations");
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  addRegularShift: async (req, res) => {
-    try {
-      const days = Array.isArray(req.body.days) ? req.body.days : [req.body.days]
-      const startTime = new Date(`1970-01-01T${req.body.startTime}:00`);
-      const endTime = new Date(`1970-01-01T${req.body.endTime}:00`);
-      const shiftType = req.body.type
-
-      await RegularShift.create({
-        name: req.body.regularShiftName,
-        days: days, // array of days
-        startTime: startTime,
-        endTime: endTime,
-        type: shiftType,
-      });
-      console.log("Regular Shift has been added!");
-      res.redirect("/parking/edit?tab=regularShift-tab#regularShifts");
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  addOpenShift: async (req, res) => {
-    try {
-      // Convert start+end to Date objects
-      const startTime = new Date(`${req.body.date}T${req.body.startTime}:00`);
-      const endTime = new Date(`${req.body.date}T${req.body.endTime}:00`);
-      // Handle overnight shifts
-      if (endTime < startTime) {
-        endTime.setDate(endTime.getDate() + 1);
-      }
-      const totalHours = calculateShiftHours(startTime, endTime);
-
-      // Format times to AM/PM
-      const formattedStartTime = startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "America/New_York" });
-      const formattedEndTime = endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "America/New_York" });
-      const location = await Location.findById(req.body.shiftLocation) //Get location
-      
-      //Date
-      // Native browser input is always YYYY-MM-DD e.g. "2025-05-01"
-      const date = new Date(req.body.date)
-      const parsedDate = new Date(`${req.body.date}T00:00:00`) //factors in DST
-        .toLocaleString("en-US", { timeZone: "America/New_York"})
-      const day = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"][date.getDay() + 1]
-      const shortDay = DAYMAPPING[day] //Shorten day
-      const formattedDate = formatDate(parsedDate)
-      console.log(parsedDate, day)
-
-      const data = {
-        //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
-        name: `${shortDay} ${formattedDate} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
-        location: req.body.shiftLocation, // ObjectId of the location
-        day: day,
-        date: parsedDate, 
-        startTime: startTime,
-        endTime: endTime,
-        totalHours: totalHours,
-        recurring: !!req.body.openEveryWeek, // Convert truthy/falsy value to Boolean
-        type: req.body.type, //firstShift, secondShift, etc...
-      }
-
-      await createOpenShift(data) //Helper function adds to schema
-      console.log("Open Shift has been added!");
-      res.redirect("/parking/edit?tab=openShift-tab#openShifts");
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  addVacation: async (req, res) => {  
-  try{
-    const { vacationMonitorSelect, vacaStartDate, vacaEndDate, vacaStartTime, vacaEndTime  } = req.body
-    // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
-    //Create lookup table and get monitor from monitor id
-    const { monitors, vacaLookup } = await fetchCommonData()
-    const monitorObj = monitorLookupByMonitorIdTable(monitors).get(vacationMonitorSelect)
-    const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
-    //Parse local dates + split before declaring the date
-    const [startYear, startMonth, startDay] = vacaStartDate.split("-").map(Number);
-    const [endYear, endMonth, endDay] = vacaEndDate.split("-").map(Number);
-    const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
-    const end = new Date(endYear, endMonth - 1, endDay);
-    //Ensure start/endDate are valid
-    if(isNaN(start) || isNaN(end) || start > end){
-      return res.status(400).send("Invalid vacation date range provided.");
-    }
-    //Boolean to check for partial days
-    const isPartial = (vacaStartTime && vacaEndTime)
-    const parsedStartTime = isPartial ? new Date(`${vacaStartDate}T${vacaStartTime}`) : null;
-    const parsedEndTime = isPartial ? new Date(`${vacaEndDate}T${vacaEndTime}`) : null;
-    // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
-
-    //Generate all dates in range & filter
-    const dateRange = []
-    let currentDate = new Date(start)
-    while (currentDate <= end){
-      //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
-      const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
-      //Only push if day in regular shift
-      if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
-      currentDate.setDate(currentDate.getDate() + 1)
-    }
-
-    // 1) Build vaca entries array, filtering away duplicates
-    const vacaEntries =  await filterTimeOffDuplicates(vacationMonitorSelect, dateRange, isPartial, parsedStartTime, parsedEndTime)
-
-    //2) Update monitor schema -> add to vaca array
-    const monitor = await Monitor.findOneAndUpdate(
-      { _id: vacationMonitorSelect}, 
-      { $addToSet: { vaca: { $each: vacaEntries} } }, //ensures dupes are not added to vaca array
-      { new: true} // return updated document
-    )
-    if(!monitor) return res.status(404).send("Monitor not found.")
-    
-    //3) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
-    let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, vacationMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
-    // console.log("osa:", openShiftIdArr) //[date, monitorId, openShiftId]
-
-    //4) Vacation Schema -> Loop over range, adding each date and ordered pair
-    for (const entry of openShiftIdArr) {
-      const [day, monitorId, openShiftId, timeRange] = entry
-      const [startTime, endTime] = Array.isArray(timeRange) ? timeRange : [null, null]
-
-      //Does this monitor already have a shift assigned for today?
-      const dayMatch = vacaLookup.find(doc => {
-        let day1 = new Date(doc.day).toDateString(), day2 = new Date(day).toDateString()
-        // console.log("days:", day1, day2, day1===day2)
-        return new Date(doc.day).toDateString() === new Date(day).toDateString()
-      })
-      const alreadyExists = dayMatch?.monitorAndOpenShift?.some(entry => {
-        let id1= entry.monitorId._id.toString(), id2 = monitorId
-        // console.log("id: ",id1, id2, id1===id2)
-        return entry.monitorId._id.equals(monitorId)
-      })
-
-      //Only add if monitor is not taking off this date already
-      if(!alreadyExists){
-      // Use upsert to create the document if it doesn't exist
-        // Safe to insert
-        await VacationLookup.findOneAndUpdate(
-          { day: day },
-          {
-            $addToSet: {
-              monitorAndOpenShift: {
-                monitorId: monitorId,
-                openShiftId: openShiftId,
-                ...(startTime && endTime && {
-                  startTime: startTime,
-                  endTime: endTime
-                })
-              }
-            }
-          },
-          { upsert: true, new: true }
-        )
-      }else{
-        console.log(`Monitor ${monitorId} already has vacation time on ${day}. Skipping.`)
-      }
-
-    }   
-
-    console.log("Vacation has been added!")
-    console.log("Monitor's shifts have been put up for bid!")
-    res.redirect("/parking/edit?tab=vaca-tab#vacation")
-    } catch(err){
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  addHoliday: async(req, res) => {
+  addBlackoutDate: async(req, res) => {
     try{
-      const { name, date } = req.body
-      let [year, month, day] = date.split('-')
-      console.log(year, month, day)
-      // console.log(name, month, day)
-
-      await Holiday.create({
+      const { name, blackoutStart, blackoutEnd } = req.body
+      
+      await BlackoutDate.create({
         name: name,
-        month: month,
-        day: day,
-        year: year,
+        start: new Date(blackoutStart),
+        end: new Date(blackoutEnd),
       })
 
-      console.log("Holiday has been added!");
+      console.log("Blackout Date has been added!");
+      req.flash('success_msg', 'Blackout date added.');
       res.redirect("/parking/holiday");
     }catch(err){
       console.error(err);
@@ -1229,129 +976,168 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
-  addSick: async (req, res) => {  
-  try{
-    const { sickMonitorSelect, sickStartDate, sickEndDate, sickStartTime, sickEndTime } = req.body
-    // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
-    //Create lookup table and get monitor from monitor id
-    const { monitors, sickTime } = await fetchCommonData()
-    const monitorObj = monitorLookupByMonitorIdTable(monitors).get(sickMonitorSelect)
-    const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
-    //Parse local dates + split before declaring the date
-    const [startYear, startMonth, startDay] = sickStartDate.split("-").map(Number);
-    const [endYear, endMonth, endDay] = sickEndDate.split("-").map(Number);
-    const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
-    const end = new Date(endYear, endMonth - 1, endDay);
-    //Ensure start/endDate are valid
-    if(isNaN(start) || isNaN(end) || start > end){
-      return res.status(400).send("Invalid sick date range provided.");
-    }
-    //Boolean to check for partial days
-    const isPartial = (sickStartTime && sickEndTime)
-    const parsedStartTime = isPartial ? new Date(`${sickStartDate}T${sickStartTime}`) : null;
-    const parsedEndTime = isPartial ? new Date(`${sickEndDate}T${sickEndTime}`) : null;
-    // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
-
-    //Generate all dates in range & filter
-    const dateRange = []
-    let currentDate = new Date(start)
-    while (currentDate <= end){
-      //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
-      const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
-      // Filter for days in regular shift
-      if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
-      currentDate.setDate(currentDate.getDate() + 1)
-    }
-
-    // 1) Build sick entries array, filtering away duplicates
-    const sickEntries =  await filterTimeOffDuplicates(sickMonitorSelect, dateRange, isPartial, parsedStartTime, parsedEndTime, 'sick')
-
-    // 2) Update monitor schema -> add to vaca array
-    const monitor = await Monitor.findOneAndUpdate(
-      { _id: sickMonitorSelect}, 
-      { $addToSet: { sick: { $each: sickEntries} } }, //ensures dupes are not added to sick array
-      { new: true} // return updated document
-    )
-    if(!monitor) return res.status(404).send("Monitor not found.")
-    
-    // //3) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
-    let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, sickMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
-    // console.log("osa:", openShiftIdArr) //[date, monitorId, openShiftId]
-
-    // //4) Sick Schema -> Loop over range, adding each date and ordered pair
-    for (const entry of openShiftIdArr) {
-      const [day, monitorId, openShiftId, timeRange] = entry
-      const [startTime, endTime] = Array.isArray(timeRange) ? timeRange : [null, null];
-      // console.log("startEnd: ",startTime, endTime)
-
-      //Does this monitor already have a shift assigned for today?
-      const dayMatch = sickTime.find(doc => {
-        let day1 = new Date(doc.day).toDateString(), day2 = new Date(day).toDateString()
-        // console.log("days:", day1, day2, day1===day2)
-        return new Date(doc.day).toDateString() === new Date(day).toDateString()
-      })
-      const alreadyExists = dayMatch?.monitorAndOpenShift?.some(entry => {
-        let id1= entry.monitorId._id.toString(), id2 = monitorId
-        // console.log("id: ",id1, id2, id1===id2)
-        return entry.monitorId._id.equals(monitorId)
-      })
-      
-      // console.log(alreadyExists)
-      //Only add if monitor is not taking off this date already
-      if(!alreadyExists){
-      // Use upsert to create the document if it doesn't exist
-        // Safe to insert
-        await SickTime.findOneAndUpdate(
-          { day: day },
-          {
-            $addToSet: {
-              monitorAndOpenShift: {
-                monitorId: monitorId,
-                openShiftId: openShiftId,
-                ...(startTime && endTime && {
-                  startTime: startTime,
-                  endTime: endTime
-                })
-              }
-            }
-          },
-          { upsert: true, new: true }
-        )
-      }else{
-        console.log(`Monitor ${monitorId} already has sick time on ${day}. Skipping.`)
-      }
-    }
-
-    console.log("Vacation has been added!")
-    console.log("Monitor shifts have been put up for bid!")
-    res.redirect("/parking/edit?tab=vaca-tab#vacation")
-    } catch(err){
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  addBlackoutDate: async(req, res) => {
+  addHoliday: async(req, res) => {
     try{
-      const { name, blackoutStart, blackoutEnd } = req.body
-      
-      await BlackoutDate.create({
+      const { name, date } = req.body
+      let [year, month, day] = date.split('-')
+      console.log(year, month, day)
+      // console.log(name, month, day)
+
+      await Holiday.create({
         name: name,
-        start: new Date(blackoutStart),
-        end: new Date(blackoutEnd),
+        month: month,
+        day: day,
+        year: year,
       })
 
-      console.log("Blackout Date has been added!");
+      console.log("Holiday has been added!");
+      req.flash('success_msg', 'Holiday added.');
       res.redirect("/parking/holiday");
     }catch(err){
       console.error(err);
       res.redirect("/parking/home");
     }
   },
+  addLocation: async (req, res) => {
+    try {
+      console.log("Request body:", req.body); // Log the request body
+      const { locationSelectionType, customDays } = req.body;
+      let selectedDays = []
+      switch(locationSelectionType) {
+        case 'weekdays':
+          selectedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+          break;
+        case 'everyday':
+          selectedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+          break;
+        case 'custom':
+          selectedDays = Array.isArray(customDays) ? customDays : [] // Array of checked values
+          break; 
+        case 'none':
+          selectedDays = Array.isArray(customDays) ? customDays : [] // Array of checked values
+          break; // 'none' falls through to empty array
+      }
+
+      await Location.create({
+        name: req.body.locationName,
+        scheduleType: selectedDays,
+        // scheduleType: req.body.locationDay,
+      });
+      console.log("Location has been added!");
+      req.flash('success_msg', 'Location added.');
+      res.redirect("/parking/edit?tab=location-tab#locations");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  addMonitor: async (req, res) => {
+    try {
+      await Monitor.create({
+        id: req.body.id,
+        name: req.body.displayName,
+        regularShift: req.body.regularShift, // ObjectId of the shift
+        location: req.body.shiftLocation, // ObjectId of the location
+        hours: req.body.hours,
+        seniority: req.body.seniority,
+      });
+      console.log("Monitor has been added!");
+      req.flash('success_msg', 'Monitor added.');
+      res.redirect("/parking/edit?tab=monitor-tab #monitors"); // Redirect to a relevant page
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  addOpenShift: async (req, res) => {
+    try {
+      // Convert start+end to Date objects
+      const startTime = new Date(`${req.body.date}T${req.body.startTime}:00`);
+      const endTime = new Date(`${req.body.date}T${req.body.endTime}:00`);
+      // Handle overnight shifts
+      if (endTime < startTime) {
+        endTime.setDate(endTime.getDate() + 1);
+      }
+      const totalHours = calculateShiftHours(startTime, endTime);
+
+      // Format times to AM/PM
+      const formattedStartTime = startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "America/New_York" });
+      const formattedEndTime = endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "America/New_York" });
+      const location = await Location.findById(req.body.shiftLocation) //Get location
+      
+      //Date
+      // Native browser input is always YYYY-MM-DD e.g. "2025-05-01"
+      const date = new Date(req.body.date)
+      const parsedDate = new Date(`${req.body.date}T00:00:00`) //factors in DST
+        .toLocaleString("en-US", { timeZone: "America/New_York"})
+      const day = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"][date.getDay() + 1]
+      const shortDay = DAYMAPPING[day] //Shorten day
+      const formattedDate = formatDate(parsedDate)
+      console.log(parsedDate, day)
+
+      const data = {
+        //[date][location][time][number of hours] e.g.  THU 5/1 52OX 11:00PM-7:00AM (8.0) 
+        name: `${shortDay} ${formattedDate} ${location.name} ${formattedStartTime} - ${formattedEndTime} (${totalHours})`, 
+        location: req.body.shiftLocation, // ObjectId of the location
+        day: day,
+        date: parsedDate, 
+        startTime: startTime,
+        endTime: endTime,
+        totalHours: totalHours,
+        recurring: !!req.body.openEveryWeek, // Convert truthy/falsy value to Boolean
+        type: req.body.type, //firstShift, secondShift, etc...
+      }
+
+      await createOpenShift(data) //Helper function adds to schema
+      console.log("Open Shift has been added!");
+      req.flash('success_msg', 'Overtime Shift added.');
+      res.redirect("/parking/edit?tab=openShift-tab#openShifts");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  addRegularShift: async (req, res) => {
+    try {
+      const days = Array.isArray(req.body.days) ? req.body.days : [req.body.days]
+      const startTime = new Date(`1970-01-01T${req.body.startTime}:00`);
+      const endTime = new Date(`1970-01-01T${req.body.endTime}:00`);
+      const shiftType = req.body.type
+
+      await RegularShift.create({
+        name: req.body.regularShiftName,
+        days: days, // array of days
+        startTime: startTime,
+        endTime: endTime,
+        type: shiftType,
+      });
+      console.log("Regular Shift has been added!");
+      req.flash('success_msg', 'Regular Shift added.');
+      res.redirect("/parking/edit?tab=regularShift-tab#regularShifts");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  addTimeOff: async(req, res) => {
+    try{
+      // console.log(req.body)
+      const { timeOffMonitorSelect, timeOffStartDate,  timeOffEndDate, timeOffStartTime, timeOffEndTime,  timeOffType } = req.body
+      //Pass to helper function that filters for vaca/sick
+      await addTimeOffHelper(timeOffMonitorSelect, timeOffStartDate,  timeOffEndDate, timeOffStartTime, timeOffEndTime,  timeOffType)
+
+      req.flash('success_msg', `${timeOffType[0].toUpperCase()+timeOffType.slice(1)} added!`);
+      res.redirect("/parking/edit?tab=vaca-tab#vacation")
+    }catch(err){
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+
 
   // Update info in the database
   // 
   // 
-  //
   //
   updateExtraOT: async (req, res) => {
     try {
@@ -1480,6 +1266,7 @@ module.exports = {
         type: req.body.type, //firstShift, secondShift, thirdShift, none
       });
       console.log("OpenShift has been updated!");
+      req.flash('success_msg', 'Overtime Shift Updated.');
       res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts") //displayOpenShifts"); 
     } catch (err) {
       console.error(err);
@@ -1567,22 +1354,6 @@ module.exports = {
       res.redirect("/parking/home");
     }
   },
-  //IDK why this is empty / commented out.
-  updateOvertimeWinnersRanked: async (req, res) => { 
-    try {
-      //   await Monitor.findByIdAndUpdate(req.params.id, {
-      //     monitorName: ,
-      //     shiftName:,
-      //     hours: ,
-      //     monitorsToCharge:,
-      // })
-      console.log("Ranked Overtime Winners have been updated!");
-      res.redirect("/parking/overtime?tab=overtimeBid-tab#displayOvertime"); 
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
   updateRegularShift: async (req, res) => {
     try {
       const regularShift = await RegularShift.findById(req.params.id)
@@ -1597,7 +1368,8 @@ module.exports = {
         type: req.body.type, //firstShift, secondShift, thirdShift, none
       });
 
-      console.log("OpenShift has been updated!");
+      console.log("RegularShift has been updated!");
+      req.flash('success_msg', 'Regular Shift updated.');
       res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts") 
     } catch (err) {
       console.error(err);
@@ -1637,83 +1409,20 @@ module.exports = {
     }
   },
 
+
   //Delete entries from DB
   //
   //
   //
-  //
-  deleteMonitor: async (req, res) => {
+  deleteAllSick: async (req, res) => {
     try {
-      const monitor = await Monitor.findById(req.params.id)
-      if(!monitor){
-        console.log("Monitor not found")
-        return res.redirect("/parking/home")
-      }
-      console.log(req.params.id)
-      //delete vaca + associated openshifts, and overtime bids
-      await clearMonitorVacationShiftsAndOvertimeBids(req.params.id) 
-      await Monitor.findByIdAndDelete(req.params.id) //delete MONITOR
-      console.log("Monitor has been deleted!");
-      res.redirect("/parking/edit?tab=monitor-tab#displayMonitors"); 
+      // await clearMonitorTimeOffAndOvertimeBids(monitorId, 'vacation');
+      await clearAllTimeOffAndOvertimeBids(req.params.id, 'sick');
+      
+      req.flash('success_msg', 'Sick time cleared.');
+      res.redirect('/parking/edit?tab=vaca-tab#displaySickByMonitor'); // Redirect back to the sick tab
     } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  deleteLocation: async (req, res) => {
-    try {
-      const location = await Location.findById(req.params.id)
-      if(!location){
-        console.log("Location not found")
-        return res.redirect("/parking/home")
-      }
-      await Location.findByIdAndDelete(req.params.id)
-      console.log("Location has been deleted!");
-      res.redirect("/parking/edit?tab=location-tab#displayLocations");
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  deleteRegularShift: async (req, res) => {
-    try {
-      const regularShift = await RegularShift.findById(req.params.id)
-      if(!regularShift){
-        console.log("Regular Shift not found")
-        return res.redirect("/parking/home")
-      }
-      await RegularShift.findByIdAndDelete(req.params.id)
-      console.log("Regular Shift has been deleted!");
-      res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts");
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  deleteOpenShift: async (req, res) => {
-    try {
-      const openShift = await OpenShift.findById(req.params.id)
-      if(!openShift){
-        console.log("Open Shift not found")
-        return res.redirect("/parking/home")
-      }
-      // await OpenShift.findByIdAndDelete(req.params.id)
-      await deleteOpenShift(req.params.id) //Call helper function to delete
-      console.log("Open Shift has been deleted!");
-      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts");
-    } catch (err) {
-      console.error(err);
-      res.redirect("/parking/home");
-    }
-  },
-  deleteOneVacation: async (req, res) => {
-    try {
-      const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
-      await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId)
-
-      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
-    } catch (err) {
-      console.error(`Error clearing vacation for date: ${err}`);
+      console.error(`Error clearing sick time for monitor: ${err}`);
       res.redirect('/parking/home'); // Redirect to home on error
     }
   },
@@ -1721,74 +1430,25 @@ module.exports = {
     try {
       //dont need param because vacation is default
       await clearMonitorVacationShiftsAndOvertimeBids(req.params.id) 
+
+      req.flash('success_msg', 'Vacation time cleared.');
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for monitor: ${err}`);
       res.redirect('/parking/home'); // Redirect to home on error
     }
   },
-  deleteAllSick: async (req, res) => {
-    try {
-      // await clearMonitorTimeOffAndOvertimeBids(monitorId, 'vacation');
-      await clearAllTimeOffAndOvertimeBids(req.params.id, 'sick');
-
-      res.redirect('/parking/edit?tab=vaca-tab#displaySickByMonitor'); // Redirect back to the sick tab
-    } catch (err) {
-      console.error(`Error clearing sick time for monitor: ${err}`);
-      res.redirect('/parking/home'); // Redirect to home on error
-    }
-  },
-  deleteOneSick: async (req, res) => {
-    try {
-      const { timeoffId, monitorId, date, dayRaw, openShiftId} = req.body
-      await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId, 'sick')
-      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
-    } catch (err) {
-      console.error(`Error clearing vacation for date: ${err}`);
-      res.redirect('/parking/home'); // Redirect to home on error
-    }
-  },
-  deleteOvertimeBid: async (req, res) =>{
+  deleteBlackoutDate: async (req, res) => {
     try{
-      console.log("Request ID:", req.params.id);
-      const bidId = req.params.id;
-      if(!bidId){
-        console.log("Monitor not found")
-      }
-      // This deletes everything inside, leaving document intact
-      // await OvertimeBid.findByIdAndUpdate(bidId, { $set: { rankings: [] } })
-      await OvertimeBid.deleteOne({ _id: bidId }) //Delete entire document
-      console.log(`Rankings cleared for Overtime Bid with ID: ${bidId}`)
-      res.redirect("/parking/overtime?tab=openShift-tab#displayOvertime")
-    } catch(err){
-      console.error(err);
-      res.redirect('/parking/home'); // Redirect to home on error
-    }
-  },
-  deleteOvertimeAuditWinners: async (req, res) =>{
-    try{
-      clearOvertimeAuditAndScheduleWinners()
-      console.log(`Route deleteOvertimeAuditWinners successfully ran!`)
-      res.redirect("/parking/overtime?tab=overtimeAssignment-tab#overtime#displayOvertimeWinners")
-    } catch(err){
-      console.error(err);
-      res.redirect('/parking/home'); // Redirect to home on error
-    }
-  },
-  deleteHoliday: async (req, res) => {
-    try{
-      const holidayToDelete = await Holiday.findById(req.params.id)
-      if(!holidayToDelete){
-        console.log("Holiday not found")
+      const blackoutToDelete = await BlackoutDate.findById(req.params.id)
+      if(!blackoutToDelete){
+        console.log("Blackout Date not found")
         return res.redirect("/parking/home")
       }
-      //Delete linked openShift Ids
-      for (const openShiftId of holidayToDelete.openShiftArr) {
-      await OpenShift.findByIdAndDelete(openShiftId);
-      }
 
-      await Holiday.findByIdAndDelete(req.params.id)
-      console.log("Holiday has been deleted!");
+      await BlackoutDate.findByIdAndDelete(req.params.id)
+      console.log("Blackout Date has been deleted!");
+      req.flash('success_msg', 'Blackout date deleted.');
       res.redirect("/parking/holiday");
     }catch(err){
       console.error(err);
@@ -1825,55 +1485,401 @@ module.exports = {
       res.redirect("/parking/home")
     }
   },
-  deleteBlackoutDate: async (req, res) => {
+  deleteHoliday: async (req, res) => {
     try{
-      const blackoutToDelete = await BlackoutDate.findById(req.params.id)
-      if(!blackoutToDelete){
-        console.log("Blackout Date not found")
+      const holidayToDelete = await Holiday.findById(req.params.id)
+      if(!holidayToDelete){
+        console.log("Holiday not found")
         return res.redirect("/parking/home")
       }
+      //Delete linked openShift Ids
+      for (const openShiftId of holidayToDelete.openShiftArr) {
+      await OpenShift.findByIdAndDelete(openShiftId);
+      }
 
-      await BlackoutDate.findByIdAndDelete(req.params.id)
-      console.log("Blackout Date has been deleted!");
+      await Holiday.findByIdAndDelete(req.params.id)
+      console.log("Holiday has been deleted!");
+      req.flash('success_msg', 'Holiday deleted.');
       res.redirect("/parking/holiday");
     }catch(err){
       console.error(err);
       res.redirect("/parking/home")
     }
   },
-  
-  // SERVICES
+  deleteLocation: async (req, res) => {
+    try {
+      const location = await Location.findById(req.params.id)
+      if(!location){
+        console.log("Location not found")
+        return res.redirect("/parking/home")
+      }
+      await Location.findByIdAndDelete(req.params.id)
+      console.log("Location has been deleted!");
+      req.flash('success_msg', 'Location has been deleted.');
+      res.redirect("/parking/edit?tab=location-tab#displayLocations");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  deleteMonitor: async (req, res) => {
+    try {
+      const monitor = await Monitor.findById(req.params.id)
+      if(!monitor){
+        console.log("Monitor not found")
+        return res.redirect("/parking/home")
+      }
+      console.log(req.params.id)
+      //delete vaca + associated openshifts, and overtime bids
+      await clearMonitorVacationShiftsAndOvertimeBids(req.params.id) 
+      await Monitor.findByIdAndDelete(req.params.id) //delete MONITOR
+      console.log("Monitor has been deleted!");
+      req.flash('success_msg', 'Monitor deleted.');
+      res.redirect("/parking/edit?tab=monitor-tab#displayMonitors"); 
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  deleteOneSick: async (req, res) => {
+    try {
+      const { monitorId, date, dayRaw, openShiftId} = req.body
+      await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId, 'sick')
+      req.flash('success_msg', 'Single sick time deleted.');
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
+    } catch (err) {
+      console.error(`Error clearing vacation for date: ${err}`);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteOneVacation: async (req, res) => {
+    try {
+      const { vacaId, monitorId, date, dayRaw, openShiftId} = req.body
+      await clearOneTimeOffAndOvertimeBids(monitorId, date, dayRaw, openShiftId)
+
+      req.flash('success_msg', 'Single vacation deleted.');
+      res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
+    } catch (err) {
+      console.error(`Error clearing vacation for date: ${err}`);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteOpenShift: async (req, res) => {
+    try {
+      const openShift = await OpenShift.findById(req.params.id)
+      if(!openShift){
+        console.log("Open Shift not found")
+        return res.redirect("/parking/home")
+      }
+      // await OpenShift.findByIdAndDelete(req.params.id)
+      await deleteOpenShift(req.params.id) //Call helper function to delete
+      console.log("Open Shift has been deleted!");
+      req.flash('success_msg', 'Overtime Shift deleted.');
+      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+  deleteOvertimeAuditWinners: async (req, res) =>{
+    try{
+      clearOvertimeAuditAndScheduleWinners()
+      console.log(`Route deleteOvertimeAuditWinners successfully ran!`)
+      res.redirect("/parking/overtime?tab=overtimeAssignment-tab#overtime#displayOvertimeWinners")
+    } catch(err){
+      console.error(err);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteOvertimeBid: async (req, res) =>{
+    try{
+      console.log("Request ID:", req.params.id);
+      const bidId = req.params.id;
+      if(!bidId){
+        console.log("Monitor not found")
+      }
+      // This deletes everything inside, leaving document intact
+      // await OvertimeBid.findByIdAndUpdate(bidId, { $set: { rankings: [] } })
+      await OvertimeBid.deleteOne({ _id: bidId }) //Delete entire document
+      console.log(`Rankings cleared for Overtime Bid with ID: ${bidId}`)
+      req.flash('success_msg', 'Rankings cleared for Overtime Bid.');
+      res.redirect("/parking/overtime?tab=openShift-tab#displayOvertime")
+    } catch(err){
+      console.error(err);
+      res.redirect('/parking/home'); // Redirect to home on error
+    }
+  },
+  deleteRegularShift: async (req, res) => {
+    try {
+      const regularShift = await RegularShift.findById(req.params.id)
+      if(!regularShift){
+        console.log("Regular Shift not found")
+        return res.redirect("/parking/home")
+      }
+      await RegularShift.findByIdAndDelete(req.params.id)
+      console.log("Regular Shift has been deleted!");
+      req.flash('success_msg', 'Regular Shift deleted.');
+      res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/parking/home");
+    }
+  },
+
+  //EXPORT and IMPORT from Mongo
   //
   //
-  // allocateOvertimePage: async (req, res) => {
-  //   try {
-  //     // Call the allocateOvertime function
-  //     const results = await allocateOvertime();
+  exportMongoData: async (req, res) => {
+    try {
+      const exportData = {};
+      for (const [name, Model] of Object.entries(COLLECTIONS)) {
+        const docs = await Model.find().lean();
+        exportData[name] = docs;
+      }
 
-  //     // Update all monitors' hours
-  //     await Promise.all(
-  //       Object.entries(results.summary).map(([id, hours]) =>
-  //         Monitor.updateOne({ _id: id }, { $inc: { hours: hours } })
-  //       )
-  //     );
+      //TODO: REname backup with week date
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      const filePath = path.join(__dirname, "../exports/mongo-backup.json");
 
-  //     // Render the allocation results page
-  //     res.render('allocation-results', results);
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.redirect('/parking/home');
-  //   }
-  // },
-  // allocateSchedule: async (req, res) => {
-  //   try {
-  //     // Call the allocateSchedule function
-  //     const results = await allocateSchedule();
+      fs.writeFileSync(filePath, jsonStr);
 
-  //     // Render the allocation results page
-  //     res.render('allocation-results', results);
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.redirect('/parking/home');
-  //   }
-  // },
+      res.download(filePath, "mongo-backup.json");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Export failed");
+    }
+  },
+  importMongoData: [
+    upload.single("importFile"),
+    async (req, res) => {
+      try {
+        const filePath = req.file.path;
+        const rawData = fs.readFileSync(filePath, "utf-8");
+        const jsonData = JSON.parse(rawData);
+
+        for (const [name, data] of Object.entries(jsonData)) {
+          const Model = COLLECTIONS[name];
+          if (!Model || !Array.isArray(data)) continue;
+
+          await Model.deleteMany({});
+          await Model.insertMany(data);
+        }
+
+        fs.unlinkSync(filePath); // Clean up
+        // res.send("Import successful");
+        req.flash('success_msg', 'Database Import successful!');
+        res.redirect("/parking/finalize"); 
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Import failed");
+      }
+    }
+  ],
+
 };
+
+//depreciated addVacataion and addSick()
+  // addVacation: async (req, res) => {  
+  // try{
+  //   const { vacationMonitorSelect, vacaStartDate, vacaEndDate, vacaStartTime, vacaEndTime  } = req.body
+  //   // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
+  //   //Create lookup table and get monitor from monitor id
+  //   const { monitors, vacaLookup } = await fetchCommonData()
+  //   const monitorObj = monitorLookupByMonitorIdTable(monitors).get(vacationMonitorSelect)
+  //   const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
+  //   //Parse local dates + split before declaring the date
+  //   const [startYear, startMonth, startDay] = vacaStartDate.split("-").map(Number);
+  //   const [endYear, endMonth, endDay] = vacaEndDate.split("-").map(Number);
+  //   const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
+  //   const end = new Date(endYear, endMonth - 1, endDay);
+  //   //Ensure start/endDate are valid
+  //   if(isNaN(start) || isNaN(end) || start > end){
+  //     return res.status(400).send("Invalid vacation date range provided.");
+  //   }
+  //   //Boolean to check for partial days
+  //   const isPartial = (vacaStartTime && vacaEndTime)
+  //   const parsedStartTime = isPartial ? new Date(`${vacaStartDate}T${vacaStartTime}`) : null;
+  //   const parsedEndTime = isPartial ? new Date(`${vacaEndDate}T${vacaEndTime}`) : null;
+  //   // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
+
+  //   //Generate all dates in range & filter
+  //   const dateRange = []
+  //   let currentDate = new Date(start)
+  //   while (currentDate <= end){
+  //     //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
+  //     const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
+  //     //Only push if day in regular shift
+  //     if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
+  //     currentDate.setDate(currentDate.getDate() + 1)
+  //   }
+
+  //   // 1) Build vaca entries array, filtering away duplicates
+  //   const vacaEntries =  await filterTimeOffDuplicates(vacationMonitorSelect, dateRange, isPartial, parsedStartTime, parsedEndTime)
+
+  //   //2) Update monitor schema -> add to vaca array
+  //   const monitor = await Monitor.findOneAndUpdate(
+  //     { _id: vacationMonitorSelect}, 
+  //     { $addToSet: { vaca: { $each: vacaEntries} } }, //ensures dupes are not added to vaca array
+  //     { new: true} // return updated document
+  //   )
+  //   if(!monitor) return res.status(404).send("Monitor not found.")
+    
+  //   //3) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
+  //   let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, vacationMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
+  //   // console.log("osa:", openShiftIdArr) //[date, monitorId, openShiftId]
+
+  //   //4) Vacation Schema -> Loop over range, adding each date and ordered pair
+  //   for (const entry of openShiftIdArr) {
+  //     const [day, monitorId, openShiftId, timeRange] = entry
+  //     const [startTime, endTime] = Array.isArray(timeRange) ? timeRange : [null, null]
+
+  //     //Does this monitor already have a shift assigned for today?
+  //     const dayMatch = vacaLookup.find(doc => {
+  //       // let day1 = new Date(doc.day).toDateString(), day2 = new Date(day).toDateString()
+  //       // console.log("days:", day1, day2, day1===day2)
+  //       return new Date(doc.day).toDateString() === new Date(day).toDateString()
+  //     })
+  //     const alreadyExists = dayMatch?.monitorAndOpenShift?.some(entry => {
+  //       // let id1= entry.monitorId._id.toString(), id2 = monitorId
+  //       // console.log("id: ",id1, id2, id1===id2)
+  //       return entry.monitorId._id.equals(monitorId)
+  //     })
+
+  //     //Only add if monitor is not taking off this date already
+  //     if(!alreadyExists){
+  //     // Use upsert to create the document if it doesn't exist
+  //       // Safe to insert
+  //       await VacationLookup.findOneAndUpdate(
+  //         { day: day },
+  //         {
+  //           $addToSet: {
+  //             monitorAndOpenShift: {
+  //               monitorId: monitorId,
+  //               openShiftId: openShiftId,
+  //               ...(startTime && endTime && {
+  //                 startTime: startTime,
+  //                 endTime: endTime
+  //               })
+  //             }
+  //           }
+  //         },
+  //         { upsert: true, new: true }
+  //       )
+  //     }else{
+  //       console.log(`Monitor ${monitorId} already has vacation time on ${day}. Skipping.`)
+  //     }
+
+  //   }   
+
+  //   console.log("Vacation has been added!")
+  //   console.log("Monitor's shifts have been put up for bid!")
+  //   res.redirect("/parking/edit?tab=vaca-tab#vacation")
+  //   } catch(err){
+  //     console.error(err);
+  //     res.redirect("/parking/home");
+  //   }
+  // },
+
+
+  // addSick: async (req, res) => {  
+  // try{
+  //   const { sickMonitorSelect, sickStartDate, sickEndDate, sickStartTime, sickEndTime } = req.body
+  //   // console.log(req.body) //{vacationMonitorSelect: 'Monitor ID', startDate: '2025-05-01', endDate: '2025-05-01'
+  //   //Create lookup table and get monitor from monitor id
+  //   const { monitors, sickTime } = await fetchCommonData()
+  //   const monitorObj = monitorLookupByMonitorIdTable(monitors).get(sickMonitorSelect)
+  //   const shiftDays = monitorObj.regularShift.days //Grab monitor's shift data
+  //   //Parse local dates + split before declaring the date
+  //   const [startYear, startMonth, startDay] = sickStartDate.split("-").map(Number);
+  //   const [endYear, endMonth, endDay] = sickEndDate.split("-").map(Number);
+  //   const start = new Date(startYear, startMonth - 1, startDay); // Months are 0-indexed
+  //   const end = new Date(endYear, endMonth - 1, endDay);
+  //   //Ensure start/endDate are valid
+  //   if(isNaN(start) || isNaN(end) || start > end){
+  //     return res.status(400).send("Invalid sick date range provided.");
+  //   }
+  //   //Boolean to check for partial days
+  //   const isPartial = (sickStartTime && sickEndTime)
+  //   const parsedStartTime = isPartial ? new Date(`${sickStartDate}T${sickStartTime}`) : null;
+  //   const parsedEndTime = isPartial ? new Date(`${sickEndDate}T${sickEndTime}`) : null;
+  //   // console.log(parsedStartTime, parsedEndTime) //2025-08-04T13:04:00.000Z 2025-08-05T01:04:00.000Z
+
+  //   //Generate all dates in range & filter
+  //   const dateRange = []
+  //   let currentDate = new Date(start)
+  //   while (currentDate <= end){
+  //     //Shift 3 so Thursday(4) becomes 0. Modulo 7 wraps around (Sunday = 3)
+  //     const dayName = DAYSARRAY[(currentDate.getDay() + 3) % 7]
+  //     // Filter for days in regular shift
+  //     if(shiftDays.includes(dayName)) { dateRange.push(new Date(currentDate)) }
+  //     currentDate.setDate(currentDate.getDate() + 1)
+  //   }
+
+  //   // 1) Build sick entries array, filtering away duplicates
+  //   const sickEntries =  await filterTimeOffDuplicates(sickMonitorSelect, dateRange, isPartial, parsedStartTime, parsedEndTime, 'sick')
+
+  //   // 2) Update monitor schema -> add to vaca array
+  //   const monitor = await Monitor.findOneAndUpdate(
+  //     { _id: sickMonitorSelect}, 
+  //     { $addToSet: { sick: { $each: sickEntries} } }, //ensures dupes are not added to sick array
+  //     { new: true} // return updated document
+  //   )
+  //   if(!monitor) return res.status(404).send("Monitor not found.")
+    
+  //   // //3) OpenShift Schema -> Put monitor's shifts up for bid + return overtime shift Id
+  //   let openShiftIdArr = await addOpenShiftFromVacation(monitorObj, sickMonitorSelect, dateRange, [parsedStartTime, parsedEndTime])
+  //   // console.log("osa:", openShiftIdArr) //[date, monitorId, openShiftId]
+
+  //   // //4) Sick Schema -> Loop over range, adding each date and ordered pair
+  //   for (const entry of openShiftIdArr) {
+  //     const [day, monitorId, openShiftId, timeRange] = entry
+  //     const [startTime, endTime] = Array.isArray(timeRange) ? timeRange : [null, null];
+  //     // console.log("startEnd: ",startTime, endTime)
+
+  //     //Does this monitor already have a shift assigned for today?
+  //     const dayMatch = sickTime.find(doc => {
+  //       // let day1 = new Date(doc.day).toDateString(), day2 = new Date(day).toDateString()
+  //       // console.log("days:", day1, day2, day1===day2)
+  //       return new Date(doc.day).toDateString() === new Date(day).toDateString()
+  //     })
+  //     const alreadyExists = dayMatch?.monitorAndOpenShift?.some(entry => {
+  //       // let id1= entry.monitorId._id.toString(), id2 = monitorId
+  //       // console.log("id: ",id1, id2, id1===id2)
+  //       return entry.monitorId._id.equals(monitorId)
+  //     })
+      
+  //     // console.log(alreadyExists)
+  //     //Only add if monitor is not taking off this date already
+  //     if(!alreadyExists){
+  //     // Use upsert to create the document if it doesn't exist
+  //       // Safe to insert
+  //       await SickTime.findOneAndUpdate(
+  //         { day: day },
+  //         {
+  //           $addToSet: {
+  //             monitorAndOpenShift: {
+  //               monitorId: monitorId,
+  //               openShiftId: openShiftId,
+  //               ...(startTime && endTime && {
+  //                 startTime: startTime,
+  //                 endTime: endTime
+  //               })
+  //             }
+  //           }
+  //         },
+  //         { upsert: true, new: true }
+  //       )
+  //     }else{
+  //       console.log(`Monitor ${monitorId} already has sick time on ${day}. Skipping.`)
+  //     }
+  //   }
+
+  //   console.log("Vacation has been added!")
+  //   console.log("Monitor shifts have been put up for bid!")
+  //   res.redirect("/parking/edit?tab=vaca-tab#vacation")
+  //   } catch(err){
+  //     console.error(err);
+  //     res.redirect("/parking/home");
+  //   }
+  // },
+

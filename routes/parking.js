@@ -59,11 +59,12 @@ router.post("/monitor", ensureAuth, parkingController.addMonitor)
 router.post("/location", ensureAuth, parkingController.addLocation)
 router.post("/regularShift", ensureAuth, parkingController.addRegularShift)
 router.post("/openShift", ensureAuth, parkingController.addOpenShift)
-router.post("/vacation", ensureAuth, parkingController.addVacation)
+// router.post("/vacation", ensureAuth, parkingController.addVacation)
 router.post("/holiday", ensureAuth, parkingController.addHoliday)
 router.post("/extraOT", ensureAuth, parkingController.addExtraOT)
-router.post("/sick", ensureAuth, parkingController.addSick)
+// router.post("/sick", ensureAuth, parkingController.addSick)
 router.post("/blackoutDate", ensureAuth, parkingController.addBlackoutDate)
+router.post("/timeOff", ensureAuth, parkingController.addTimeOff)
 
 // POST routes to edit entries 
 router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
