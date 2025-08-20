@@ -17,7 +17,7 @@ const { getWorksheetColumnWidths } = require("json-as-xlsx")
 //const [month, day, year] = [new Date().getMonth() + 1, new Date().getDate(), new Date().getFullYear()];
 //console.log(`${month}/${day}/${year}`); // "5/22/2025"
 //temp hardcoding date:
-const THISWEEK = new Date("8/11/25")//new Date("4/30/25") //new Date("6/29/25") 
+const THISWEEK = new Date("4/30/25") //new Date("6/29/25") 
 // const TESTWEEK = new Date() //Gets the current date from the user
 // Map full day to a shortened format. 
 const DAYMAPPING = { monday: "MON", tuesday: "TUE", wednesday: "WED", thursday: "THU", friday: "FRI", saturday: "SAT", sunday: "SUN",};

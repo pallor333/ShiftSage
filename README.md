@@ -1,3 +1,16 @@
+# ShiftSage is a scheduling and workforce management tool designed to simplify shift planning and overtime tracking. With ShiftSage, you can:
+
+Build efficient schedules that balance employee availability and coverage needs.
+
+Calculate and track overtime automatically, ensuring accurate reporting and compliance.
+
+Generate overtime shifts when team members take time off or when holidays change staffing needs.
+
+Streamline shift assignments with rules that ensure fairness and reduce conflicts.
+
+ShiftSage gives managers clarity and control while making scheduling more transparent and predictable for employees.
+
+
 # Install
 
 `npm install`
@@ -19,9 +32,3 @@
 
 `npm start`
 
-# ShiftSage 4/17/25
-Bugs: 
-- Incorrect error message on login → references to an email
-- Seniority shouldn't display day of week (Tuesday) but instead Month/Day/Year
-- 'Edit' button on Regular/Overtime Shift and Manage Locations does not work and should be removed in the case of regular + manage locations.
-- Does not handle DST when it comes to shifts. 
