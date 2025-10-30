@@ -1,3 +1,6 @@
+//Use .env file in config folder
+require("dotenv").config({ path: "./config/.env" });
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -7,13 +10,11 @@ const MongoStore = require("connect-mongo");
 const methodOverride = require("method-override");
 const flash = require("express-flash");
 const logger = require("morgan");
+
 const connectDB = require("./config/database");
 // const mainRoutes = require("./routes/main");
 //const postRoutes = require("./routes/posts");
 const parkingRoutes = require("./routes/parking");
-
-//Use .env file in config folder
-require("dotenv").config({ path: "./config/.env" });
 
 // Passport config
 require("./config/passport")(passport);
@@ -50,12 +51,13 @@ app.use(methodOverride("_method"));
 // Setup Sessions - stored in MongoDB
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: process.env.SESSION_SECRET || "keyboard cat",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.DB_STRING, // Use your MongoDB connection string from .env
     }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }
   })
 );
 
@@ -87,7 +89,7 @@ app.get("/", (req, res) => {
   res.redirect("/parking");
 });
 // app.get("/login", (req, res) => {
-//   res.redirect("/parking/login");
+//   res.redirect("login");
 // });
 
 //Server Running

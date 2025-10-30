@@ -24,8 +24,8 @@ router.get("/", homeController.getIndex);
 router.get("/login", authController.getLogin);
 router.post("/login", authController.postLogin);
 router.get("/logout", authController.logout);
-// router.get("/signup", authController.getSignup);
-// router.post("/signup", authController.postSignup);
+router.get("/signup", authController.getSignup);
+router.post("/signup", authController.postSignup);
 
 ///////////////// Routes for Shift Sage
 // Displaying dashboard page
@@ -67,32 +67,35 @@ router.post("/blackoutDate", ensureAuth, parkingController.addBlackoutDate)
 router.post("/timeOff", ensureAuth, parkingController.addTimeOff)
 
 // POST routes to edit entries 
-router.post("/monitor/edit/:id", ensureAuth, parkingController.updateMonitor);
-router.post("/openShift/edit/:id", ensureAuth, parkingController.updateOpenShift);
-router.post("/overtime/rank/:id", ensureAuth, parkingController.updateOvertimeBid);
-router.post("/regularShift/edit/:id", ensureAuth, parkingController.updateRegularShift);
-router.post("/regularShift/edit/:id", ensureAuth, parkingController.updateRegularShift);
+router.put("/monitor/:id", ensureAuth, parkingController.updateMonitor);
+router.put("/openShift/:id", ensureAuth, parkingController.updateOpenShift);
+router.put("/overtime/rank/:id", ensureAuth, parkingController.updateOvertimeBid);
+router.put("/regularShift/:id", ensureAuth, parkingController.updateRegularShift);
+router.put("/regularShift/:id", ensureAuth, parkingController.updateRegularShift);
 //UPDATE entries
-router.post("/finalize/update", ensureAuth, parkingController.updateFinalizeHours);
-router.post("/extraOT/update", ensureAuth, parkingController.updateExtraOT);
+router.put("/finalize", ensureAuth, parkingController.updateFinalizeHours);
+router.put("/extraOT", ensureAuth, parkingController.updateExtraOT);
 
 // router.get("/shift/edit/:id", ensureAuth, parkingController.editShift);
 // router.get("/location/edit/:id", ensureAuth, parkingController.editLocation);
 
 // Delete routes to delete entries
-router.post("/monitor/delete/:id", ensureAuth, parkingController.deleteMonitor);
-router.post("/location/delete/:id", ensureAuth, parkingController.deleteLocation);
-router.post("/regularShift/delete/:id", ensureAuth, parkingController.deleteRegularShift);
-router.post("/openShift/delete/:id", ensureAuth, parkingController.deleteOpenShift);
-router.post('/monitor/deleteAllVacation/:id', ensureAuth, parkingController.deleteAllVacation);
-router.post('/monitor/deleteOneVacation', ensureAuth, parkingController.deleteOneVacation);
-router.post("/overtime/deleteBid/:id", ensureAuth, parkingController.deleteOvertimeBid);
-router.get("/overtime/deleteOvertimeAuditWinners", ensureAuth, parkingController.deleteOvertimeAuditWinners);
-router.post("/holiday/deleteHoliday/:id", ensureAuth, parkingController.deleteHoliday)
-router.post("/extraOT/delete/:id", ensureAuth, parkingController.deleteExtraOT)
+router.delete("/monitor/:id", ensureAuth, parkingController.deleteMonitor);
+router.delete("/location/:id", ensureAuth, parkingController.deleteLocation);
+router.delete("/regularShift/:id", ensureAuth, parkingController.deleteRegularShift);
+router.delete("/openShift/:id", ensureAuth, parkingController.deleteOpenShift);
+router.delete('/monitor/allVacation/:id', ensureAuth, parkingController.deleteAllVacation);
+router.delete('/monitor/oneVacation/:id', ensureAuth, parkingController.deleteOneVacation);
+router.delete("/overtime/:id", ensureAuth, parkingController.deleteOvertimeBid);
+router.delete("/overtime/auditWinners", ensureAuth, parkingController.deleteOvertimeAuditWinners);
+router.delete("/holiday/:id", ensureAuth, parkingController.deleteHoliday)
+router.delete("/extraOT/:id", ensureAuth, parkingController.deleteExtraOT)
 // router.delete("/extraOT/:id", ensureAuth, parkingController.deleteExtraOT)
-router.post('/monitor/deleteAllSick/:id', ensureAuth, parkingController.deleteAllSick);
-router.post('/monitor/deleteOneSick', ensureAuth, parkingController.deleteOneSick);
-router.post("/holiday/deleteBlackoutDate/:id", ensureAuth, parkingController.deleteBlackoutDate)
+router.delete('/monitor/allSick/:id', ensureAuth, parkingController.deleteAllSick);
+router.delete('/monitor/oneSick', ensureAuth, parkingController.deleteOneSick);
+router.delete("/holiday/blackoutDate/:id", ensureAuth, parkingController.deleteBlackoutDate)
+
+router.delete("/monitor/:id", ensureAuth, parkingController.deleteMonitor);
+
 
 module.exports = router;

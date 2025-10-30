@@ -4,6 +4,8 @@ const path = require("path")
 const multer = require("multer")
 const upload = multer({ dest: "uploads/" })
 const mongoose = require('mongoose')
+
+
 // Importing the schemas from the DB in models/Parking.js
 const { Monitor, Location, OpenShift, OvertimeAudit, OvertimeBid, OvertimeSchedule, RegularShift, VacationLookup, Holiday, SickTime, ShortNotice, BlackoutDate} = require("../models/Parking")
 const { calculateShiftHours, findClosestHoliday, formatDate, formatDateUTC, formatTime, getFixedTimeRange, getFixedTimeRangeISO, getNextThurs, getNextNextThurs, getPrevThursDateObj, getNextThursDateObj, getShiftOverlap, holidayNextWeek, qualifyingRegularShifts } = require('../utils/dateHelpers')
@@ -11,6 +13,7 @@ const { monitorLookupByMonitorIdTable, monitorLookupByMonitorNameTable, openShif
 const { allocateOvertime } = require('../services/overtimeServices') //Import business logic from Service layer
 const { allocateSchedule } = require('../services/scheduleServices') //Import business logic from Service layer
 const { getWorksheetColumnWidths } = require("json-as-xlsx")
+
 //Can fetch related objects now
 //const monitor = await Monitor.findById(monitorId).populate('regularShifts currentLocation');
 
@@ -703,7 +706,7 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   //Extra OT/Short Notice page
@@ -717,7 +720,7 @@ module.exports = {
       })
     }catch(err){
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   //Export Overtime page
@@ -741,7 +744,7 @@ module.exports = {
       })
     }catch(err){
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   //Finalize/Extra OT/Short Notice page
@@ -750,7 +753,7 @@ module.exports = {
       res.render("finalize.ejs",{})
     }catch(err){
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },  
   //Holiday page
@@ -790,7 +793,7 @@ module.exports = {
       })
     }catch(err){
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   //Home page
@@ -810,7 +813,7 @@ module.exports = {
       });
     } catch (err) {
       console.log(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   //Mongo page
@@ -820,7 +823,7 @@ module.exports = {
       })
     }catch(err){
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   //Overtime page
@@ -855,7 +858,7 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   //Quickstart page
@@ -864,7 +867,7 @@ module.exports = {
       res.render("quickstart.ejs"),{}
     }catch(err){
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   //Scheduling page
@@ -908,7 +911,7 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
 
@@ -929,10 +932,10 @@ module.exports = {
 
       console.log("Blackout Date has been added!");
       req.flash('success_msg', 'Blackout date added.');
-      res.redirect("/parking/holiday");
+      res.redirect("holiday");
     }catch(err){
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addExtraOT: async(req, res) => {
@@ -941,7 +944,7 @@ module.exports = {
       const monitorObject = await Monitor.findById(monId)
       if(!monitorObject){
         console.error("Monitor not found")
-      return res.redirect("/parking/home")
+      return res.redirect("home")
       }
       // console.log(monId, hoursAdded, comment )
       // console.log(monitorObject)
@@ -969,11 +972,11 @@ module.exports = {
 
       console.log("Extra OT has been added!");
       req.flash('success_msg', 'Extra OT entry successfully added.');
-      res.redirect("/parking/extraOT");
+      res.redirect("extraOT");
     }catch(err){
       console.error(err);
       req.flash('error_msg', 'ERROR: Something went wrong while adding.');
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addHoliday: async(req, res) => {
@@ -992,10 +995,10 @@ module.exports = {
 
       console.log("Holiday has been added!");
       req.flash('success_msg', 'Holiday added.');
-      res.redirect("/parking/holiday");
+      res.redirect("holiday");
     }catch(err){
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addLocation: async (req, res) => {
@@ -1025,10 +1028,10 @@ module.exports = {
       });
       console.log("Location has been added!");
       req.flash('success_msg', 'Location added.');
-      res.redirect("/parking/edit?tab=location-tab#locations");
+      res.redirect("edit?tab=location-tab#locations");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addMonitor: async (req, res) => {
@@ -1043,10 +1046,10 @@ module.exports = {
       });
       console.log("Monitor has been added!");
       req.flash('success_msg', 'Monitor added.');
-      res.redirect("/parking/edit?tab=monitor-tab #monitors"); // Redirect to a relevant page
+      res.redirect("edit?tab=monitor-tab #monitors"); // Redirect to a relevant page
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addOpenShift: async (req, res) => {
@@ -1091,10 +1094,10 @@ module.exports = {
       await createOpenShift(data) //Helper function adds to schema
       console.log("Open Shift has been added!");
       req.flash('success_msg', 'Overtime Shift added.');
-      res.redirect("/parking/edit?tab=openShift-tab#openShifts");
+      res.redirect("edit?tab=openShift-tab#openShifts");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addRegularShift: async (req, res) => {
@@ -1113,10 +1116,10 @@ module.exports = {
       });
       console.log("Regular Shift has been added!");
       req.flash('success_msg', 'Regular Shift added.');
-      res.redirect("/parking/edit?tab=regularShift-tab#regularShifts");
+      res.redirect("edit?tab=regularShift-tab#regularShifts");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   addTimeOff: async(req, res) => {
@@ -1127,10 +1130,10 @@ module.exports = {
       await addTimeOffHelper(timeOffMonitorSelect, timeOffStartDate,  timeOffEndDate, timeOffStartTime, timeOffEndTime,  timeOffType)
 
       req.flash('success_msg', `${timeOffType[0].toUpperCase()+timeOffType.slice(1)} added!`);
-      res.redirect("/parking/edit?tab=vaca-tab#vacation")
+      res.redirect("edit?tab=vaca-tab#vacation")
     }catch(err){
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
 
@@ -1145,7 +1148,7 @@ module.exports = {
 
       if(!extraOT){
         console.log("Extra OT not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
 
       //Build obj of monitor's final hours
@@ -1189,11 +1192,11 @@ module.exports = {
       await ShortNotice.deleteMany({})
 
       req.flash('success_msg', 'Monitor hour update successful, all extra OT deleted.');
-      res.redirect("/parking/extraOT") 
+      res.redirect("extraOT") 
     } catch (err) {
       console.error(err);
       req.flash('error_msg', 'Something went wrong while updating monitor hours and/or deleting extra OT');
-      res.redirect("/parking/extraOT");
+      res.redirect("extraOT");
     }
   },
   updateFinalizeHours: async (req, res) => {
@@ -1201,11 +1204,11 @@ module.exports = {
       const { holidays, monitors, overtimeAudit } = await fetchCommonData()
       if(!monitors){
         console.log("Monitors not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       if(!overtimeAudit){
         console.log("Overtime winners not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
 
       //Tabulating hours for each monitor + creating monitor lookup table by name
@@ -1222,11 +1225,11 @@ module.exports = {
       await cleanupOldEntries(getNextThursDateObj(THISWEEK))
 
       req.flash('success_msg', 'Monitors charged, holiday overtime shifts generated, and month old overtime/sick/vacation deleted.');
-      res.redirect("/parking/finalize") 
+      res.redirect("finalize") 
     } catch (err) {
       console.error(err);
       req.flash('error_msg', 'Something went wrong while updating monitor hours and/or generating holiday overtime shifts');
-      res.redirect("/parking/finalize");
+      res.redirect("finalize");
     }
   },
   updateMonitor: async (req, res) => {
@@ -1246,10 +1249,10 @@ module.exports = {
       seniority: req.body.seniority,
     });
     console.log("Monitor has been updated!");
-    res.redirect("/parking/edit?tab=monitor-tab#displayMonitors") //displayMonitors");
+    res.redirect("edit?tab=monitor-tab#displayMonitors") //displayMonitors");
   } catch (err) {
     console.error(err);
-    res.redirect("/parking/home");
+    res.redirect("home");
   }
   },
   updateOpenShift: async (req, res) => {
@@ -1257,7 +1260,7 @@ module.exports = {
       const openShift = await Location.find();
       if(!openShift){
         console.log("OpenShift not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       // console.log("Request body:", req.body)
       await OpenShift.findByIdAndUpdate(req.params.id, {
@@ -1267,10 +1270,10 @@ module.exports = {
       });
       console.log("OpenShift has been updated!");
       req.flash('success_msg', 'Overtime Shift Updated.');
-      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts") //displayOpenShifts"); 
+      res.redirect("edit?tab=openShift-tab#displayOpenShifts") //displayOpenShifts"); 
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   updateOvertimeBid: async (req, res) => {
@@ -1289,7 +1292,7 @@ module.exports = {
       const monitor = await Monitor.findById(monId)
       if(!monitor){
         console.log("Monitor not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
 
       //debugging
@@ -1348,10 +1351,10 @@ module.exports = {
       )
 
       console.log("Overtime Bid has been updated!");
-      res.redirect("/parking/overtime?tab=overtimeBid-tab#rankingForm");
+      res.redirect("overtime?tab=overtimeBid-tab#rankingForm");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   updateRegularShift: async (req, res) => {
@@ -1359,7 +1362,7 @@ module.exports = {
       const regularShift = await RegularShift.findById(req.params.id)
       if(!regularShift ){
         console.log("Regular Shift not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       // console.log("Request body:", req.body)
       // console.log("Request body type:", req.body.type)
@@ -1373,7 +1376,7 @@ module.exports = {
       res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts") 
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   calculateOvertimeBid: async (req, res) => { //Press a button
@@ -1385,7 +1388,7 @@ module.exports = {
       if(!OvertimeAudit) throw new Error("overtime audit unavaliable")
       if(!overtimeWinsForSchedule || !overtimeWinsForAudit){
         console.log("Error in retreiving overtime calculations.")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
 
       //Convert map object to plain object for insertion
@@ -1405,7 +1408,7 @@ module.exports = {
       res.redirect("/parking/overtime?tab=overtimeAssignment-tab#displayOvertimeWinners")
     } catch (err) {
       console.error(err)
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
 
@@ -1420,10 +1423,10 @@ module.exports = {
       await clearAllTimeOffAndOvertimeBids(req.params.id, 'sick');
       
       req.flash('success_msg', 'Sick time cleared.');
-      res.redirect('/parking/edit?tab=vaca-tab#displaySickByMonitor'); // Redirect back to the sick tab
+      res.redirect('edit?tab=vaca-tab#displaySickByMonitor'); // Redirect back to the sick tab
     } catch (err) {
       console.error(`Error clearing sick time for monitor: ${err}`);
-      res.redirect('/parking/home'); // Redirect to home on error
+      res.redirect('home'); // Redirect to home on error
     }
   },
   deleteAllVacation: async (req, res) => {
@@ -1435,7 +1438,7 @@ module.exports = {
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByMonitor'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for monitor: ${err}`);
-      res.redirect('/parking/home'); // Redirect to home on error
+      res.redirect('home'); // Redirect to home on error
     }
   },
   deleteBlackoutDate: async (req, res) => {
@@ -1443,16 +1446,16 @@ module.exports = {
       const blackoutToDelete = await BlackoutDate.findById(req.params.id)
       if(!blackoutToDelete){
         console.log("Blackout Date not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
 
       await BlackoutDate.findByIdAndDelete(req.params.id)
       console.log("Blackout Date has been deleted!");
       req.flash('success_msg', 'Blackout date deleted.');
-      res.redirect("/parking/holiday");
+      res.redirect("holiday");
     }catch(err){
       console.error(err);
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   deleteExtraOT: async (req, res) => {
@@ -1464,7 +1467,7 @@ module.exports = {
       const doc = await ShortNotice.findById(id)
       // If document not found, or index is invalid, exit early and return to page
       if (!doc || !doc.extraShift || index < 0 || index >= doc.extraShift.length) {
-        return res.redirect("/parking/home");
+        return res.redirect("home");
       }
 
       // Remove the specific entry from the entries array using splice
@@ -1478,11 +1481,11 @@ module.exports = {
 
       console.log("Extra OT has been deleted!");
       req.flash('success_msg', 'Entry successfully deleted.');
-      res.redirect("/parking/extraOT");
+      res.redirect("extraOT");
     }catch(err){
       console.error(err);
       req.flash('error_msg', 'Something went wrong while deleting the entry.');
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   deleteHoliday: async (req, res) => {
@@ -1490,7 +1493,7 @@ module.exports = {
       const holidayToDelete = await Holiday.findById(req.params.id)
       if(!holidayToDelete){
         console.log("Holiday not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       //Delete linked openShift Ids
       for (const openShiftId of holidayToDelete.openShiftArr) {
@@ -1500,10 +1503,10 @@ module.exports = {
       await Holiday.findByIdAndDelete(req.params.id)
       console.log("Holiday has been deleted!");
       req.flash('success_msg', 'Holiday deleted.');
-      res.redirect("/parking/holiday");
+      res.redirect("holiday");
     }catch(err){
       console.error(err);
-      res.redirect("/parking/home")
+      res.redirect("home")
     }
   },
   deleteLocation: async (req, res) => {
@@ -1511,15 +1514,15 @@ module.exports = {
       const location = await Location.findById(req.params.id)
       if(!location){
         console.log("Location not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       await Location.findByIdAndDelete(req.params.id)
       console.log("Location has been deleted!");
       req.flash('success_msg', 'Location has been deleted.');
-      res.redirect("/parking/edit?tab=location-tab#displayLocations");
+      res.redirect("edit?tab=location-tab#displayLocations");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   deleteMonitor: async (req, res) => {
@@ -1527,7 +1530,7 @@ module.exports = {
       const monitor = await Monitor.findById(req.params.id)
       if(!monitor){
         console.log("Monitor not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       console.log(req.params.id)
       //delete vaca + associated openshifts, and overtime bids
@@ -1535,10 +1538,10 @@ module.exports = {
       await Monitor.findByIdAndDelete(req.params.id) //delete MONITOR
       console.log("Monitor has been deleted!");
       req.flash('success_msg', 'Monitor deleted.');
-      res.redirect("/parking/edit?tab=monitor-tab#displayMonitors"); 
+      res.redirect("edit?tab=monitor-tab#displayMonitors"); 
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   deleteOneSick: async (req, res) => {
@@ -1549,7 +1552,7 @@ module.exports = {
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for date: ${err}`);
-      res.redirect('/parking/home'); // Redirect to home on error
+      res.redirect("home"); // Redirect to home on error
     }
   },
   deleteOneVacation: async (req, res) => {
@@ -1561,7 +1564,7 @@ module.exports = {
       res.redirect('/parking/edit?tab=vaca-tab#displayVacationByDate'); // Redirect back to the vacation management section
     } catch (err) {
       console.error(`Error clearing vacation for date: ${err}`);
-      res.redirect('/parking/home'); // Redirect to home on error
+      res.redirect("home"); // Redirect to home on error
     }
   },
   deleteOpenShift: async (req, res) => {
@@ -1569,26 +1572,26 @@ module.exports = {
       const openShift = await OpenShift.findById(req.params.id)
       if(!openShift){
         console.log("Open Shift not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       // await OpenShift.findByIdAndDelete(req.params.id)
       await deleteOpenShift(req.params.id) //Call helper function to delete
       console.log("Open Shift has been deleted!");
       req.flash('success_msg', 'Overtime Shift deleted.');
-      res.redirect("/parking/edit?tab=openShift-tab#displayOpenShifts");
+      res.redirect("edit?tab=openShift-tab#displayOpenShifts");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
   deleteOvertimeAuditWinners: async (req, res) =>{
     try{
       clearOvertimeAuditAndScheduleWinners()
       console.log(`Route deleteOvertimeAuditWinners successfully ran!`)
-      res.redirect("/parking/overtime?tab=overtimeAssignment-tab#overtime#displayOvertimeWinners")
+      res.redirect("overtime?tab=overtimeAssignment-tab#overtime#displayOvertimeWinners")
     } catch(err){
       console.error(err);
-      res.redirect('/parking/home'); // Redirect to home on error
+      res.redirect('home'); // Redirect to home on error
     }
   },
   deleteOvertimeBid: async (req, res) =>{
@@ -1603,10 +1606,10 @@ module.exports = {
       await OvertimeBid.deleteOne({ _id: bidId }) //Delete entire document
       console.log(`Rankings cleared for Overtime Bid with ID: ${bidId}`)
       req.flash('success_msg', 'Rankings cleared for Overtime Bid.');
-      res.redirect("/parking/overtime?tab=openShift-tab#displayOvertime")
+      res.redirect("overtime?tab=openShift-tab#displayOvertime")
     } catch(err){
       console.error(err);
-      res.redirect('/parking/home'); // Redirect to home on error
+      res.redirect("home"); // Redirect to home on error
     }
   },
   deleteRegularShift: async (req, res) => {
@@ -1614,15 +1617,15 @@ module.exports = {
       const regularShift = await RegularShift.findById(req.params.id)
       if(!regularShift){
         console.log("Regular Shift not found")
-        return res.redirect("/parking/home")
+        return res.redirect("home")
       }
       await RegularShift.findByIdAndDelete(req.params.id)
       console.log("Regular Shift has been deleted!");
       req.flash('success_msg', 'Regular Shift deleted.');
-      res.redirect("/parking/edit?tab=regularShift-tab#displayRegularShifts");
+      res.redirect("edit?tab=regularShift-tab#displayRegularShifts");
     } catch (err) {
       console.error(err);
-      res.redirect("/parking/home");
+      res.redirect("home");
     }
   },
 
@@ -1668,7 +1671,7 @@ module.exports = {
         fs.unlinkSync(filePath); // Clean up
         // res.send("Import successful");
         req.flash('success_msg', 'Database Import successful!');
-        res.redirect("/parking/finalize"); 
+        res.redirect("finalize"); 
       } catch (err) {
         console.error(err);
         res.status(500).send("Import failed");
@@ -1776,7 +1779,7 @@ module.exports = {
   //   res.redirect("/parking/edit?tab=vaca-tab#vacation")
   //   } catch(err){
   //     console.error(err);
-  //     res.redirect("/parking/home");
+  //     res.redirect("home");
   //   }
   // },
 
@@ -1879,7 +1882,7 @@ module.exports = {
   //   res.redirect("/parking/edit?tab=vaca-tab#vacation")
   //   } catch(err){
   //     console.error(err);
-  //     res.redirect("/parking/home");
+  //     res.redirect("home");
   //   }
   // },
 

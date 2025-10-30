@@ -2,33 +2,39 @@ const passport = require("passport");
 const validator = require("validator");
 const User = require("../models/User");
 
-exports.getLogin = (req, res) => {
+const getLogin = (req, res) => {
   if (req.user) {
-    return res.redirect("/parking/home");
+    return res.redirect("home");
   }
   res.render("login", {
     title: "Login",
   });
 };
 
-exports.postLogin = (req, res, next) => {
+const postLogin = (req, res, next) => {
   const validationErrors = [];
-  // Change login from requiring email to username
-  // if (!validator.isEmail(req.body.email))
-  //   validationErrors.push({ msg: "Please enter a valid email address." });
-  if (validator.isEmpty(req.body.username)) {
+  if (validator.isEmpty(req.body.userName)) {
+    console.log("Validator: 'userName' field is blank")
     validationErrors.push({ msg: "Username cannot be blank." });
   }
-  if (validator.isEmpty(req.body.password))
+  if (validator.isEmpty(req.body.password)) {
+    console.log("Validator: 'password' field is blank")
     validationErrors.push({ msg: "Password cannot be blank." });
+  }
+  if (validator.isEmpty(req.body.confirmPassword)) {
+    console.log("Validator: 'confirmPassword' field is blank")
+    validationErrors.push({ msg: "Passwords must match." });
+  }
+  if (!validator.equals(req.body.password, req.body.confirmPassword)) {
+    console.log("Validator: 'confirmPassword' does not match 'password'")
+    validationErrors.push({ msg: "Passwords must match." });
+  }
+    
 
   if (validationErrors.length) {
     req.flash("errors", validationErrors);
-    return res.redirect("/login");
+    return res.redirect("login");
   }
-  // req.body.email = validator.normalizeEmail(req.body.email, {
-  //   gmail_remove_dots: false,
-  // });
 
   passport.authenticate("local", (err, user, info) => {
     if (err) {
@@ -36,7 +42,7 @@ exports.postLogin = (req, res, next) => {
     }
     if (!user) {
       req.flash("errors", info);
-      return res.redirect("/login");
+      return res.redirect("login");
     }
     req.logIn(user, (err) => {
       if (err) {
@@ -44,12 +50,12 @@ exports.postLogin = (req, res, next) => {
       }
       req.flash("success", { msg: "Success! You are logged in." });
       // res.redirect(req.session.returnTo || "/profile");
-      res.redirect(req.session.returnTo || "/parking/home");
+      res.redirect(req.session.returnTo || "home");
     });
   })(req, res, next);
 };
 
-exports.logout = (req, res, next) => {
+const logout = (req, res, next) => {
   req.logout((err) => {
     if (err) {
       console.error("Error during logout:", err);
@@ -69,58 +75,44 @@ exports.logout = (req, res, next) => {
   });
 };
 
-// exports.logout = async (req, res) => { //depreceated
-//   req.logout(() => {
-//     console.log('User has logged out.')
-//   })
-//   req.session.destroy((err) => {
-//     if (err)
-//       console.log("Error : Failed to destroy the session during logout.", err);
-//     req.user = null;
-//     res.redirect("/");
-//   });
-// };
 
-exports.getSignup = (req, res) => {
+const getSignup = (req, res) => {
   if (req.user) {
-    return res.redirect("/parking/home");
+    return res.redirect("home");
   }
   res.render("signup", {
     title: "Create Account",
   });
 };
 
-exports.postSignup = async(req, res, next) => {
+const postSignup = async(req, res, next) => {
   const validationErrors = [];
-  if (!validator.isEmail(req.body.email))
-    validationErrors.push({ msg: "Please enter a valid email address." });
-  if (!validator.isLength(req.body.password, { min: 8 }))
+  if (!validator.isEmpty(req.body.userName))
+    validationErrors.push({msg: "Please enter a valid username."});
+  if (!validator.isLength(req.body.password, { min: 7 }))
     validationErrors.push({
-      msg: "Password must be at least 8 characters long",
+      msg: "Password must be at least 7 characters long",
     });
   if (req.body.password !== req.body.confirmPassword)
     validationErrors.push({ msg: "Passwords do not match" });
 
   if (validationErrors.length) {
     req.flash("errors", validationErrors);
-    return res.redirect("../signup");
+    return res.redirect("signup");
   }
-  req.body.email = validator.normalizeEmail(req.body.email, {
-    gmail_remove_dots: false,
-  });
+
 
   try {
     // Check if the user already exists
-    const existingUser = await User.findOne({ email: req.body.email });
+    const existingUser = await User.findOne({ userName: req.body.userName });
     if (existingUser) {
-      req.flash("errors", { msg: "An account with that email already exists." });
-      return res.redirect("../signup");
+      req.flash("errors", { msg: "An account with that username already exists." });
+      return res.redirect("signup");
     }
 
     // Create a new user
     const newUser = new User({
       userName: req.body.userName,
-      email: req.body.email,
       password: req.body.password,
     });
 
@@ -132,10 +124,18 @@ exports.postSignup = async(req, res, next) => {
       }
       req.flash("success", { msg: "You have successfully signed up!" });
       // res.redirect(req.session.returnTo || "/profile");
-      res.redirect(req.session.returnTo || "/parking/home");
+      res.redirect(req.session.returnTo || "home");
     });
   } catch (err) {
     console.error(err);
-    res.redirect("/signup");
+    res.redirect("signup");
   }
+};
+
+module.exports = {
+  getLogin, 
+  postLogin, 
+  logout, 
+  getSignup, 
+  postSignup
 };
