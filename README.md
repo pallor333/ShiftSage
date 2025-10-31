@@ -39,10 +39,15 @@ Values for /config/.env file:
 ---
 
 ## 🛠 Tech Stack  
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-0A50B2?style=for-the-badge&logo=mongodb)
+![EJS](https://img.shields.io/badge/ejs-404?style=for-the-badge&logo=ejs)
+![GH Actions](https://img.shields.io/badge/GH_Actions-fff?logo=githubactions&style=for-the-badge)
 
 - **Backend:** Node.js, Express  
 - **Database:** MongoDB (Mongoose)  
-- **Frontend:** EJS templates, CSS, JavaScript  
+- **Frontend:** EJS templates
 - **Testing:** Playwright (VRT)
 - **CI:** GitHub Actions
 
