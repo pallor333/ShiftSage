@@ -1,7 +1,11 @@
 # ShiftSage 🕒  
 _All-in-one scheduling and overtime management tool_  
 
-ShiftSage is a **scheduling and workforce management web app** designed to simplify shift planning and overtime tracking. It helps managers build efficient schedules, calculate overtime automatically, and generate fair coverage when team members take time off or during holidays.  
+ShiftSage is a **scheduling and workforce management web app** designed to simplify shift planning and overtime tracking. It helps managers build efficient schedules, calculate overtime automatically, and generate fair coverage when team members take time off or during holidays. 
+
+<p align="center">
+  <img src="./docs/assets/shiftsage-banner.png" width="600" alt="ShiftSage Project (banner placeholder)">
+</p>
 
 ## ✨ Features  
 
@@ -11,42 +15,55 @@ ShiftSage is a **scheduling and workforce management web app** designed to simpl
 - ⚖️ **Fairness Rules** – Streamline assignments with rules to prevent conflicts and ensure equitable distribution.  
 - 📊 **Manager Insights** – Gain clarity and control while making scheduling more transparent for employees.  
 
-## 🛠 Tech Stack  
-
-- **Backend:** Node.js, Express  
-- **Database:** MongoDB (Mongoose)  
-- **Frontend:** EJS templates, CSS, JavaScript  
-- **Other Tools:** Cloudinary (media storage), dotenv (environment config)  
-
---- 
-
-## 🚀 Getting Started  
-
-### Install  
-Clone the repo and install dependencies:  
-```bash
-npm install
-
-
 ---
 
+## 🚀 Quickstart
+
+```bash
+git clone <your-fork-url>
+cd shiftsage
+npm ci
+npm run dev
+```
+
 # Environment Variables
-- Create a `.env` file in config folder and add the following as `key = value`
+Values for /config/.env file:
   - PORT = 2121 (can be any port example: 3000)
   - DB_STRING = `your database URI`
+  - SEED_USER = `default username`
+  - SEED_PASS = `default user password`
   - CLOUD_NAME = `your cloudinary cloud name`
   - API_KEY = `your cloudinary api key`
   - API_SECRET = `your cloudinary api secret`
 
 ---
 
-# Run
+## 🛠 Tech Stack  
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-0A50B2?style=for-the-badge&logo=mongodb)
+![EJS](https://img.shields.io/badge/ejs-404?style=for-the-badge&logo=ejs)
+![GH Actions](https://img.shields.io/badge/GH_Actions-fff?logo=githubactions&style=for-the-badge)
 
-`npm start`
-open http://localhost:[PORT]/parking in the web browser
+- **Backend:** Node.js, Express  
+- **Database:** MongoDB (Mongoose)  
+- **Frontend:** EJS templates
+- **Testing:** Playwright (VRT)
+- **CI:** GitHub Actions
 
-📸 Demo (TODO)
+## 🧭 Roadmap
+See [docs/ROADMAP.md](./docs/ROADMAP.md).
 
-🌱 Future Improvements:
-- Build a React frontend for a modern UI
-- Add automated testing suite
+## 🧪 Testing & Quality
+- Unit and integration tests (TBD)
+- Visual Regression Tests with Playwright (see [docs/vrt-demo.md](./docs/vrt-demo.md))
+
+## 📚 Docs
+- [Architecture](./docs/architecture.md)
+- [API](./docs/api.md)
+
+## 🤝 Contributing
+See [CONTRIBUTING.md](./CONTRIBUTING.md) and our [Pull Request Template](./.github/pull_request_template.md).
+
+## 🪪 License
+MIT — see [LICENSE](./LICENSE).
